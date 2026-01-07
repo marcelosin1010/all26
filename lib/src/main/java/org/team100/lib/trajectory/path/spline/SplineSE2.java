@@ -2,8 +2,8 @@ package org.team100.lib.trajectory.path.spline;
 
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.path.PathPointSE2;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;

@@ -1,6 +1,6 @@
 package org.team100.lib.trajectory.timing;
 
-import org.team100.lib.geometry.PathPointSE3;
+import org.team100.lib.trajectory.path.PathPointSE3;
 
 /**
  * Represents a state within a trajectory in SE(3).

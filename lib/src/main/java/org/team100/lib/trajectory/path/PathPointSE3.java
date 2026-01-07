@@ -1,5 +1,7 @@
-package org.team100.lib.geometry;
+package org.team100.lib.trajectory.path;
 
+import org.team100.lib.geometry.Metrics;
+import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.trajectory.path.spline.SplineSE3;
 import org.team100.lib.util.Math100;
 

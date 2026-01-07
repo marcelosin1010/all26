@@ -3,8 +3,8 @@ package org.team100.lib.trajectory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.path.PathPointSE2;
 import org.team100.lib.trajectory.timing.TimedStateSE2;
 import org.team100.lib.trajectory.timing.TimingConstraint;
 

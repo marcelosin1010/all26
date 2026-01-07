@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
-import org.team100.lib.geometry.PathPointSE2;
+import org.team100.lib.trajectory.path.PathPointSE2;
 import org.team100.lib.trajectory.path.PathSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;

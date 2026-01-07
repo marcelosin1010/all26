@@ -1,6 +1,6 @@
 package org.team100.lib.trajectory.timing;
 
-import org.team100.lib.geometry.PathPointSE2;
+import org.team100.lib.trajectory.path.PathPointSE2;
 
 import edu.wpi.first.math.geometry.Translation2d;
 

@@ -1,8 +1,8 @@
 package org.team100.lib.trajectory.timing;
 
-import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
+import org.team100.lib.trajectory.path.PathPointSE2;
 import org.team100.lib.tuning.Mutable;
 
 /** Trivial constraint for testing. */

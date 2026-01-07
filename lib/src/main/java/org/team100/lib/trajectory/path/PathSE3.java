@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.geometry.PathPointSE3;
 
 public class PathSE3 {
 

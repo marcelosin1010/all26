@@ -1,6 +1,6 @@
 package org.team100.lib.trajectory.timing;
 
-import org.team100.lib.geometry.PathPointSE3;
+import org.team100.lib.trajectory.path.PathPointSE3;
 
 // TODO: a real version of this
 public class ConstantConstraintSE3 implements TimingConstraintSE3 {

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.team100.lib.geometry.GeometryUtil;
 import org.team100.lib.geometry.Metrics;
-import org.team100.lib.geometry.PathPointSE2;
 import org.team100.lib.trajectory.path.spline.SplineSE2;
 
 import edu.wpi.first.math.geometry.Pose2d;

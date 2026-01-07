@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE3;
-import org.team100.lib.geometry.PathPointSE3;
 import org.team100.lib.geometry.WaypointSE3;
 import org.team100.lib.testing.Timeless;
+import org.team100.lib.trajectory.path.PathPointSE3;
 import org.team100.lib.util.ChartUtil3d;
 
 import edu.wpi.first.math.Vector;

@@ -1,9 +1,9 @@
-package org.team100.lib.geometry;
+package org.team100.lib.trajectory.path;
 
+import org.team100.lib.geometry.Metrics;
+import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.trajectory.path.spline.SplineSE2;
 import org.team100.lib.util.Math100;
-
-import edu.wpi.first.math.MathUtil;
 
 /**
  * Represents a point on a path in SE(2) (plane with rotation).
@@ -79,11 +79,10 @@ public class PathPointSE2 {
     }
 
     /**
-     * Linear interpolation of each component separately.
+     * Interpolates by resampling the underlying spline.
      * 
-     * TODO: this is wrong for the spline parameter, it's the distance.
-     * 
-     * Not a constant-twist arc.
+     * The parameter is assumed to vary linearly between points, so the interpolant
+     * here is just a fraction of that linear variation.
      */
     public PathPointSE2 interpolate(PathPointSE2 other, double x) {
         if (DEBUG)
@@ -117,17 +116,12 @@ public class PathPointSE2 {
         if (DEBUG)
             System.out.printf("s0 %f s1 %f x %f s %f\n",
                     m_s, other.m_s, x, s);
-        // sample the spline again instead of interpolating.
+
         if (spline != null)
             return spline.sample(s);
-        // TODO: remove this way
-        System.out.println("WARNING: no spline, using linear interpolation ");
-        return new PathPointSE2(
-                GeometryUtil.interpolate(m_waypoint, other.m_waypoint, x),
-                spline,
-                s,
-                MathUtil.interpolate(m_headingRateRad_M, other.m_headingRateRad_M, x),
-                Math100.interpolate(m_curvatureRad_M, other.m_curvatureRad_M, x));
+
+        new Throwable().printStackTrace();
+        throw new IllegalStateException();
     }
 
     /**
