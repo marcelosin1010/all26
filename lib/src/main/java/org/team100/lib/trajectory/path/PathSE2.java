@@ -59,6 +59,12 @@ public class PathSE2 {
         return m_points.get(index).point();
     }
 
+    public PathEntrySE2 getEntry(int index) {
+        if (m_points.isEmpty())
+            return null;
+        return m_points.get(index);
+    }
+
     /** This is always non-negative. */
     public double getMaxDistance() {
         if (m_points.isEmpty())
@@ -109,11 +115,6 @@ public class PathSE2 {
         return null;
     }
 
-    /** Just returns the list of points with no further sampling. */
-    public PathEntrySE2[] resample() {
-        return m_points.toArray(PathEntrySE2[]::new);
-    }
-
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -136,8 +137,12 @@ public class PathSE2 {
     /**
      * Samples the entire path evenly by distance. Since the spline parameterizer
      * now contains a pathwise distance limit, you shouldn't need this anymore.
+     * 
+     * One difference is that the bisection method doesn't provide even sampling at
+     * all: if round N is almost dense enough, then round N+1 can be almost twice as
+     * dense as that.  Maybe that's ok.
      */
-    public PathPointSE2[] resample(double step) {
+    PathPointSE2[] resample(double step) {
         double maxDistance = getMaxDistance();
         if (maxDistance == 0)
             throw new IllegalArgumentException("max distance must be greater than zero");

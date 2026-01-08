@@ -1,257 +1,212 @@
 package org.team100.lib.trajectory.timing;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.jfree.data.xy.VectorSeries;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
-import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
+import org.team100.lib.trajectory.PathToVectorSeries;
 import org.team100.lib.trajectory.TrajectorySE2;
+import org.team100.lib.trajectory.TrajectorySE2ToVectorSeries;
 import org.team100.lib.trajectory.path.PathFactorySE2;
-import org.team100.lib.trajectory.path.PathPointSE2;
 import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.spline.SplineFactorySE2;
 import org.team100.lib.trajectory.path.spline.SplineSE2;
+import org.team100.lib.util.ChartUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class TrajectorySE2FactoryTest {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
     public static final double EPSILON = 1e-12;
     private static final double DELTA = 0.01;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());
 
-    public static final List<WaypointSE2> waypoints2 = Arrays.asList(
-            WaypointSE2.irrotational(
-                    new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(
-                    new Pose2d(2.4, 0.0, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(
-                    new Pose2d(3.6, 1.2, new Rotation2d(0)), 0, 1.2),
-            WaypointSE2.irrotational(
-                    new Pose2d(6.0, 1.2, new Rotation2d(0)), 0, 1.2));
+    /** Straight, then s-shaped, then straight. **/
+    public static final List<WaypointSE2> waypoints = Arrays.asList(
+            WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(new Pose2d(2, 0, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(new Pose2d(3, 1, new Rotation2d(0)), 0, 1.2),
+            WaypointSE2.irrotational(new Pose2d(5, 1, new Rotation2d(0)), 0, 1.2));
 
-    public TrajectorySE2 buildAndCheckTrajectory(
-            final PathSE2 path,
-            double step_size,
-            List<TimingConstraint> constraints,
-            double start_vel,
-            double end_vel,
-            double max_vel,
-            double max_acc) {
-        TrajectorySE2Factory u = new TrajectorySE2Factory(constraints);
-        TrajectorySE2 timed_traj = u.fromPath(path, start_vel, end_vel);
-        checkTrajectory(timed_traj, constraints, start_vel, end_vel, max_vel, max_acc);
-        return timed_traj;
+    /** Low accel, high velocity, makes a triangle profile */
+    @Test
+    void testConstrained1() {
+        double maxV = 20;
+        double maxA = 5;
+        List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, maxV, maxA));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        double start_vel = 0;
+        double end_vel = 0;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+
+        verifyAccel(trajectory);
     }
 
-    public void checkTrajectory(
-            final TrajectorySE2 traj,
-            List<TimingConstraint> constraints,
-            double start_vel,
-            double end_vel,
-            double max_vel,
-            double max_acc) {
-        assertFalse(traj.isEmpty());
-        assertEquals(start_vel, traj.sample(0).velocityM_S(), EPSILON);
-        assertEquals(end_vel, traj.getLastPoint().velocityM_S(), EPSILON);
+    /** Low accel, low velocity, makes a trapezoid profile */
+    @Test
+    void testConstrained2() {
+        double maxV = 3;
+        double maxA = 5;
+        List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, maxV, maxA));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        double start_vel = 0;
+        double end_vel = 0;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+        verifyAccel(trajectory);
+    }
 
-        // Go state by state, verifying all constraints are satisfied and integration is
-        // correct.
-        TimedStateSE2 prev_state = null;
-        for (TimedStateSE2 state : traj.getPoints()) {
-            for (final TimingConstraint constraint : constraints) {
-                assertTrue(state.velocityM_S() - EPSILON <= constraint.maxV(state.point()));
-                assertTrue(state.acceleration() - EPSILON <= constraint.maxAccel(
-                        state.point(), state.velocityM_S()),
-                        String.format("%f %f", state.acceleration(), constraint.maxAccel(
-                                state.point(), state.velocityM_S())));
-                assertTrue(state.acceleration() + EPSILON >= constraint.maxDecel(state.point(), state.velocityM_S()),
-                        String.format("%f %f", state.acceleration(),
-                                constraint.maxDecel(state.point(), state.velocityM_S())));
-            }
-            if (prev_state != null) {
-                assertEquals(state.velocityM_S(),
-                        prev_state.velocityM_S()
-                                + (state.getTimeS() - prev_state.getTimeS()) * prev_state.acceleration(),
-                        EPSILON);
-            }
-            prev_state = state;
-        }
+    /** Initial and terminal velocities makes a kind of trapezoid. */
+    @Test
+    void testConstrained3() {
+        double maxV = 6;
+        double maxA = 5;
+        List<TimingConstraint> constraints = List.of(new ConstantConstraint(logger, maxV, maxA));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        double start_vel = 5;
+        double end_vel = 2;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+        verifyAccel(trajectory);
+
     }
 
     /**
-     * The path here is just four waypoints, so sharp corners.
-     * 
-     * The trajectory just notices velocity and acceleration along the path, so it
-     * is totally infeasible at the corners.
      */
     @Test
-    void testNoConstraints() {
-        PathFactorySE2 pathFactory = new PathFactorySE2(0.2, 0.2, 0.2, 0.2);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
-        PathSE2 path = pathFactory.get(splines);
-        assertEquals(55, path.length());
+    void testCentripetalConstraint1() {
+        List<TimingConstraint> constraints = List.of(
+                new CapsizeAccelerationConstraint(logger, 2, 1));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        double start_vel = 0;
+        double end_vel = 0;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+        verifyAccel(trajectory);
+    }
 
-        // Triangle profile.
-        TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
-                1.0,
-                new ArrayList<TimingConstraint>(), 0.0, 0.0, 20.0, 5.0);
-        assertEquals(55, timed_traj.length());
+    @Test
+    void testCentripetalConstraint2() {
+        List<TimingConstraint> constraints = List.of(
+                new CapsizeAccelerationConstraint(logger, 3, 1));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        double start_vel = 0;
+        double end_vel = 0;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+        verifyAccel(trajectory);
+    }
 
-        // Trapezoidal profile.
-        timed_traj = buildAndCheckTrajectory(path,
-                1.0, new ArrayList<TimingConstraint>(),
-                0.0, 0.0,
-                10.0, 5.0);
-        assertEquals(55, timed_traj.length());
-
-        // Trapezoidal profile with start and end velocities.
-        timed_traj = buildAndCheckTrajectory(path,
-                1.0, new ArrayList<TimingConstraint>(),
-                5.0, 2.0,
-                10.0, 5.0);
-        assertEquals(55, timed_traj.length());
+    @Test
+    void testCentripetalConstraint3() {
+        List<TimingConstraint> constraints = List.of(
+                new CapsizeAccelerationConstraint(logger, 2, 1));
+        TrajectorySE2Factory trajectoryFactory = new TrajectorySE2Factory(constraints);
+        PathSE2 path = getPath();
+        // higher than this gets clamped, so don't do that.
+        double start_vel = 3;
+        double end_vel = 2;
+        TrajectorySE2 trajectory = trajectoryFactory.fromPath(path, start_vel, end_vel);
+        if (DEBUG)
+            trajectory.dump();
+        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        assertEquals(55, trajectory.length());
+        assertEquals(start_vel, trajectory.sample(0).velocityM_S(), EPSILON);
+        assertEquals(end_vel, trajectory.getLastPoint().velocityM_S(), EPSILON);
+        verifyVelocityConstraints(trajectory, constraints);
+        verifyAccelConstraints(trajectory, constraints);
+        verifyDecelConstraints(trajectory, constraints);
+        verifyAccel(trajectory);
     }
 
     /**
-     * The centripetal constraint does nothing in the corners, because these paths
-     * aren't realistic; the corners are ignored here.
-     */
-    @Test
-    void testCentripetalConstraint() {
-        PathFactorySE2 pathFactory = new PathFactorySE2(0.2, 0.2, 0.2, 0.2);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
-        PathSE2 path = pathFactory.get(splines);
-
-        SwerveKinodynamics limits = SwerveKinodynamicsFactory.forRealisticTest(logger);
-
-        // Triangle profile.
-        TrajectorySE2 timed_traj = buildAndCheckTrajectory(path,
-                1.0,
-                List.of(new CapsizeAccelerationConstraint(logger, limits, 1.0)),
-                 0.0, 0.0, 20.0, 5.0);
-        assertEquals(4, timed_traj.length());
-        assertNotNull(timed_traj);
-
-        // Trapezoidal profile.
-        timed_traj = buildAndCheckTrajectory(path, 1.0, new ArrayList<TimingConstraint>(), 0.0, 0.0,
-                10.0, 5.0);
-        assertEquals(4, timed_traj.length());
-
-        // Trapezoidal profile with start and end velocities.
-        timed_traj = buildAndCheckTrajectory(path, 1.0, new ArrayList<TimingConstraint>(), 5.0, 2.0,
-                10.0, 5.0);
-        assertEquals(4, timed_traj.length());
-    }
-
-    @Test
-    void testConditionalVelocityConstraint() {
-
-        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
-        PathSE2 path = pathFactory.get(splines);
-
-        class ConditionalTimingConstraint implements TimingConstraint {
-            @Override
-            public double maxV(PathPointSE2 state) {
-                if (state.waypoint().pose().getTranslation().getX() >= 24.0) {
-                    return 5.0;
-                } else {
-                    return Double.POSITIVE_INFINITY;
-                }
-            }
-
-            @Override
-            public double maxAccel(PathPointSE2 state, double velocity) {
-                return Double.POSITIVE_INFINITY;
-            }
-
-            @Override
-            public double maxDecel(PathPointSE2 state, double velocity) {
-                return Double.NEGATIVE_INFINITY;
-            }
-        }
-
-        // Trapezoidal profile.
-        TrajectorySE2 timed_traj = buildAndCheckTrajectory(
-                path, 1.0, Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
-        assertNotNull(timed_traj);
-    }
-
-    @Test
-    void testConditionalAccelerationConstraint() {
-        PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.1, 0.1, 0.1);
-        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints2);
-        PathSE2 path = pathFactory.get(splines);
-
-        class ConditionalTimingConstraint implements TimingConstraint {
-            @Override
-            public double maxV(PathPointSE2 state) {
-                return Double.POSITIVE_INFINITY;
-            }
-
-            @Override
-            public double maxAccel(PathPointSE2 state,
-                    double velocity) {
-                return 10.0 / velocity;
-            }
-
-            @Override
-            public double maxDecel(PathPointSE2 state, double velocity) {
-                return -10.0;
-            }
-        }
-
-        // Trapezoidal profile.
-        TrajectorySE2 timed_traj = buildAndCheckTrajectory(
-                path, 1.0, Arrays.asList(new ConditionalTimingConstraint()), 0.0, 0.0, 10.0, 5.0);
-        assertNotNull(timed_traj);
-    }
-
-    /**
-     * 0.16 ms on my machine.
+     * 0.7 ms on my machine. Could be faster.
      * 
      * See PathFactoryTest::testPerformance()
      */
     @Test
     void testPerformance() {
-
+        // A sweeping left turn without rotation.
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d()),
+                        new Pose2d(new Translation2d(), new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1.2),
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                         new DirectionSE2(0, 1, 0), 1.2));
         List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
 
         PathFactorySE2 pathFactory = new PathFactorySE2(0.1, 0.05, 0.05, 0.2);
-        PathSE2 path = pathFactory.get(splines);
 
         TrajectorySE2 trajectory = new TrajectorySE2();
         TrajectorySE2Factory m_trajectoryFactory = new TrajectorySE2Factory(new ArrayList<>());
 
         long startTimeNs = System.nanoTime();
-        final int iterations = 100;
-        for (int i = 0; i < iterations; ++i) {
+        int N = 100;
+        for (int i = 0; i < N; ++i) {
+            // this takes almost all the time
+            // TODO: explore performance of this part
+            PathSE2 path = pathFactory.get(splines);
+            // this takes very little time
             trajectory = m_trajectoryFactory.fromPath(path, 0, 0);
         }
         long endTimeNs = System.nanoTime();
@@ -259,13 +214,93 @@ public class TrajectorySE2FactoryTest {
         double totalDurationMs = (endTimeNs - startTimeNs) / 1000000.0;
         if (DEBUG) {
             System.out.printf("total duration ms: %5.3f\n", totalDurationMs);
-            System.out.printf("duration per iteration ms: %5.3f\n", totalDurationMs / iterations);
+            System.out.printf("duration per iteration ms: %5.3f\n", totalDurationMs / N);
         }
         assertEquals(33, trajectory.length());
         TimedStateSE2 p = trajectory.getPoint(12);
         assertEquals(0.605, p.point().waypoint().pose().getTranslation().getX(), DELTA);
         assertEquals(0, p.point().getHeadingRateRad_M(), DELTA);
+    }
 
+    /**
+     * Produce the path for testing.
+     */
+    private PathSE2 getPath() {
+        List<SplineSE2> splines = SplineFactorySE2.splinesFromWaypoints(waypoints);
+        PathFactorySE2 pathFactory = new PathFactorySE2(0.2, 0.2, 0.2, 0.2);
+        PathSE2 path = pathFactory.get(splines);
+        List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
+        ChartUtil.plotOverlay(series, 200);
+        assertEquals(55, path.length());
+        return path;
+    }
+
+    /** Verify velocity constraints. */
+    private void verifyVelocityConstraints(TrajectorySE2 trajectory, List<TimingConstraint> constraints) {
+        double margin = 1e-12;
+        for (int i = 0; i < trajectory.length(); ++i) {
+            TimedStateSE2 state = trajectory.getPoint(i);
+            for (TimingConstraint constraint : constraints) {
+                String name = constraint.getClass().getSimpleName();
+                double stateV = state.velocityM_S();
+                double maxV = constraint.maxV(state.point());
+                assertTrue(stateV - margin <= maxV,
+                        String.format("i %d constraint %s state vel %f constraint vel %f",
+                                i, name, stateV, maxV));
+            }
+        }
+    }
+
+    /** Verify acceleration constraints. */
+    private void verifyAccelConstraints(TrajectorySE2 trajectory, List<TimingConstraint> constraints) {
+        double margin = 1e-12;
+        for (int i = 0; i < trajectory.length(); ++i) {
+            TimedStateSE2 state = trajectory.getPoint(i);
+            for (TimingConstraint constraint : constraints) {
+                String name = constraint.getClass().getSimpleName();
+                double stateAccel = state.acceleration();
+                double maxAccel = constraint.maxAccel(state.point(), state.velocityM_S());
+                assertTrue(stateAccel - margin <= maxAccel,
+                        String.format("i %d constraint %s state accel %f constraint accel %f",
+                                i, name, stateAccel, maxAccel));
+            }
+        }
+    }
+
+    /**
+     * Verify deceleration constraints.
+     */
+    private void verifyDecelConstraints(TrajectorySE2 trajectory, List<TimingConstraint> constraints) {
+        // this huge margin still doesn't pass, so I should go fix the issue in the factory.
+        double margin = 0.3;
+        for (int i = 0; i < trajectory.length(); ++i) {
+            TimedStateSE2 state = trajectory.getPoint(i);
+            for (TimingConstraint constraint : constraints) {
+                String name = constraint.getClass().getSimpleName();
+                double stateAccel = state.acceleration();
+                double maxDecel = constraint.maxDecel(state.point(), state.velocityM_S());
+                assertTrue(stateAccel + margin >= maxDecel,
+                        String.format("i %d constraint %s state accel %f constraint decel %f",
+                                i, name, stateAccel, maxDecel));
+            }
+        }
+    }
+
+    /**
+     * Verify the acceleration computation: acceleration at the start of each
+     * segment should be the difference between velocities of the endpoints.
+     */
+    private void verifyAccel(TrajectorySE2 trajectory) {
+        double margin = 1e-12;
+        for (int i = 1; i < trajectory.length(); ++i) {
+            TimedStateSE2 s0 = trajectory.getPoint(i - 1);
+            TimedStateSE2 s1 = trajectory.getPoint(i);
+            double dt = s1.getTimeS() - s0.getTimeS();
+            double extrapolatedVelocity = s0.velocityM_S() + s0.acceleration() * dt;
+            assertEquals(s1.velocityM_S(), extrapolatedVelocity, margin,
+                    String.format("i %d state vel %f extrapolated vel %f",
+                            i, s1.velocityM_S(), extrapolatedVelocity));
+        }
     }
 
 }

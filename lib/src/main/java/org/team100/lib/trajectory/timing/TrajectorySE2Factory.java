@@ -14,7 +14,7 @@ import org.team100.lib.util.Math100;
  * schedule.
  */
 public class TrajectorySE2Factory {
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     private static final double EPSILON = 1e-6;
 
     /** Defaults to make the constraints set the actual. */
@@ -28,50 +28,31 @@ public class TrajectorySE2Factory {
     }
 
     /**
-     * Samples the path, then assigns a time to each sample.
+     * Assigns a time to each point in the path.
+     * 
+     * Output is these same points with time.
      */
     public TrajectorySE2 fromPath(PathSE2 path, double start_vel, double end_vel) {
-        PathEntrySE2[] samples = getSamples(path);
-        return fromSamples(samples, start_vel, end_vel);
-    }
-
-    /////////////////////////////////////////////////////////////////////////////////////
-    ///
-    ///
-
-    /**
-     * Return an array of poses from the path.
-     */
-    private PathEntrySE2[] getSamples(PathSE2 path) {
-        return path.resample();
-    }
-
-    /**
-     * Input is a list of samples (could be evenly sampled or not).
-     * 
-     * Output is these same samples with time.
-     */
-    public TrajectorySE2 fromSamples(
-            PathEntrySE2[] samples,
-            double start_vel,
-            double end_vel) {
-        double[] distances = distances(samples);
-        double[] velocities = velocities(samples, start_vel, end_vel, distances);
+        double[] distances = distances(path);
+        double[] velocities = velocities(path, start_vel, end_vel, distances);
         double[] accels = accels(distances, velocities);
         double[] runningTime = runningTime(distances, velocities, accels);
-        List<TimedStateSE2> timedStates = timedStates(samples, velocities, accels, runningTime);
+        List<TimedStateSE2> timedStates = timedStates(path, velocities, accels, runningTime);
         return new TrajectorySE2(timedStates, m_constraints);
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////
+
     /**
-     * Computes the length of each arc and accumulates.
+     * Computes the length of each segment, as if it were a straight line, and
+     * accumulates.
      */
-    private double[] distances(PathEntrySE2[] samples) {
-        int n = samples.length;
+    private double[] distances(PathSE2 path) {
+        int n = path.length();
         double distances[] = new double[n];
         for (int i = 1; i < n; ++i) {
-            double arclength = samples[i].point().distanceCartesian(samples[i - 1].point());
-            distances[i] = arclength + distances[i - 1];
+            double segmentLength = path.getEntry(i).point().distanceCartesian(path.getEntry(i - 1).point());
+            distances[i] = segmentLength + distances[i - 1];
         }
         return distances;
     }
@@ -81,10 +62,10 @@ public class TrajectorySE2Factory {
      * constraints.
      */
     private double[] velocities(
-            PathEntrySE2[] samples, double start_vel, double end_vel, double[] distances) {
-        double velocities[] = new double[samples.length];
-        forward(samples, start_vel, distances, velocities);
-        backward(samples, end_vel, distances, velocities);
+            PathSE2 path, double start_vel, double end_vel, double[] distances) {
+        double velocities[] = new double[path.length()];
+        forward(path, start_vel, distances, velocities);
+        backward(path, end_vel, distances, velocities);
         if (start_vel > velocities[0]) {
             System.out.printf("WARNING: start velocity %f is higher than constrained velocity %f\n",
                     start_vel, velocities[0]);
@@ -129,11 +110,11 @@ public class TrajectorySE2Factory {
      * Creates a list of timed states.
      */
     private List<TimedStateSE2> timedStates(
-            PathEntrySE2[] samples, double[] velocities, double[] accels, double[] runningTime) {
-        int n = samples.length;
+            PathSE2 path, double[] velocities, double[] accels, double[] runningTime) {
+        int n = path.length();
         List<TimedStateSE2> timedStates = new ArrayList<>(n);
         for (int i = 0; i < n; ++i) {
-            timedStates.add(new TimedStateSE2(samples[i].point(), runningTime[i], velocities[i], accels[i]));
+            timedStates.add(new TimedStateSE2(path.getEntry(i).point(), runningTime[i], velocities[i], accels[i]));
         }
         return timedStates;
     }
@@ -143,8 +124,8 @@ public class TrajectorySE2Factory {
      * referencing the state at i.
      */
     private void forward(
-            PathEntrySE2[] samples, double start_vel, double[] distances, double[] velocities) {
-        int n = samples.length;
+            PathSE2 path, double start_vel, double[] distances, double[] velocities) {
+        int n = path.length();
         velocities[0] = start_vel;
         for (int i = 0; i < n - 1; ++i) {
             if (DEBUG)
@@ -158,14 +139,14 @@ public class TrajectorySE2Factory {
                 break;
             }
             // velocity constraint depends only on state
-            double maxVelocity = maxVelocity(samples[i + 1].point());
+            double maxVelocity = maxVelocity(path.getEntry(i + 1).point());
             if (DEBUG)
                 System.out.printf("maxV i %d %f\n", i + 1, maxVelocity);
             // start with the maximum velocity
             velocities[i + 1] = maxVelocity;
             // reduce velocity to fit under the acceleration constraint
             double impliedAccel = Math100.accel(velocities[i], velocities[i + 1], arclength);
-            double maxAccel = maxAccel(samples[i], velocities[i]);
+            double maxAccel = maxAccel(path.getEntry(i), velocities[i]);
             if (impliedAccel > maxAccel/* + EPSILON */) {
                 velocities[i + 1] = Math100.v1(velocities[i], maxAccel, arclength);
                 if (DEBUG)
@@ -184,10 +165,12 @@ public class TrajectorySE2Factory {
      * but walking backwards through the path, only i+1 is available, and the
      * samples should be enough close together, and the velocity should change
      * smoothly smooth enough so it shouldn't matter much in practice.
+     * 
+     * TODO: gah, it does seem to have too-big an effect, so fix it.
      */
     private void backward(
-            PathEntrySE2[] samples, double end_vel, double[] distances, double[] velocities) {
-        int n = samples.length;
+            PathSE2 path, double end_vel, double[] distances, double[] velocities) {
+        int n = path.length();
         velocities[n - 1] = end_vel;
         for (int i = n - 2; i >= 0; --i) {
             if (DEBUG)
@@ -198,13 +181,13 @@ public class TrajectorySE2Factory {
                 break;
             }
 
-            double maxVelocity = maxVelocity(samples[i].point());
+            double maxVelocity = maxVelocity(path.getEntry(i).point());
             if (DEBUG)
                 System.out.printf("maxV i %d %f\n", i, maxVelocity);
 
             double impliedAccel = Math100.accel(velocities[i], velocities[i + 1], arclength);
             // Apply the decel constraint at the end of the segment since it is feasible.
-            double maxDecel = maxDecel(samples[i].point(), velocities[i + 1]);
+            double maxDecel = maxDecel(path.getEntry(i).point(), velocities[i + 1]);
             if (impliedAccel < maxDecel/* - EPSILON */) {
                 velocities[i] = Math100.v0(velocities[i + 1], maxDecel, arclength);
                 if (DEBUG)

@@ -63,6 +63,8 @@ public class PathFactorySE2 {
      * 
      * The trajectory scheduler consumes these points, interpolating between them
      * with straight lines.
+     * 
+     * TODO: explore performance of this part, it could be faster.
      */
     public PathSE2 get(List<? extends SplineSE2> splines) {
         List<PathEntrySE2> result = new ArrayList<>();
