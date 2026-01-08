@@ -28,7 +28,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
 public class TrajectorySE2FactoryTest {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
     public static final double EPSILON = 1e-12;
     private static final double DELTA = 0.01;
     private static final LoggerFactory logger = new TestLoggerFactory(new TestPrimitiveLogger());

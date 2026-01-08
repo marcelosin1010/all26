@@ -236,21 +236,14 @@ class TrajectorySE2PlannerTest implements Timeless {
         // use the start velocity to adjust the first magic number.
         // divide by the distance because the spline multiplies by it
         double e1 = 2.0 * startVelocity.norm() / full.getNorm();
+        List<WaypointSE2> waypoints = List.of(
+                new WaypointSE2(start.pose(), DirectionSE2.irrotational(startingAngle), e1),
+                new WaypointSE2(end, DirectionSE2.irrotational(courseToGoal), 1.2));
         TrajectorySE2 traj = planner.generateTrajectory(
-                List.of(
-                        new WaypointSE2(
-                                start.pose(),
-                                DirectionSE2.irrotational(startingAngle),
-                                e1),
-                        new WaypointSE2(
-                                end,
-                                DirectionSE2.irrotational(courseToGoal),
-                                1.2)),
-                startVelocity.norm(),
-                0);
+                waypoints, startVelocity.norm(), 0);
         if (DEBUG)
             traj.dump();
-        assertEquals(2.705, traj.duration(), DELTA);
+        assertEquals(2.757, traj.duration(), DELTA);
     }
 
     /**
@@ -284,7 +277,7 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2 traj = planner.generateTrajectory(waypoints, 1, 1);
         if (DEBUG)
             traj.dump();
-        assertEquals(4.562, traj.duration(), DELTA);
+        assertEquals(4.603, traj.duration(), DELTA);
     }
 
     /**
@@ -335,8 +328,7 @@ class TrajectorySE2PlannerTest implements Timeless {
 
     }
 
-
-        /**
+    /**
      * Yields a straight line.
      * 
      * TrajectoryPlanner.restToRest() has several overloads: the one that takes
@@ -480,14 +472,10 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(9, 9),
-                                new Rotation2d(-Math.PI / 2)),
+                        new Pose2d(new Translation2d(9, 9), new Rotation2d(-Math.PI / 2)),
                         new DirectionSE2(0, 1, 0), 1));
         TrajectorySE2 t = p.restToRest(waypoints);
 
@@ -511,19 +499,13 @@ class TrajectorySE2PlannerTest implements Timeless {
         TrajectorySE2Planner p = new TrajectorySE2Planner(pathFactory, trajectoryFactory);
         List<WaypointSE2> waypoints = List.of(
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(1, 1),
-                                new Rotation2d()),
+                        new Pose2d(new Translation2d(1, 1), new Rotation2d()),
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(5, 5),
-                                new Rotation2d(-2)),
+                        new Pose2d(new Translation2d(5, 5), new Rotation2d(-2)),
                         new DirectionSE2(1, 0, 0), 1),
                 new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(9, 9),
-                                new Rotation2d(-Math.PI / 2)),
+                        new Pose2d(new Translation2d(9, 9), new Rotation2d(-Math.PI / 2)),
                         new DirectionSE2(0, 1, 0), 1));
         TrajectorySE2 t = p.restToRest(waypoints);
 
