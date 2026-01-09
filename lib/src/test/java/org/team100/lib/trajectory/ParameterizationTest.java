@@ -1,5 +1,6 @@
 package org.team100.lib.trajectory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
@@ -29,12 +30,8 @@ public class ParameterizationTest {
     private static final boolean DEBUG = false;
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
-    /**
-     * Shows x as a function of the spline parameter, s.
-     */
     @Test
     void testSplineStraight() {
-        // a straight line in x, since the direction is also +x
         SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
@@ -56,13 +53,8 @@ public class ParameterizationTest {
         ChartUtil.plotStacked(d1, d2, d3);
     }
 
-    /**
-     * Shows x as a function of the spline parameter, s.
-     */
     @Test
     void testSplineCurved() {
-        // a straight line in x, since the direction is also +x
-        // note the zero scale here to force zero velocity at the ends
         SplineSE2 spline = new SplineSE2(
                 new WaypointSE2(
                         new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
@@ -71,9 +63,12 @@ public class ParameterizationTest {
                         new Pose2d(new Translation2d(1, 0), new Rotation2d(0)),
                         new DirectionSE2(0, 1, 0), 1));
 
-        SplineSE2ToVectorSeries splineConverter = new SplineSE2ToVectorSeries(0.1);
-        List<VectorSeries> series = splineConverter.convert(List.of(spline));
-        ChartUtil.plotOverlay(series, 500);
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(List.of(spline));
+        List<VectorSeries> series2 = new SplineSE2ToVectorSeries(0.01).curvature(List.of(spline));
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 500);
 
         XYSeries sx = SplineSE2ToVectorSeries.x("x", List.of(spline));
         XYSeries sxPrime = SplineSE2ToVectorSeries.xPrime("xprime", List.of(spline));

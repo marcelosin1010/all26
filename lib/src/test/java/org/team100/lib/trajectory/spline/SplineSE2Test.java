@@ -2,8 +2,10 @@ package org.team100.lib.trajectory.spline;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.jfree.data.xy.VectorSeries;
@@ -634,6 +636,181 @@ class SplineSE2Test implements Timeless {
                 new Pose2d(new Translation2d(), new Rotation2d(1)),
                 new DirectionSE2(0, 0, 1), 1);
         assertThrows(IllegalArgumentException.class, () -> new SplineSE2(w0, w1));
+    }
+
+    @Test
+    void testMulti0() {
+        WaypointSE2 a = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 2), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1);
+        WaypointSE2 b = new WaypointSE2(
+                new Pose2d(new Translation2d(1, 0), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 c = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 2), new Rotation2d()),
+                new DirectionSE2(0, 1, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(a, b));
+        splines.add(new SplineSE2(b, c));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        List<VectorSeries> series2 = new SplineSE2ToVectorSeries(0.25).curvature(splines);
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 300);
+
+    }
+
+    @Test
+    void testMulti1() {
+        WaypointSE2 d = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+                new DirectionSE2(0, 1, 0), 1);
+        WaypointSE2 e = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 1), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 f = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 1), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1);
+        WaypointSE2 g = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+                new DirectionSE2(-1, 0, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(d, e));
+        splines.add(new SplineSE2(e, f));
+        splines.add(new SplineSE2(f, g));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        List<VectorSeries> series2 = new SplineSE2ToVectorSeries(0.05).curvature(splines);
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 300);
+    }
+
+    @Test
+    void testMulti2() {
+        WaypointSE2 h = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 i = new WaypointSE2(
+                new Pose2d(new Translation2d(1, 0), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 j = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 1), new Rotation2d()),
+                new DirectionSE2(1, 1, 0), 1.3);
+        WaypointSE2 k = new WaypointSE2(
+                new Pose2d(new Translation2d(3, 0), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1.3);
+        WaypointSE2 l = new WaypointSE2(
+                new Pose2d(new Translation2d(3, -1), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(h, i));
+        splines.add(new SplineSE2(i, j));
+        splines.add(new SplineSE2(j, k));
+        splines.add(new SplineSE2(k, l));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        List<VectorSeries> series2 = new SplineSE2ToVectorSeries(0.05).curvature(splines);
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 300);
+    }
+
+    @Test
+    void testMulti3() {
+        WaypointSE2 a = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 2), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1);
+        WaypointSE2 b = new WaypointSE2(
+                new Pose2d(new Translation2d(1, 0), new Rotation2d(Math.PI / 2)),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 c = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 2), new Rotation2d(Math.PI)),
+                new DirectionSE2(0, 1, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(a, b));
+        splines.add(new SplineSE2(b, c));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        List<VectorSeries> series2 = new SplineSE2ToVectorSeries(0.1).curvature(splines);
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 300);
+    }
+
+    @Test
+    void testMulti4() {
+        WaypointSE2 d = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+                new DirectionSE2(0, 1, 0), 1);
+        WaypointSE2 e = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 1), new Rotation2d(Math.PI / 2)),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 f = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 1), new Rotation2d(Math.PI)),
+                new DirectionSE2(0, -1, 0), 1);
+        WaypointSE2 g = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 0), new Rotation2d()),
+                new DirectionSE2(-1, 0, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(d, e));
+        splines.add(new SplineSE2(e, f));
+        splines.add(new SplineSE2(f, g));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        ChartUtil.plotOverlay(series, 300);
+    }
+
+    @Test
+    void testMulti5() {
+        WaypointSE2 h = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 i = new WaypointSE2(
+                new Pose2d(new Translation2d(1, 0), new Rotation2d(Math.PI / 2)),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 j = new WaypointSE2(
+                new Pose2d(new Translation2d(2, 1), new Rotation2d(Math.PI)),
+                new DirectionSE2(1, 1, 0), 1);
+        WaypointSE2 k = new WaypointSE2(
+                new Pose2d(new Translation2d(3, 0), new Rotation2d()),
+                new DirectionSE2(0, -1, 0), 1);
+        WaypointSE2 l = new WaypointSE2(
+                new Pose2d(new Translation2d(3, -1), new Rotation2d(Math.PI / 2)),
+                new DirectionSE2(0, -1, 0), 1);
+
+        List<SplineSE2> splines = new ArrayList<>();
+        splines.add(new SplineSE2(h, i));
+        splines.add(new SplineSE2(i, j));
+        splines.add(new SplineSE2(j, k));
+        splines.add(new SplineSE2(k, l));
+
+        List<VectorSeries> series = new SplineSE2ToVectorSeries(0.1).convert(splines);
+        ChartUtil.plotOverlay(series, 300);
+
+    }
+
+    @Test
+    void testCurvature4() {
+        // check the sign of the curvature
+        List<WaypointSE2> waypoints = Arrays.asList(
+                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+                WaypointSE2.irrotational(new Pose2d(1, 1, new Rotation2d(0)), 0, 1.2));
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
+        SplineSE2 spline = splines.get(0);
+        // path first turns left then right
+        assertTrue(spline.curvature(0.2) > 0, String.format("%f", spline.curvature(0.2)));
+        assertTrue(spline.curvature(0.8) < 0, String.format("%f", spline.curvature(0.8)));
     }
 
 }

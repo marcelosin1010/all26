@@ -1,8 +1,5 @@
 package org.team100.lib.trajectory.spline;
 
-import org.team100.lib.geometry.WaypointSE2;
-import org.team100.lib.trajectory.path.PathSE2Point;
-
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -18,9 +15,7 @@ public class SplineUtil {
      * The offset is a fixed length behind the toolpoint.
      */
     public static Vector<N2> offsetR(SplineSE2 spline, double l, double s) {
-        PathSE2Point sample = spline.entry(s).point();
-        WaypointSE2 waypoint = sample.waypoint();
-        Pose2d pose = waypoint.pose();
+        Pose2d pose = spline.pose(s);
         // negative length here because the offset is "behind" the toolpoint.
         Pose2d p2 = pose.transformBy(new Transform2d(-l, 0, new Rotation2d()));
         return VecBuilder.fill(p2.getX(), p2.getY());
@@ -33,9 +28,7 @@ public class SplineUtil {
      * heading rate.
      */
     public static Vector<N2> offsetRprime(SplineSE2 spline, double l, double s) {
-        PathSE2Point sample = spline.entry(s).point();
-        WaypointSE2 waypoint = sample.waypoint();
-        Pose2d pose = waypoint.pose();
+        Pose2d pose = spline.pose(s);
         Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
         Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
         // dtheta/ds
@@ -51,9 +44,7 @@ public class SplineUtil {
      * The offset point acceleration has two components: tangential and centripetal.
      */
     public static Vector<N2> offsetRprimeprime(SplineSE2 spline, double l, double s) {
-        PathSE2Point sample = spline.entry(s).point();
-        WaypointSE2 waypoint = sample.waypoint();
-        Pose2d pose = waypoint.pose();
+        Pose2d pose = spline.pose(s);
         Rotation2d radial = pose.getRotation().plus(Rotation2d.k180deg);
         Rotation2d tangential = radial.plus(Rotation2d.kCCW_Pi_2);
 
@@ -65,7 +56,6 @@ public class SplineUtil {
         // tangential
         double headingAccel = spline.ddheading(s);
         double ta = l * headingAccel;
-        System.out.printf("ca %f ta %f\n", ca, ta);
 
         // note inversion of radial, it's pointing towards the center
         return VecBuilder.fill(
@@ -85,11 +75,24 @@ public class SplineUtil {
      * @param rprimeprime second derivative
      */
     public static <N extends Num> Vector<N> K(Vector<N> rprime, Vector<N> rprimeprime) {
+        Vector<N> T = T(rprime);
         double rprimenorm = rprime.norm();
-        Vector<N> T = rprime.div(rprimenorm);
         Vector<N> p2 = rprimeprime.div(rprimenorm * rprimenorm);
         Vector<N> K = p2.minus(T.times(T.dot(p2)));
         return K;
+    }
+
+    /**
+     * Unit tangent vector.
+     * 
+     * See MATH.md.
+     *
+     * @param rprime position derivative with respect to any parameterization
+     */
+    public static <N extends Num> Vector<N> T(Vector<N> rprime) {
+        double rprimenorm = rprime.norm();
+        Vector<N> T = rprime.div(rprimenorm);
+        return T;
     }
 
 }

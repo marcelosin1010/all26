@@ -58,7 +58,12 @@ public class TrajectorySE2FactoryTest {
         assertEquals(end_vel, trajectory.getLastPoint().point().velocity(), EPSILON);
         if (DEBUG)
             trajectory.dump();
-        ChartUtil.plotOverlay(new TrajectorySE2ToVectorSeries(0.1).convert(trajectory), 200);
+        List<VectorSeries> series = new TrajectorySE2ToVectorSeries(0.1).convert(trajectory);
+        List<VectorSeries> series2 = new TrajectorySE2ToVectorSeries(0.005).accel(trajectory);
+        List<VectorSeries> all = new ArrayList<>();
+        all.addAll(series);
+        all.addAll(series2);
+        ChartUtil.plotOverlay(all, 200);
         verifyVelocityConstraints(trajectory, constraints);
         verifyAccelConstraints(trajectory, constraints);
         verifyDecelConstraints(trajectory, constraints);

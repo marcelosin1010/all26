@@ -6,8 +6,10 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N2;
 
 public class SplineSE2ToVectorSeries {
     private static final boolean DEBUG = false;
@@ -21,7 +23,8 @@ public class SplineSE2ToVectorSeries {
     }
 
     /**
-     * Show little arrows.
+     * Show little arrows indicating the heading, using uniform steps in the
+     * parameter, s.
      * 
      * @return (x, y, dx, dy)
      */
@@ -31,14 +34,33 @@ public class SplineSE2ToVectorSeries {
             SplineSE2 spline = splines.get(i);
             VectorSeries series = new VectorSeries(String.format("%d", i));
             for (double s = 0; s <= 1.001; s += DS) {
-                Pose2d p = spline.entry(s).point().waypoint().pose();
-                if (DEBUG)
-                    System.out.println(p);
+                // Pose2d p = spline.entry(s).point().waypoint().pose();
+                Pose2d p = spline.pose(s);
                 double x = p.getX();
                 double y = p.getY();
                 Rotation2d heading = p.getRotation();
                 double dx = m_scale * heading.getCos();
                 double dy = m_scale * heading.getSin();
+                series.add(x, y, dx, dy);
+            }
+            result.add(series);
+        }
+        return result;
+    }
+
+    /** Show the K vector. */
+    public List<VectorSeries> curvature(List<SplineSE2> splines) {
+        List<VectorSeries> result = new ArrayList<>();
+        for (int i = 0; i < splines.size(); i++) {
+            SplineSE2 spline = splines.get(i);
+            VectorSeries series = new VectorSeries(String.format("%d", i));
+            for (double s = 0; s <= 1.001; s += DS) {
+                Pose2d p = spline.pose(s);
+                double x = p.getX();
+                double y = p.getY();
+                Vector<N2> K = spline.K(s);
+                double dx = m_scale  * K.get(0);
+                double dy = m_scale  * K.get(1);
                 series.add(x, y, dx, dy);
             }
             result.add(series);
@@ -55,7 +77,8 @@ public class SplineSE2ToVectorSeries {
         XYSeries series = new XYSeries(name);
         for (SplineSE2 spline : splines) {
             for (double s = 0; s <= 1.001; s += DS) {
-                double x = spline.entry(s).point().waypoint().pose().getX();
+                // double x = spline.entry(s).point().waypoint().pose().getX();
+                double x = spline.pose(s).getX();
                 series.add(s, x);
             }
         }

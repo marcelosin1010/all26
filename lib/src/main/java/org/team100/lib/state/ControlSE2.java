@@ -3,6 +3,7 @@ package org.team100.lib.state;
 import org.team100.lib.geometry.AccelerationSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
+import org.team100.lib.trajectory.TrajectorySE2Point;
 import org.team100.lib.trajectory.path.PathSE2Point;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -119,6 +120,14 @@ public class ControlSE2 {
 
     public ControlR1 theta() {
         return m_theta;
+    }
+
+    /**
+     * Trajectory point => ControlSE2.
+     * Correctly computes centripetal acceleration.
+     */
+    public static ControlSE2 fromTrajectorySE2Point(TrajectorySE2Point p) {
+        return ControlSE2.fromMovingPathSE2Point(p.point(), p.velocity(), p.accel());
     }
 
     /**

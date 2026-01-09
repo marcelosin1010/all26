@@ -4,8 +4,8 @@ import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.trajectory.path.PathSE2Entry;
-import org.team100.lib.trajectory.path.PathSE2Point;
 import org.team100.lib.trajectory.path.PathSE2Parameter;
+import org.team100.lib.trajectory.path.PathSE2Point;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -119,15 +119,15 @@ public class SplineSE2 {
     ///
     /// position, p
 
-    private double x(double s) {
+    double x(double s) {
         return m_x.getPosition(s);
     }
 
-    private double y(double s) {
+    double y(double s) {
         return m_y.getPosition(s);
     }
 
-    private Rotation2d heading(double s) {
+    Rotation2d heading(double s) {
         return m_heading0.rotateBy(Rotation2d.fromRadians(m_heading.getPosition(s)));
     }
 
@@ -187,12 +187,18 @@ public class SplineSE2 {
     }
 
     /**
-     * Scalar curvature, $\kappa$, is the norm of the curvature vector.
+     * Scalar curvature, $\kappa$, is the norm of the curvature vector, signed (CCW
+     * positive) with respect to the tangent vector.
      * 
      * see MATH.md.
      */
-    private double curvature(double s) {
-        return K(s).norm();
+    double curvature(double s) {
+        Vector<N2> K = K(s);
+        Vector<N2> T = T(s);
+        // which direction is K from T?
+        double det = T.get(0) * K.get(1) - T.get(1) * K.get(0);
+        double k = K.norm() * Math.signum(det);
+        return k;
     }
 
     /**
@@ -201,8 +207,17 @@ public class SplineSE2 {
      * 
      * see MATH.md
      */
-    private Vector<N2> K(double s) {
+    Vector<N2> K(double s) {
         return SplineUtil.K(rprime(s), rprimeprime(s));
+    }
+
+    /**
+     * Tangent vector is a unit vector in the direction of motion.
+     * 
+     * see MATH.md
+     */
+    Vector<N2> T(double s) {
+        return SplineUtil.T(rprime(s));
     }
 
     /**

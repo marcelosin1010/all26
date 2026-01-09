@@ -5,13 +5,14 @@ import java.util.List;
 import org.jfree.data.xy.VectorSeries;
 import org.jfree.data.xy.XYSeries;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.state.ControlSE2;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TrajectorySE2ToVectorSeries {
     private static final boolean DEBUG = false;
 
-    private static final int POINTS = 20;
+    private static final int POINTS = 50;
     /** Length of the vector indicating heading */
     private final double m_scale;
 
@@ -39,6 +40,22 @@ public class TrajectorySE2ToVectorSeries {
                 System.out.printf("%f\n", time);
         }
         return List.of(s);
+    }
+
+    public List<VectorSeries> accel(TrajectorySE2 trajectory) {
+        VectorSeries series = new VectorSeries("trajectory");
+        double duration = trajectory.duration();
+        double dt = duration / POINTS;
+        for (double time = 0; time < duration; time += dt) {
+            TrajectorySE2Point point = trajectory.sample(time).point();
+            ControlSE2 control = ControlSE2.fromTrajectorySE2Point(point);
+            double x = control.x().x();
+            double y = control.y().x();
+            double ax = m_scale * control.x().a();
+            double ay = m_scale * control.y().a();
+            series.add(x, y, ax, ay);
+        }
+        return List.of(series);
     }
 
     /**
@@ -72,8 +89,6 @@ public class TrajectorySE2ToVectorSeries {
             TrajectorySE2Entry p = trajectory.sample(t);
             Rotation2d course = p.point().point().waypoint().course().toRotation();
             double velocityM_s = p.point().velocity();
-            System.out.println(velocityM_s);
-            System.out.println(course);
             double xv = course.getCos() * velocityM_s;
             series.add(t, xv);
         }

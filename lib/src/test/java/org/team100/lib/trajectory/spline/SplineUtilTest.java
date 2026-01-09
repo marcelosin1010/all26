@@ -41,31 +41,28 @@ public class SplineUtilTest {
         // so the offset (shown here with the vector) makes a quarter cyloid
         // velocity is +x the whole time
         // heading rate is -1 the whole time
-        SplineSE2 toolpoint = new SplineSE2(
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(),
-                                new Rotation2d(Math.PI / 2)),
-                        new DirectionSE2(1, 0, -1), 1),
-                new WaypointSE2(
-                        new Pose2d(
-                                new Translation2d(Math.PI / 2, 0),
-                                new Rotation2d(0)),
-                        new DirectionSE2(1, 0, -1), 1));
+        WaypointSE2 w0 = new WaypointSE2(
+                new Pose2d(new Translation2d(), new Rotation2d(Math.PI / 2)),
+                new DirectionSE2(1, 0, -1), 1);
+        WaypointSE2 w1 = new WaypointSE2(
+                new Pose2d(new Translation2d(Math.PI / 2, 0), new Rotation2d(0)),
+                new DirectionSE2(1, 0, -1), 1);
+        SplineSE2 toolpoint = new SplineSE2(w0, w1);
 
         // the toolpoint path has no curvature
         for (double s = 0; s <= 1; s += 0.1) {
-            assertEquals(0, toolpoint.entry(s).point().getCurvatureRad_M(), DELTA);
+            // assertEquals(0, toolpoint.entry(s).point().getCurvatureRad_M(), DELTA);
+            assertEquals(0, toolpoint.curvature(s), DELTA);
         }
-        double l = 1.0;
+        double length = 1.0;
 
         // initial offset is -y
-        Vector<N2> or0 = SplineUtil.offsetR(toolpoint, l, 0);
+        Vector<N2> or0 = SplineUtil.offsetR(toolpoint, length, 0);
         assertEquals(0, or0.get(0), DELTA);
         assertEquals(-1, or0.get(1), DELTA);
         // offset itself is rotating like heading (-theta)
         // though this is not the net motion of the offset endpoint
-        Vector<N2> orp0 = SplineUtil.offsetRprime(toolpoint, l, 0);
+        Vector<N2> orp0 = SplineUtil.offsetRprime(toolpoint, length, 0);
         assertEquals(-1.111, orp0.get(0), DELTA);
         assertEquals(0, orp0.get(1), DELTA);
 
@@ -75,8 +72,8 @@ public class SplineUtilTest {
         // velocity vectors
         VectorSeries v = new VectorSeries("endpoints");
         for (double s = 0; s < 1.001; s += 0.05) {
-            Vector<N2> p = SplineUtil.offsetR(toolpoint, l, s);
-            Vector<N2> pprime = SplineUtil.offsetRprime(toolpoint, l, s);
+            Vector<N2> p = SplineUtil.offsetR(toolpoint, length, s);
+            Vector<N2> pprime = SplineUtil.offsetRprime(toolpoint, length, s);
             Vector<N2> rprime = toolpoint.rprime(s);
             double dx = pprime.get(0) + rprime.get(0);
             double dy = pprime.get(1) + rprime.get(1);
@@ -87,8 +84,8 @@ public class SplineUtilTest {
         // acceleration vectors
         VectorSeries a = new VectorSeries("endpoints");
         for (double s = 0; s < 1.001; s += 0.05) {
-            Vector<N2> p = SplineUtil.offsetR(toolpoint, l, s);
-            Vector<N2> pprimeprime = SplineUtil.offsetRprimeprime(toolpoint, l, s);
+            Vector<N2> p = SplineUtil.offsetR(toolpoint, length, s);
+            Vector<N2> pprimeprime = SplineUtil.offsetRprimeprime(toolpoint, length, s);
             Vector<N2> rprimeprime = toolpoint.rprimeprime(s);
             double ax = pprimeprime.get(0) + rprimeprime.get(0);
             double ay = pprimeprime.get(1) + rprimeprime.get(1);
