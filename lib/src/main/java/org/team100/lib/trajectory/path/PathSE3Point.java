@@ -18,8 +18,7 @@ public class PathSE3Point {
      * Pose and course.
      */
     private final WaypointSE3 m_waypoint;
-    final SplineSE3 m_spline;
-    final double m_s;
+
     /**
      * The curvature vector is the path-length-derivative of the unit tangent
      * vector. It's an R3 vector here but it's constrained to the plane
@@ -45,26 +44,18 @@ public class PathSE3Point {
      */
     public PathSE3Point(
             WaypointSE3 waypoint,
-            SplineSE3 spline,
-            double s,
             Vector<N3> K,
             Vector<N3> H) {
         m_waypoint = waypoint;
-        m_spline = spline;
         Vector<N3> T = waypoint.course().translation();
         if (K.dot(T) > 1e-6)
             throw new IllegalArgumentException("K must be perpendicular to T");
-        m_s = s;
         m_K = K;
         m_H = H;
     }
 
     public WaypointSE3 waypoint() {
         return m_waypoint;
-    }
-
-    public double getS() {
-        return m_s;
     }
 
     public Vector<N3> curvature() {

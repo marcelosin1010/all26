@@ -144,7 +144,7 @@ public class SplineSE3 {
     public PathSE3Point sample(double s) {
         Vector<N3> K = K(s);
         Vector<N3> H = headingRate(s);
-        return new PathSE3Point(waypoint(s), this, s, K, H);
+        return new PathSE3Point(waypoint(s), K, H);
     }
 
     public WaypointSE3 waypoint(double s) {

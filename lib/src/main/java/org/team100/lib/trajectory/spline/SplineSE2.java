@@ -113,7 +113,7 @@ public class SplineSE2 implements ISplineSE2 {
     public PathSE2Entry entry(double s) {
         return new PathSE2Entry(
                 new PathSE2Parameter(this, s),
-                new PathSE2Point(waypoint(s), headingRate(s), curvature(s)));
+                new PathSE2Point(waypoint(s), headingRate(s), curvature(s), K(s)));
     }
 
     ////////////////////////////////////////////////////////////

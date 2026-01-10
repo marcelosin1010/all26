@@ -103,6 +103,25 @@ public class PathFactorySE2Test implements Timeless {
         assertEquals(59, path.length(), 0.001);
     }
 
+        @Test
+    void testCurve() {
+        // note none of the directions include rotation, so dtheta is zero at the knots.
+        WaypointSE2 w0 = new WaypointSE2(
+                new Pose2d(new Translation2d(0, 0), new Rotation2d()),
+                new DirectionSE2(1, 0, 0), 1);
+        WaypointSE2 w1 = new WaypointSE2(
+                new Pose2d(new Translation2d(1, 1), new Rotation2d(2)),
+                new DirectionSE2(0, 1, 0), 1);
+        List<WaypointSE2> waypoints = List.of(w0, w1);
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
+
+        PathSE2Factory pathFactory = new PathSE2Factory(0.1, 0.01, 0.1);
+        PathSE2 path = pathFactory.get(splines);
+        List<VectorSeries> series = new PathToVectorSeries(0.1).convert(path);
+        ChartUtil.plotOverlay(series, 500);
+        assertEquals(57, path.length(), 0.001);
+    }
+
     @Test
     void test() {
         WaypointSE2 p1 = new WaypointSE2(

@@ -28,15 +28,26 @@ public class PathToVectorSeries {
         for (double d = 0; d < l; d += dl) {
             if (DEBUG)
                 System.out.printf("%f\n", d);
-            PathSE2Point pwm;
-            pwm = PathUtil.sample(path, d);
-            Pose2d p = pwm.waypoint().pose();
+            Pose2d p = PathUtil.sample(path, d).waypoint().pose();
             double x = p.getX();
             double y = p.getY();
             Rotation2d heading = p.getRotation();
             double dx = m_scale * heading.getCos();
             double dy = m_scale * heading.getSin();
             s.add(x, y, dx, dy);
+        }
+        return List.of(s);
+    }
+
+    public List<VectorSeries> curvature(PathSE2 path) {
+        VectorSeries s = new VectorSeries("path");
+        double l = path.distance(path.length() - 1);
+        double dl = l / 20;
+        for (double d = 0; d < l; d += dl) {
+            Pose2d p = PathUtil.sample(path, d).waypoint().pose();
+            double x = p.getX();
+            double y = p.getY();
+
         }
         return List.of(s);
     }

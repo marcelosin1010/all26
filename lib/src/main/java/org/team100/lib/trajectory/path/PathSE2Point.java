@@ -4,6 +4,9 @@ import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.util.Math100;
 
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.numbers.N2;
+
 /**
  * Represents a point on a path in SE(2) (plane with rotation).
  * 
@@ -25,6 +28,7 @@ public class PathSE2Point {
      * (course), it's not just the magnitude of curvature.
      */
     private final double m_curvatureRad_M;
+    private final Vector<N2> m_K;
 
     /**
      * @param waypoint         location and heading and direction of travel
@@ -34,10 +38,12 @@ public class PathSE2Point {
     public PathSE2Point(
             WaypointSE2 waypoint,
             double headingRateRad_M,
-            double curvatureRad_M) {
+            double curvatureRad_M,
+            Vector<N2> K) {
         m_waypoint = waypoint;
         m_headingRateRad_M = headingRateRad_M;
         m_curvatureRad_M = curvatureRad_M;
+        m_K = K;
     }
 
     public WaypointSE2 waypoint() {

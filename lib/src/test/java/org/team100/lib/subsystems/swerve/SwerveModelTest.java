@@ -9,6 +9,7 @@ import org.team100.lib.geometry.WaypointSE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.trajectory.path.PathSE2Point;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -30,7 +31,7 @@ class ModelSE2Test {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 s = ModelSE2.fromMovingPathPointSE2(p, 0);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(0, s.x().v(), DELTA);
@@ -45,7 +46,7 @@ class ModelSE2Test {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 s = ModelSE2.fromMovingPathPointSE2(p, 0);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(0, s.x().v(), DELTA);
@@ -60,7 +61,7 @@ class ModelSE2Test {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 s = ModelSE2.fromMovingPathPointSE2(p, 1);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(1, s.x().v(), DELTA);
@@ -75,7 +76,7 @@ class ModelSE2Test {
     void testTimedState4() {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1);
+                0, 1, VecBuilder.fill(0, 1));
         ModelSE2 s = ModelSE2.fromMovingPathPointSE2(p, 1);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(1, s.x().v(), DELTA);

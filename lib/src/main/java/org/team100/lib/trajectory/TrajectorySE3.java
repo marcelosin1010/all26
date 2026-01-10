@@ -83,7 +83,7 @@ public class TrajectorySE3 {
             WaypointSE3 w = pwm.waypoint();
             Pose3d p = w.pose();
             System.out.printf("%d, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
-                    i, pwm.getS(), ts.point().time(), ts.point().velocity(), ts.point().accel(),
+                    i, ts.parameter().s(), ts.point().time(), ts.point().velocity(), ts.point().accel(),
                     p.getX(), p.getY());
         }
     }

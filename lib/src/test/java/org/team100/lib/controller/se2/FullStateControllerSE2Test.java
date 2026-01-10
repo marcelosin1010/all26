@@ -18,6 +18,7 @@ import org.team100.lib.state.ModelSE2;
 import org.team100.lib.testing.Timeless;
 import org.team100.lib.trajectory.path.PathSE2Point;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -178,7 +179,7 @@ class FullStateControllerSE2Test implements Timeless {
         ModelSE2 measurement = new ModelSE2();
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(0, err.getX(), 0.001);
@@ -194,7 +195,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(-1, err.getX(), 0.001);
@@ -210,7 +211,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(1, err.getX(), 0.001);
@@ -226,7 +227,7 @@ class FullStateControllerSE2Test implements Timeless {
         ModelSE2 measurement = new ModelSE2(new Pose2d(1, 0, new Rotation2d(1)));
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(1)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
         ModelSE2 currentReference = ModelSE2.fromMovingPathPointSE2(p, 0);
         DeltaSE2 err = controller.positionError(measurement, currentReference);
         assertEquals(-1, err.getX(), 0.001);
@@ -246,7 +247,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -270,7 +271,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(1, 0, new Rotation2d(Math.PI / 2)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -293,7 +294,9 @@ class FullStateControllerSE2Test implements Timeless {
         // motion is in a straight line, down the x axis
         // setpoint is also at the origin
         PathSE2Point p = new PathSE2Point(
-                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2), 0, 0);
+                WaypointSE2.irrotational(
+                        new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -320,7 +323,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -342,7 +345,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -365,7 +368,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(Math.PI / 2)), 0, 1.2),
-                0, 0);
+                0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -388,7 +391,7 @@ class FullStateControllerSE2Test implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                1, 1);
+                1, 1, VecBuilder.fill(0, 1));
 
         // moving
         double velocity = 1;
@@ -413,8 +416,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -443,8 +445,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
         ;
         // moving
         double velocity = 1;
@@ -473,8 +474,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -505,7 +505,7 @@ class FullStateControllerSE2Test implements Timeless {
         // motion is in a straight line, down the x axis
         // no curvature
         double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -533,8 +533,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(Math.PI / 2)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -560,8 +559,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -590,8 +588,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(Math.PI / 2)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;
@@ -627,8 +624,7 @@ class FullStateControllerSE2Test implements Timeless {
                 new Pose2d(0, 0, new Rotation2d(Math.PI / 2)), 0, 1.2);
         // motion is in a straight line, down the x axis
         // no curvature
-        double curvatureRad_M = 0;
-        PathSE2Point p = new PathSE2Point(setpointPose, 0, curvatureRad_M);
+        PathSE2Point p = new PathSE2Point(setpointPose, 0, 0, VecBuilder.fill(0, 0));
 
         // moving
         double velocity = 1;

@@ -96,44 +96,6 @@ public class PathUtil {
         throw new IllegalStateException();
     }
 
-    public static PathSE3Point interpolate(PathSE3Point a, PathSE3Point b, double x) {
-        if (DEBUG)
-            System.out.printf("this s %f other s %f\n",
-                    a.m_s, b.m_s);
-        SplineSE3 spline = null;
-        double s = 0;
-        if (a.m_spline == b.m_spline) {
-            // ok to interpolate using this spline
-            if (DEBUG)
-                System.out.println("same spline");
-            spline = a.m_spline;
-            s = Math100.interpolate(a.m_s, b.m_s, x);
-        } else {
-            // which one to use?
-            // one of the endpoints should be the spline endpoint
-            // which is always the zero (not the 1)
-            if (b.m_s < 1e-6) {
-                // other one is the start, so use this one
-                if (DEBUG)
-                    System.out.println("use this spline");
-                spline = a.m_spline;
-                s = Math100.interpolate(a.m_s, 1, x);
-            } else {
-                if (DEBUG)
-                    System.out.println("use the other spline");
-                spline = b.m_spline;
-                s = Math100.interpolate(0, b.m_s, x);
-            }
-        }
-        if (DEBUG)
-            System.out.printf("s0 %f s1 %f x %f s %f\n",
-                    a.m_s, b.m_s, x, s);
-        // sample the spline again instead of interpolating.
-        if (spline != null)
-            return spline.sample(s);
-        return null;
-    }
-
     /**
      * Samples the entire path evenly by distance. Since the spline parameterizer
      * now contains a pathwise distance limit, you shouldn't need this anymore.
