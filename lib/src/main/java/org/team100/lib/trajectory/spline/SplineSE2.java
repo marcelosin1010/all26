@@ -111,9 +111,15 @@ public class SplineSE2 implements ISplineSE2 {
     }
 
     public PathSE2Entry entry(double s) {
-        return new PathSE2Entry(
-                new PathSE2Parameter(this, s),
-                new PathSE2Point(waypoint(s), headingRate(s), curvature(s), K(s)));
+        return new PathSE2Entry(parameter(s), point(s));
+    }
+
+    public PathSE2Parameter parameter(double s) {
+        return new PathSE2Parameter(this, s);
+    }
+
+    public PathSE2Point point(double s) {
+        return new PathSE2Point(waypoint(s), headingRate(s), K(s));
     }
 
     ////////////////////////////////////////////////////////////
@@ -194,12 +200,7 @@ public class SplineSE2 implements ISplineSE2 {
      * see MATH.md.
      */
     double curvature(double s) {
-        Vector<N2> K = K(s);
-        Vector<N2> T = T(s);
-        // which direction is K from T?
-        double det = T.get(0) * K.get(1) - T.get(1) * K.get(0);
-        double k = K.norm() * Math.signum(det);
-        return k;
+        return SplineUtil.kappaSigned(T(s), K(s));
     }
 
     /**

@@ -30,10 +30,14 @@ import org.team100.lib.trajectory.path.PathSE2;
 import org.team100.lib.trajectory.path.PathSE2Factory;
 import org.team100.lib.trajectory.path.PathSE2Point;
 import org.team100.lib.util.ChartUtil;
+import org.team100.lib.util.Math100;
+import org.team100.lib.util.StrUtil;
 
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N2;
 
 class SplineSE2Test implements Timeless {
     private static final boolean DEBUG = false;
@@ -808,6 +812,26 @@ class SplineSE2Test implements Timeless {
                 WaypointSE2.irrotational(new Pose2d(1, 1, new Rotation2d(0)), 0, 1.2));
         List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
         SplineSE2 spline = splines.get(0);
+        // path first turns left then right
+        assertTrue(spline.curvature(0.2) > 0, String.format("%f", spline.curvature(0.2)));
+        assertTrue(spline.curvature(0.8) < 0, String.format("%f", spline.curvature(0.8)));
+    }
+
+    @Test
+    void testT() {
+        // direction T and spline T are the same
+        List<WaypointSE2> waypoints = Arrays.asList(
+                WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
+                WaypointSE2.irrotational(new Pose2d(1, 1, new Rotation2d(0)), 0, 1.2));
+        List<SplineSE2> splines = SplineSE2Factory.splinesFromWaypoints(waypoints);
+        SplineSE2 spline = splines.get(0);
+        for (double s = 0; s <= 1.0; s += 0.01) {
+            PathSE2Point p = spline.point(s);
+            Vector<N2> sT = spline.T(s);
+            Vector<N2> pT = p.waypoint().course().T();
+            assertTrue(Math100.epsilonEquals(sT, pT), String.format("%f %s %s",
+                    s, StrUtil.vecStr(sT), StrUtil.vecStr(pT)));
+        }
         // path first turns left then right
         assertTrue(spline.curvature(0.2) > 0, String.format("%f", spline.curvature(0.2)));
         assertTrue(spline.curvature(0.8) < 0, String.format("%f", spline.curvature(0.8)));

@@ -24,7 +24,7 @@ public class ConstantConstraintTest implements Timeless {
         PathSE2Point state = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         assertEquals(2, c.maxV(state), DELTA);
     }
 
@@ -34,7 +34,7 @@ public class ConstantConstraintTest implements Timeless {
         PathSE2Point state = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         assertEquals(-3, c.maxDecel(state, 1), DELTA);
         assertEquals(3, c.maxAccel(state, 1), DELTA);
 

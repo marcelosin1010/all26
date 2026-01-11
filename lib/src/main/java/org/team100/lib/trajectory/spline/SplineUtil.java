@@ -110,4 +110,18 @@ public class SplineUtil {
         return T;
     }
 
+    /**
+     * In R2, the scalar curvature, $\kappa$, is the norm of the curvature vector
+     * (K), signed (CCW positive) with respect to the unit tangent vector (T).
+     * 
+     * see MATH.md.
+     * 
+     * TODO: move this to something like PathUtil since it's not about splines.
+     */
+    public static double kappaSigned(Vector<N2> T, Vector<N2> K) {
+        // which direction is K from T?
+        double det = T.get(0) * K.get(1) - T.get(1) * K.get(0);
+        return K.norm() * Math.signum(det);
+    }
+
 }

@@ -2,7 +2,9 @@ package org.team100.lib.trajectory.path;
 
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.spline.SplineUtil;
 import org.team100.lib.util.Math100;
+import org.team100.lib.util.StrUtil;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N2;
@@ -23,11 +25,9 @@ public class PathSE2Point {
      */
     private final double m_headingRateRad_M;
     /**
-     * Change in course per change in distance, rad/m.
-     * This is a signed quantity indicating the direction from the tangent vector
-     * (course), it's not just the magnitude of curvature.
+     * Curvature vector. Norm is \kappa, curvature in radians per meter, which is
+     * the reciprocal of the radius.
      */
-    private final double m_curvatureRad_M;
     private final Vector<N2> m_K;
 
     /**
@@ -38,11 +38,9 @@ public class PathSE2Point {
     public PathSE2Point(
             WaypointSE2 waypoint,
             double headingRateRad_M,
-            double curvatureRad_M,
             Vector<N2> K) {
         m_waypoint = waypoint;
         m_headingRateRad_M = headingRateRad_M;
-        m_curvatureRad_M = curvatureRad_M;
         m_K = K;
     }
 
@@ -59,9 +57,17 @@ public class PathSE2Point {
         return m_headingRateRad_M;
     }
 
-    /** Radians per meter, which is the reciprocal of the radius. */
+    /**
+     * Radians per meter, which is the reciprocal of the radius.
+     * 
+     * TODO: change the name of this method to kappa.
+     */
     public double getCurvatureRad_M() {
-        return m_curvatureRad_M;
+        return SplineUtil.kappaSigned(m_waypoint.course().T(), m_K);
+    }
+
+    public Vector<N2> K() {
+        return m_K;
     }
 
     /**
@@ -93,9 +99,9 @@ public class PathSE2Point {
                 System.out.println("wrong heading rate");
             return false;
         }
-        if (!Math100.epsilonEquals(m_curvatureRad_M, p2dwc.m_curvatureRad_M)) {
+        if (!Math100.epsilonEquals(m_K, p2dwc.m_K)) {
             if (DEBUG)
-                System.out.println("wrong curvature");
+                System.out.println("wrong K");
             return false;
         }
         return true;
@@ -103,13 +109,13 @@ public class PathSE2Point {
 
     public String toString() {
         return String.format(
-                "x %5.3f, y %5.3f, theta %5.3f, course %s, dtheta %5.3f, curvature %5.3f",
+                "x %5.3f, y %5.3f, theta %5.3f, course %s, dtheta %5.3f, K %s",
                 m_waypoint.pose().getTranslation().getX(),
                 m_waypoint.pose().getTranslation().getY(),
                 m_waypoint.pose().getRotation().getRadians(),
                 m_waypoint.course(),
                 m_headingRateRad_M,
-                m_curvatureRad_M);
+                StrUtil.vecStr(m_K));
     }
 
 }

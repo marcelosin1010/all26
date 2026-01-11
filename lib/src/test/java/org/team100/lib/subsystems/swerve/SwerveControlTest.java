@@ -30,7 +30,7 @@ class SwerveControlTest {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         ControlSE2 s = ControlSE2.fromMovingPathSE2Point(p, 0, 0);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(0, s.x().v(), DELTA);
@@ -45,7 +45,7 @@ class SwerveControlTest {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         ControlSE2 s = ControlSE2.fromMovingPathSE2Point(p, 0, 1);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(0, s.x().v(), DELTA);
@@ -60,7 +60,7 @@ class SwerveControlTest {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         ControlSE2 s = ControlSE2.fromMovingPathSE2Point(p, 1, 0);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(1, s.x().v(), DELTA);
@@ -75,7 +75,7 @@ class SwerveControlTest {
     void testTimedState4() {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1, VecBuilder.fill(0, 1));
+                0, VecBuilder.fill(0, 1));
         ControlSE2 s = ControlSE2.fromMovingPathSE2Point(p, 1, 0);
         assertEquals(0, s.x().x(), DELTA);
         assertEquals(1, s.x().v(), DELTA);

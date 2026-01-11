@@ -114,11 +114,12 @@ public class TrajectorySE2 {
         System.out.println("i, s, t, v, a, k, x, y");
         for (int i = 0; i < length(); ++i) {
             TrajectorySE2Entry ts = getPoint(i);
-            PathSE2Point pwm = ts.point().point();
+            TrajectorySE2Point point = ts.point();
+            PathSE2Point pwm = point.point();
             WaypointSE2 w = pwm.waypoint();
             Pose2d p = w.pose();
             System.out.printf("%d, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
-                    i, ts.point().time(), ts.point().velocity(), ts.point().accel(), pwm.getCurvatureRad_M(),
+                    i, point.time(), point.velocity(), point.accel(), pwm.K().norm(),
                     p.getX(), p.getY());
         }
     }
@@ -132,7 +133,8 @@ public class TrajectorySE2 {
             WaypointSE2 w = pwm.waypoint();
             Pose2d p = w.pose();
             System.out.printf("%5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",
-                    ts.point().time(), ts.point().velocity(), ts.point().accel(), pwm.getCurvatureRad_M(), p.getX(), p.getY());
+                    ts.point().time(), ts.point().velocity(), ts.point().accel(), pwm.K().norm(), p.getX(),
+                    p.getY());
         }
     }
 }

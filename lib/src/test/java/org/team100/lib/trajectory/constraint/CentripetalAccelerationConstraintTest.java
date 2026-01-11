@@ -32,7 +32,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1, VecBuilder.fill(0, 1));
+                0, VecBuilder.fill(0, 1));
         // motionless, so 100% of the capsize accel is available
         assertEquals(-8.166, c.maxDecel(p, 0), DELTA);
         assertEquals(8.166, c.maxAccel(p, 0), DELTA);
@@ -51,7 +51,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1, VecBuilder.fill(0, 1));
+                0, VecBuilder.fill(0, 1));
         // moving, only some of the capsize accel is available
         assertEquals(-5.257, c.maxDecel(p, 2.5), DELTA);
         assertEquals(5.257, c.maxAccel(p, 2.5), DELTA);
@@ -70,7 +70,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1, VecBuilder.fill(0, 1));
+                0, VecBuilder.fill(0, 1));
         // above the velocity limit
         assertEquals(-1, c.maxDecel(p, 3), DELTA);
         assertEquals(0, c.maxAccel(p, 3), DELTA);
@@ -88,7 +88,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 1, VecBuilder.fill(0, 1));
+                0, VecBuilder.fill(0, 1));
         assertEquals(-4.083, c.maxDecel(p, 0), DELTA);
         assertEquals(4.083, c.maxAccel(p, 0), DELTA);
         assertEquals(2.021, c.maxV(p), DELTA);
@@ -105,7 +105,7 @@ class CentripetalAccelerationConstraintTest implements Timeless {
         PathSE2Point p = new PathSE2Point(
                 WaypointSE2.irrotational(
                         new Pose2d(0, 0, new Rotation2d(0)), 0, 1.2),
-                0, 0, VecBuilder.fill(0, 0));
+                0, VecBuilder.fill(0, 0));
         assertEquals(-4.083, c.maxDecel(p, 0), DELTA);
         assertEquals(4.083, c.maxAccel(p, 0), DELTA);
         assertEquals(Double.POSITIVE_INFINITY, c.maxV(p), DELTA);

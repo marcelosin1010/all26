@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Num;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
@@ -29,6 +31,14 @@ public class Math100 {
         } else {
             return new ArrayList<>();
         }
+    }
+
+    public static <N extends Num> boolean epsilonEquals(Vector<N> x, Vector<N> y) {
+        for (int i = 0; i < x.getNumRows(); ++i) {
+            if (!epsilonEquals(x.get(i), y.get(i)))
+                return false;
+        }
+        return true;
     }
 
     public static boolean epsilonEquals(double x, double y) {

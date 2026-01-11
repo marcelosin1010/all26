@@ -2,8 +2,11 @@ package org.team100.lib.geometry;
 
 import org.team100.lib.util.Math100;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
+import edu.wpi.first.math.numbers.N2;
 
 /**
  * A direction (i.e. unit-length vector) in the SE(2) manifold, describing the
@@ -44,6 +47,12 @@ public class DirectionSE2 {
     /** Cartesian part of direction, as an old-fashioned Rotation2d */
     public Rotation2d toRotation() {
         return new Rotation2d(x, y);
+    }
+
+    /** Unit tangent vector is the cartesian part. */
+    public Vector<N2> T() {
+        Rotation2d rot = toRotation();
+        return VecBuilder.fill(rot.getCos(), rot.getSin());
     }
 
     /** In the direction of the specified angle in radians, without rotation */
