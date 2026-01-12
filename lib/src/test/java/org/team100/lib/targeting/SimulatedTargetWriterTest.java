@@ -17,19 +17,23 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 /** Timeless because the clock is used to decide to ignore (stale) input. */
 public class SimulatedTargetWriterTest implements Timeless {
+    private static final boolean DEBUG = false;
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(
             new TestPrimitiveLogger());
 
     @Test
     void testOne() throws InterruptedException {
+        if (DEBUG)
+            System.out.println("testOne");
         NetworkTableInstance.getDefault().startServer();
-        Thread.sleep(50);
+        Thread.sleep(100);
+
         stepTime();
 
         ModelSE2 p = new ModelSE2();
         Targets reader = new Targets(logger, logger, x -> p);
-        Thread.sleep(50);
+        Thread.sleep(100);
         SimulatedTargetWriter writer = new SimulatedTargetWriter(
                 logger,
                 List.of(Camera.TEST4),
@@ -37,16 +41,14 @@ public class SimulatedTargetWriterTest implements Timeless {
                 new Translation2d[] {
                         new Translation2d(1, 0) });
 
-        Thread.sleep(50);
-
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         writer.update();
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         reader.update();

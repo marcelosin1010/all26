@@ -66,7 +66,7 @@ public class SimulatedTargetWriter {
             m_publishers.put(
                     camera,
                     m_inst.getStructArrayTopic(
-                            name, Rotation3d.struct).publish(PubSubOption.keepDuplicates(true)));
+                            name, Rotation3d.struct).publish(PubSubOption.keepDuplicates(true), PubSubOption.periodic(0.01), PubSubOption.sendAll(true)));
         }
     }
 
@@ -119,10 +119,12 @@ public class SimulatedTargetWriter {
             }
             publisher.set(rots, time);
         }
+        m_inst.flushLocal();
         m_inst.flush();
     }
 
     public void close() {
         m_publishers.values().forEach(p -> p.close());
+        m_inst.close();
     }
 }

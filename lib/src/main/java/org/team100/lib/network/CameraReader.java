@@ -69,7 +69,7 @@ public abstract class CameraReader<T> {
      */
     public void update() {
         if (DEBUG) {
-            System.out.println("update");
+            System.out.println("CameraReader update");
         }
         beginUpdate();
         for (NetworkTableEvent e : m_poller.readQueue()) {

@@ -25,6 +25,7 @@ import edu.wpi.first.networktables.StructArrayTopic;
  * Timeless because the clock is used to decide to ignore (stale) input.
  */
 public class TargetsTest implements Timeless {
+    private static final boolean DEBUG = true;
     private static final double DELTA = 0.001;
     private static final LoggerFactory logger = new TestLoggerFactory(
             new TestPrimitiveLogger());
@@ -32,7 +33,7 @@ public class TargetsTest implements Timeless {
     @Test
     void testTargets() throws InterruptedException {
         NetworkTableInstance.getDefault().startServer();
-        Thread.sleep(50);
+        Thread.sleep(200);
         stepTime();
 
         ModelSE2 p = new ModelSE2();
@@ -58,7 +59,7 @@ public class TargetsTest implements Timeless {
         // tilt down 45
         pub.set(new Rotation3d[] { new Rotation3d(0, Math.PI / 4, 0) },
                 (long) (Takt.get() * 1000000.0));
-                
+
         // wait for NT rate-limiting
         Thread.sleep(200);
         inst.flush();
@@ -77,7 +78,7 @@ public class TargetsTest implements Timeless {
     @Test
     void testTranslations() throws InterruptedException {
         NetworkTableInstance.getDefault().startServer();
-        Thread.sleep(50);
+        Thread.sleep(100);
         stepTime();
 
         ModelSE2 p = new ModelSE2();
@@ -90,13 +91,13 @@ public class TargetsTest implements Timeless {
                 new Translation2d[] { new Translation2d(1, 0) });
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         writer.update();
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         reader.update();
@@ -116,7 +117,7 @@ public class TargetsTest implements Timeless {
     @Test
     void testMultipleCameras() throws InterruptedException {
         NetworkTableInstance.getDefault().startServer();
-        Thread.sleep(50);
+        Thread.sleep(100);
         stepTime();
 
         ModelSE2 p = new ModelSE2();
@@ -129,13 +130,13 @@ public class TargetsTest implements Timeless {
                 new Translation2d[] { new Translation2d(1, 0) });
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         writer.update();
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         reader.update();
@@ -155,6 +156,8 @@ public class TargetsTest implements Timeless {
 
     @Test
     void testMultipleTargets() throws InterruptedException {
+        if (DEBUG)
+            System.out.println("testMultipleTargets");
         NetworkTableInstance.getDefault().startServer();
         Thread.sleep(100);
         stepTime();
@@ -171,13 +174,13 @@ public class TargetsTest implements Timeless {
                         new Translation2d(2, 0) });
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         writer.update();
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         reader.update();
@@ -196,8 +199,10 @@ public class TargetsTest implements Timeless {
 
     @Test
     void testMultipleTargetsAndCameras() throws InterruptedException {
+        if (DEBUG)
+            System.out.println("testMultipleTargetsAndCameras");
         NetworkTableInstance.getDefault().startServer();
-        Thread.sleep(50);
+        Thread.sleep(100);
         stepTime();
 
         ModelSE2 p = new ModelSE2();
@@ -212,13 +217,13 @@ public class TargetsTest implements Timeless {
                         new Translation2d(2, 0) });
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         writer.update();
 
         // wait for NT rate-limiting
-        Thread.sleep(200);
+        Thread.sleep(100);
 
         stepTime();
         reader.update();
