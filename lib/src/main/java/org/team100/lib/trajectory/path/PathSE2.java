@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.team100.lib.geometry.Metrics;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 
 /**
@@ -35,12 +36,13 @@ public class PathSE2 {
         }
         m_distances[0] = 0.0;
         m_points.add(states.get(0));
-        for (int i = 1; i < n; ++i) {
-            m_points.add(states.get(i));
-            PathSE2Point p0 = getEntry(i - 1).point();
-            PathSE2Point p1 = getEntry(i).point();
-            double dist = Metrics.translationalDistance(p0.waypoint().pose(), p1.waypoint().pose());
-            m_distances[i] = m_distances[i - 1] + dist;
+        for (int i0 = 0; i0 < n-1; ++i0) {
+            int i1 = i0 + 1;
+            m_points.add(states.get(i1));
+            Pose2d p0 = getEntry(i0).point().waypoint().pose();
+            Pose2d p1 = getEntry(i1).point().waypoint().pose();
+            double dist = Metrics.translationalDistance(p0, p1);
+            m_distances[i1] = m_distances[i0] + dist;
         }
     }
 

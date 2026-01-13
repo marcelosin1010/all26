@@ -53,10 +53,11 @@ public class TrajectorySE2 {
             return getPoint(0);
         }
 
-        for (int i = 1; i < length(); ++i) {
-            final TrajectorySE2Entry ceil = getPoint(i);
+        for (int i0 = 0; i0 < length() - 1; ++i0) {
+            int i1 = i0 + 1;
+            final TrajectorySE2Entry ceil = getPoint(i1);
             if (ceil.point().time() >= timeS) {
-                final TrajectorySE2Entry floor = getPoint(i - 1);
+                final TrajectorySE2Entry floor = getPoint(i0);
                 double span = ceil.point().time() - floor.point().time();
                 if (Math.abs(span) <= 1e-12) {
                     return ceil;

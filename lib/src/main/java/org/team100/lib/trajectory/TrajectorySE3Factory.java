@@ -61,9 +61,10 @@ public class TrajectorySE3Factory {
     private double[] accels(double[] distances, double[] velocities) {
         int n = distances.length;
         double[] accels = new double[n];
-        for (int i = 0; i < n - 1; ++i) {
-            double arcLength = distances[i + 1] - distances[i];
-            accels[i] = Math100.accel(velocities[i], velocities[i + 1], arcLength);
+        for (int i0 = 0; i0 < n - 1; ++i0) {
+            int i1 = i0 + 1;
+            double arcLength = distances[i1] - distances[i0];
+            accels[i0] = Math100.accel(velocities[i0], velocities[i1], arcLength);
         }
         return accels;
     }
@@ -71,10 +72,11 @@ public class TrajectorySE3Factory {
     private double[] runningTime(double[] distances, double[] velocities, double[] accels) {
         int n = distances.length;
         double[] runningTime = new double[n];
-        for (int i = 1; i < n; ++i) {
-            double arcLength = distances[i] - distances[i - 1];
-            double dt = dt(velocities[i - 1], velocities[i], arcLength, accels[i - 1]);
-            runningTime[i] = runningTime[i - 1] + dt;
+        for (int i0 = 0; i0 < n-1; ++i0) {
+            int i1 = i0 + 1;
+            double arcLength = distances[i1] - distances[i0];
+            double dt = dt(velocities[i0], velocities[i1], arcLength, accels[i0]);
+            runningTime[i1] = runningTime[i0] + dt;
         }
         return runningTime;
     }

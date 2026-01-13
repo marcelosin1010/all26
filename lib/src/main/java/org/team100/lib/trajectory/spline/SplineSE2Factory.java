@@ -11,8 +11,9 @@ public class SplineSE2Factory {
      */
     public static List<SplineSE2> splinesFromWaypoints(List<WaypointSE2> waypoints) {
         List<SplineSE2> splines = new ArrayList<>(waypoints.size() - 1);
-        for (int i = 1; i < waypoints.size(); ++i) {
-            splines.add(new SplineSE2(waypoints.get(i - 1), waypoints.get(i)));
+        for (int i0 = 0; i0 < waypoints.size() - 1; ++i0) {
+            int i1 = i0 + 1;
+            splines.add(new SplineSE2(waypoints.get(i0), waypoints.get(i1)));
         }
         return splines;
     }

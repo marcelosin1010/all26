@@ -278,7 +278,8 @@ public class TrajectorySE2FactoryTest {
      * Verify deceleration constraints.
      */
     private void verifyDecelConstraints(TrajectorySE2 trajectory, List<TimingConstraint> constraints) {
-        // this huge margin still doesn't pass, so I should go fix the issue in the factory.
+        // this huge margin still doesn't pass, so I should go fix the issue in the
+        // factory.
         double margin = 0.3;
         for (int i = 0; i < trajectory.length(); ++i) {
             TrajectorySE2Entry state = trajectory.getPoint(i);
@@ -299,14 +300,15 @@ public class TrajectorySE2FactoryTest {
      */
     private void verifyAccel(TrajectorySE2 trajectory) {
         double margin = 1e-12;
-        for (int i = 1; i < trajectory.length(); ++i) {
-            TrajectorySE2Entry s0 = trajectory.getPoint(i - 1);
-            TrajectorySE2Entry s1 = trajectory.getPoint(i);
+        for (int i0 = 0; i0 < trajectory.length() - 1; ++i0) {
+            int i1 = i0 + 1;
+            TrajectorySE2Entry s0 = trajectory.getPoint(i0);
+            TrajectorySE2Entry s1 = trajectory.getPoint(i1);
             double dt = s1.point().time() - s0.point().time();
             double extrapolatedVelocity = s0.point().velocity() + s0.point().accel() * dt;
             assertEquals(s1.point().velocity(), extrapolatedVelocity, margin,
                     String.format("i %d state vel %f extrapolated vel %f",
-                            i, s1.point().velocity(), extrapolatedVelocity));
+                            i1, s1.point().velocity(), extrapolatedVelocity));
         }
     }
 
