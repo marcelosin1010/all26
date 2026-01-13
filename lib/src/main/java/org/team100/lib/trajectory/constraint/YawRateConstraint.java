@@ -46,7 +46,6 @@ public class YawRateConstraint implements TimingConstraint {
 
     @Override
     public double maxAccel(PathSE2Point point, double velocity) {
-        // TODO: this is wrong
         // Heading rate in rad/m
         double heading_rate = point.waypoint().course().headingRate();
         // rad/s^2 / rad/m => m/s^2
@@ -55,7 +54,6 @@ public class YawRateConstraint implements TimingConstraint {
 
     @Override
     public double maxDecel(PathSE2Point point, double velocity) {
-        // TODO: this is wrong
         // Heading rate in rad/m
         double heading_rate = point.waypoint().course().headingRate();
         // rad/s^2 / rad/m => m/s^2

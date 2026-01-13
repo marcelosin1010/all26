@@ -28,7 +28,6 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
                 new AffineFunction(-3.216, 1.534));
 
         // these are placeholders
-        // TODO: calibrate all the axes.
 
         // pitch; joint zero and servo zero are aligned; unconstrained.
         m_boom = new CalibratedServo(1,
@@ -51,7 +50,6 @@ public class LynxArmTwoDof extends SubsystemBase implements AutoCloseable {
                 new AffineFunction(-Math.PI, Math.PI / 2));
 
         // the grip axis measures the width of the jaws.
-        // TODO: calibrate in meters
         m_grip = new CalibratedServo(5,
                 new Clamp(0, 0.02),
                 new AffineFunction(-0.02, 0.02));

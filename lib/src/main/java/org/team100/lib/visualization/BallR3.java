@@ -72,7 +72,7 @@ public class BallR3 implements Ball {
                 m_azimuth.get(), m_elevation.get(), m_speed);
         // velocity due to robot translation
         GlobalVelocityR3 mv = GlobalVelocityR3.fromSe2(m_robot.get().velocity());
-        // Initial position is on the floor. TODO: offsets.
+        // Initial position is on the floor.
         m_location = new Translation3d(m_robot.get().pose().getTranslation());
         GlobalVelocityR3 m_velocity = v.plus(mv);
         // velocity in the XY plane

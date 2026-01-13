@@ -33,7 +33,7 @@ public class FiveBarCartesian extends SubsystemBase {
     static {
         // origin is P1
         SCENARIO = new Scenario();
-        // TODO: real measurements
+        // These are fake link lengths.
         SCENARIO.a1 = 0.1;
         SCENARIO.a2 = 0.1;
         SCENARIO.a3 = 0.1;
@@ -105,8 +105,6 @@ public class FiveBarCartesian extends SubsystemBase {
      * Moves both axes so that P3 reaches the specified translation relative to the
      * work center. Movement is uncoordinated, so the caller should manage the
      * trajectory, if desired.
-     * 
-     * TODO: velocity feedforward
      */
     public void setPosition(Translation2d t) {
         double x3 = t.getX();

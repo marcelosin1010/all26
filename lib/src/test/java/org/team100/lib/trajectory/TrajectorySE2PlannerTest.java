@@ -437,7 +437,7 @@ class TrajectorySE2PlannerTest implements Timeless {
             p1.point().point().waypoint().pose().log(p0.point().point().waypoint().pose());
             double dcourse1 = Metrics.translationalNorm(course1.minus(course0));
             double dcourse = course1.toRotation().minus(course0.toRotation()).getRadians();
-            double intrinsicCa = p0.point().velocity() * p0.point().velocity() * p0.point().point().getCurvatureRad_M();
+            double intrinsicCa = p0.point().velocity() * p0.point().velocity() * p0.point().point().k();
 
             if (DEBUG)
                 System.out.printf("%5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f, %5.3f\n",

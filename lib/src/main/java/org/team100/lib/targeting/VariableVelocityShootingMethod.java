@@ -59,7 +59,6 @@ public class VariableVelocityShootingMethod {
     private final VariableVelocityRange m_range;
     private final double m_tolerance;
 
-    // TODO: separate x/y and angle tolerances
     public VariableVelocityShootingMethod(VariableVelocityRange range, double tolerance) {
         m_range = range;
         m_tolerance = tolerance;

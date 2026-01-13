@@ -25,7 +25,6 @@ public class AxisCalibrator extends SubsystemBase {
         return runOnce(this::doStep);
     }
 
-    // TODO: put this in a separate class.
     public void doStep() {
         if (m_position + m_inc >= 0.95) {
             // we're at the end, so go back

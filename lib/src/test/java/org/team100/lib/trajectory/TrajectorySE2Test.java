@@ -14,13 +14,12 @@ import org.team100.lib.logging.primitive.TestPrimitiveLogger;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.testing.Timeless;
-import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.path.PathUtil;
-import org.team100.lib.trajectory.spline.SplineSE2Factory;
-import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.path.PathSE2;
+import org.team100.lib.trajectory.path.PathSE2Factory;
+import org.team100.lib.trajectory.spline.SplineSE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 import org.team100.lib.util.ChartUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -201,7 +200,7 @@ class TrajectorySE2Test implements Timeless {
         start = System.nanoTime();
         for (int rep = 0; rep < reps; ++rep) {
             for (int t = 0; t < times; ++t) {
-                PathUtil.sample(path, 0.1 * t);
+                path.sample(0.1 * t);
             }
         }
         end = System.nanoTime();

@@ -1,7 +1,6 @@
 package org.team100.lib.controller.se2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -28,10 +27,10 @@ import org.team100.lib.trajectory.TrajectorySE2Planner;
 import org.team100.lib.trajectory.constraint.TimingConstraint;
 import org.team100.lib.trajectory.constraint.TimingConstraintFactory;
 import org.team100.lib.trajectory.examples.TrajectoryExamples;
-import org.team100.lib.trajectory.path.PathSE2Factory;
-import org.team100.lib.trajectory.spline.SplineSE2Factory;
-import org.team100.lib.trajectory.spline.SplineSE2;
 import org.team100.lib.trajectory.path.PathSE2;
+import org.team100.lib.trajectory.path.PathSE2Factory;
+import org.team100.lib.trajectory.spline.SplineSE2;
+import org.team100.lib.trajectory.spline.SplineSE2Factory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;

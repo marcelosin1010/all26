@@ -198,8 +198,6 @@ public class ManualWithProfiledHeading implements FieldRelativeDriver {
     /**
      * Note that the max speed and accel are inversely proportional to the current
      * velocity.
-     * 
-     * TODO: get rid of this
      */
     public TrapezoidIncrementalProfile makeProfile(double currentVelocity) {
         // fraction of the maximum speed

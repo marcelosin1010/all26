@@ -50,7 +50,6 @@ public class Turret extends SubsystemBase {
     private static final double MAX_POSITION = 3;
     /**
      * accounts for firing delay and actuation delay
-     * TODO: make this a parameter
      * TODO: why is this so long?
      */
     private static final double DELAY = 0.2;
@@ -211,7 +210,6 @@ public class Turret extends SubsystemBase {
         // GlobalVelocityR2 robotVelocity = GlobalVelocityR2.ZERO;
         Translation2d targetPosition = m_target.get();
         // for now, the target is assumed to be motionless
-        // TODO: target tracking to derive velocity.
         GlobalVelocityR2 targetVelocity = GlobalVelocityR2.ZERO;
         Optional<Rotation2d> azimuth = m_intercept.intercept(
                 robotPosition,

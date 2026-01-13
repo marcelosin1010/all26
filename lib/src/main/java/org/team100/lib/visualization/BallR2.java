@@ -52,7 +52,7 @@ public class BallR2 implements Ball {
         GlobalVelocityR2 v = GlobalVelocityR2.fromPolar(m_azimuth.get(), m_speed);
         // Velocity due to robot translation
         GlobalVelocityR2 mv = GlobalVelocityR2.fromSe2(m_robot.get().velocity());
-        // Initial position is at the robot center. TODO: offsets.
+        // Initial position is at the robot center.
         m_location = m_robot.get().pose().getTranslation();
         // Initial velocity.
         m_velocity = v.plus(mv);

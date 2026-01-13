@@ -11,7 +11,6 @@ import org.team100.lib.util.Math100;
 
 /**
  * For now this is a copy of the SE2 version.
- * TODO: combine some aspects
  */
 public class TrajectorySE3Factory {
     public static final boolean DEBUG = false;
@@ -201,7 +200,6 @@ public class TrajectorySE3Factory {
         return maxDecel;
     }
 
-    // TODO: move this to some util class?
     private static double dt(
             double v0,
             double v1,

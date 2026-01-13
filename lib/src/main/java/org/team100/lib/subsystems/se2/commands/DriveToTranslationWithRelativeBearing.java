@@ -39,7 +39,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
     private final Translation2d m_relativeTranslation;
 
     private Pose2d m_goal;
-    private Translation2d m_translation;
+    // private Translation2d m_translation;
     private ProfileReferenceSE2 m_reference;
     private VelocityReferenceControllerSE2 m_referenceController;
 
@@ -118,7 +118,7 @@ public class DriveToTranslationWithRelativeBearing extends MoveAndHold {
     private void updateGoal() {
         m_targets.get().ifPresent(
                 (target) -> {
-                    m_translation = target;
+                    // m_translation = target;
                     Rotation2d heading = heading(target);
                     m_goal = new Pose2d(
                             target.minus(m_relativeTranslation.rotateBy(m_drive.getState().pose().getRotation())),

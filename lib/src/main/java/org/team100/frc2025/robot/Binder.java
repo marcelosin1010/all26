@@ -183,18 +183,17 @@ public class Binder {
         // whileTrue(driverControl::test, m_mech.homeToL4()).onFalse(m_mech.l4ToHome());
 
         final LoggerFactory coralSequence = rootLogger.name("Coral Sequence");
-        final ProfileSE2 profile = HolonomicProfileFactory.get(
-                coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
+        // final ProfileSE2 profile = HolonomicProfileFactory.get(
+        // coralSequence, m_machinery.m_swerveKinodynamics, 1, 0.5, 1, 0.2);
         final ControllerSE2 holonomicController = ControllerFactorySE2.byIdentity(coralSequence);
 
         // Drive to a scoring location at the reef and score.
         whileTrue(driver::b, m_machinery.m_manipulator.centerEject());
         // whileTrue(driver::a,
-        //         // TODO make this seperate/combined with scoring in general
-        //         ScoreCoralSmartLuke.get(
-        //                 coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
-        //                 holonomicController, profile, m_machinery.m_drive,
-        //                 m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
+        // ScoreCoralSmartLuke.get(
+        // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
+        // holonomicController, profile, m_machinery.m_drive,
+        // m_machinery.m_localizer::setHeedRadiusM, buttons::level, buttons::point));
         // // ScoreCoralSmart.get(
         // coralSequence, m_machinery.m_mech, m_machinery.m_manipulator,
         // holonomicController, profile, m_machinery.m_drive,

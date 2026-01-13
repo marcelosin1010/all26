@@ -154,7 +154,7 @@ public class ControlSE2 {
         // this works because the acceleration vector is always normal
         // to the course vector, and in 2d, with signed curvature, that
         // determines the vector.
-        double curvRad_M = point.getCurvatureRad_M();
+        double curvRad_M = point.k();
         double centripetalAccelM_s_s = velocityM_s * velocityM_s * curvRad_M;
         double xCa = -1.0 * course.getSin() * centripetalAccelM_s_s;
         double yCa = course.getCos() * centripetalAccelM_s_s;

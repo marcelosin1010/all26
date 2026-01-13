@@ -49,7 +49,7 @@ public class CapsizeAccelerationConstraint implements TimingConstraint {
      */
     @Override
     public double maxV(PathSE2Point point) {
-        double radius = 1 / Math.abs(point.getCurvatureRad_M());
+        double radius = 1 / Math.abs(point.k());
         // abs is used here to make sure sqrt is happy.
         double maxV = Math.sqrt(Math.abs(m_maxCentripetalAccel * m_scale.getAsDouble() * radius));
         if (DEBUG)
@@ -97,7 +97,7 @@ public class CapsizeAccelerationConstraint implements TimingConstraint {
      * along = sqrt(total^2 - v^4/r^2)
      */
     private double alongSq(PathSE2Point state, double velocity) {
-        double radius = 1 / Math.abs(state.getCurvatureRad_M());
+        double radius = 1 / Math.abs(state.k());
         double actualCentripetalAccel = velocity * velocity / radius;
         if (DEBUG)
             System.out.printf("radius %f velocity %f actual centripetal accel %f\n",

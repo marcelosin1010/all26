@@ -257,7 +257,6 @@ public class TrajectorySE2Factory {
         return maxDecel;
     }
 
-    // TODO: move this to some util class?
     private static double dt(
             double v0,
             double v1,

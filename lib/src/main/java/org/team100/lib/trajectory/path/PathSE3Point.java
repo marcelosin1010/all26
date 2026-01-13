@@ -2,7 +2,6 @@ package org.team100.lib.trajectory.path;
 
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE3;
-import org.team100.lib.trajectory.spline.SplineSE3;
 
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.numbers.N3;

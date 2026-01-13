@@ -3,6 +3,7 @@ package org.team100.lib.trajectory.spline;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.CurveUtil;
 import org.team100.lib.trajectory.path.PathSE2Entry;
 import org.team100.lib.trajectory.path.PathSE2Parameter;
 import org.team100.lib.trajectory.path.PathSE2Point;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.numbers.N2;
  * one-dimensional splines, with respect to a parameter s∈[0,1].
  */
 public class SplineSE2 implements ISplineSE2 {
+    private static final double DEFAULT_SCALE = 1;
     private static final boolean DEBUG = false;
 
     private final SplineR1 m_x;
@@ -102,8 +104,7 @@ public class SplineSE2 implements ISplineSE2 {
 
     @Override
     public WaypointSE2 waypoint(double s) {
-        // TODO: remove the "1" here
-        return new WaypointSE2(pose(s), course(s), 1);
+        return new WaypointSE2(pose(s), course(s), DEFAULT_SCALE);
     }
 
     @Override
@@ -202,7 +203,7 @@ public class SplineSE2 implements ISplineSE2 {
      * see MATH.md.
      */
     double curvature(double s) {
-        return SplineUtil.kappaSigned(T(s), K(s));
+        return CurveUtil.kappaSigned(T(s), K(s));
     }
 
     /**
@@ -213,7 +214,7 @@ public class SplineSE2 implements ISplineSE2 {
      */
     @Override
     public Vector<N2> K(double s) {
-        return SplineUtil.K(rprime(s), rprimeprime(s));
+        return CurveUtil.K(rprime(s), rprimeprime(s));
     }
 
     /**
@@ -222,7 +223,7 @@ public class SplineSE2 implements ISplineSE2 {
      * see MATH.md
      */
     Vector<N2> T(double s) {
-        return SplineUtil.T(rprime(s));
+        return CurveUtil.T(rprime(s));
     }
 
     /**

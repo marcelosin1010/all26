@@ -42,7 +42,7 @@ public class FiveBarServo extends SubsystemBase {
     static {
         // origin is P1
         SCENARIO = new Scenario();
-        // TODO: real measurements
+        // These are fake link lengths.
         SCENARIO.a1 = 0.1;
         SCENARIO.a2 = 0.1;
         SCENARIO.a3 = 0.1;

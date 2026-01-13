@@ -109,7 +109,10 @@ public class PhoenixConfigurator {
         crash(() -> m_motor.getConfigurator().apply(currentConfigs, TIMEOUT_SEC));
     }
 
-    /** TODO: don't allow a limit above the configuration */
+    /**
+     * Changes the stator limit. This is useful for "holding torque" which might be
+     * less than "grabbing torque".
+     */
     public void overrideStatorLimit(double limit) {
         CurrentLimitsConfigs currentConfigs = new CurrentLimitsConfigs();
         currentConfigs.SupplyCurrentLimit = m_supply;
@@ -119,7 +122,9 @@ public class PhoenixConfigurator {
         crash(() -> m_motor.getConfigurator().apply(currentConfigs, TIMEOUT_SEC));
     }
 
-    /** TODO: make sure clients call this when their need is done */
+    /**
+     * Returns the current limit to the initial setup.
+     */
     public void endCurrentLimitOverride() {
         currentConfig();
     }

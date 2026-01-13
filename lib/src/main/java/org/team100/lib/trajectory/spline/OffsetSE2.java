@@ -2,6 +2,7 @@ package org.team100.lib.trajectory.spline;
 
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.WaypointSE2;
+import org.team100.lib.trajectory.CurveUtil;
 import org.team100.lib.trajectory.path.PathSE2Entry;
 import org.team100.lib.trajectory.path.PathSE2Parameter;
 import org.team100.lib.trajectory.path.PathSE2Point;
@@ -28,6 +29,7 @@ import edu.wpi.first.math.numbers.N2;
  * 
  */
 public class OffsetSE2 implements ISplineSE2 {
+    private static final double DEFAULT_SCALE = 1;
 
     private final SplineSE2 m_toolpoint;
     private final double m_length;
@@ -39,8 +41,7 @@ public class OffsetSE2 implements ISplineSE2 {
 
     @Override
     public WaypointSE2 waypoint(double s) {
-        // TODO: remove the "1" here
-        return new WaypointSE2(pose(s), course(s), 1);
+        return new WaypointSE2(pose(s), course(s), DEFAULT_SCALE);
     }
 
     @Override
@@ -58,7 +59,7 @@ public class OffsetSE2 implements ISplineSE2 {
 
     @Override
     public Vector<N2> K(double s) {
-        return SplineUtil.K(rprime(s), rprimeprime(s));
+        return CurveUtil.K(rprime(s), rprimeprime(s));
     }
 
     @Override

@@ -39,7 +39,7 @@ public class FiveBarMech extends SubsystemBase {
     static {
         // origin is P1
         SCENARIO = new Scenario();
-        // TODO: real measurements
+        // These are fake link lengths.
         SCENARIO.a1 = 0.1;
         SCENARIO.a2 = 0.1;
         SCENARIO.a3 = 0.1;
@@ -213,9 +213,6 @@ public class FiveBarMech extends SubsystemBase {
     private void setHomePosition() {
         m_motorP1.setUnwrappedEncoderPositionRad(Q1_MAX);
         m_motorP5.setUnwrappedEncoderPositionRad(Q5_MIN);
-        // TODO: use the sensor?
-        // m_sensorP1.setPosition(Math.PI/2);
-        // m_sensorP5.setPosition(Math.PI);
     }
 
     ///////////////////////

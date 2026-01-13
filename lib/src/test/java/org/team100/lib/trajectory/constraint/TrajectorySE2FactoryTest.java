@@ -212,7 +212,6 @@ public class TrajectorySE2FactoryTest {
         int N = 100;
         for (int i = 0; i < N; ++i) {
             // this takes almost all the time
-            // TODO: explore performance of this part
             PathSE2 path = pathFactory.get(splines);
             // this takes very little time
             trajectory = m_trajectoryFactory.fromPath(path, 0, 0);

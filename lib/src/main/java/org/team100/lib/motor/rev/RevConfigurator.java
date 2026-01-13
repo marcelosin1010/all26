@@ -13,7 +13,9 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.config.FeedForwardConfig;
 import com.revrobotics.spark.config.LimitSwitchConfig;
+import com.revrobotics.spark.config.LimitSwitchConfig.Behavior;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
@@ -69,8 +71,8 @@ public class RevConfigurator {
 
     public void baseConfig() {
         SparkMaxConfig conf = new SparkMaxConfig();
-        conf.limitSwitch.forwardLimitSwitchEnabled(false);
-        conf.limitSwitch.reverseLimitSwitchEnabled(false);
+        conf.limitSwitch.forwardLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor);
+        conf.limitSwitch.reverseLimitSwitchTriggerBehavior(Behavior.kKeepMovingMotor);
         conf.limitSwitch.forwardLimitSwitchType(LimitSwitchConfig.Type.kNormallyClosed);
         conf.limitSwitch.reverseLimitSwitchType(LimitSwitchConfig.Type.kNormallyClosed);
         crash(() -> m_motor.configure(conf, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
@@ -102,14 +104,19 @@ public class RevConfigurator {
         crash(() -> m_motor.configure(conf, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));
     }
 
-    /** TODO: don't allow a limit above the configuration */
+    /**
+     * Changes the stator limit. This is useful for "holding torque" which might be
+     * less than "grabbing torque".
+     */
     public void overrideStatorLimit(int limit) {
         SparkMaxConfig conf = new SparkMaxConfig();
         conf.smartCurrentLimit(limit);
         crash(() -> m_motor.configure(conf, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters));
     }
 
-    /** TODO: make sure clients call this when their need is done */
+    /**
+     * Returns the current limit to the initial setup.
+     */
     public void endCurrentLimitOverride() {
         currentConfig();
     }
@@ -131,8 +138,9 @@ public class RevConfigurator {
         conf.closedLoop.d(m_pid.getVelocityD(), ClosedLoopSlot.kSlot1);
         conf.closedLoop.iZone(m_pid.getPositionIZone(), ClosedLoopSlot.kSlot0);
         conf.closedLoop.iZone(m_pid.getVelocityIZone(), ClosedLoopSlot.kSlot1);
-        conf.closedLoop.velocityFF(0, ClosedLoopSlot.kSlot0); // use arbitrary FF instead
-        conf.closedLoop.velocityFF(0, ClosedLoopSlot.kSlot1); // use arbitrary FF instead
+        // we don't use this type of feedforward at all, we use "arbitrary" feedforward.
+        conf.closedLoop.apply(new FeedForwardConfig().kV(0, ClosedLoopSlot.kSlot0));
+        conf.closedLoop.apply(new FeedForwardConfig().kV(0, ClosedLoopSlot.kSlot1));
         conf.closedLoop.outputRange(-1, 1, ClosedLoopSlot.kSlot0);
         conf.closedLoop.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
         crash(() -> m_motor.configure(conf, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));

@@ -12,7 +12,6 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Twist3d;
 
-// TODO: combine this with the SE2 version since they're identical
 public class PathSE3Factory {
     private static final boolean DEBUG = false;
     private static final double SPLINE_SAMPLE_TOLERANCE_M = 0.02;

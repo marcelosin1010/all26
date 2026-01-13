@@ -168,7 +168,7 @@ public abstract class CANSparkMotor implements BareMotor {
         final double FF = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
 
         final double motorRev_M = motorRev_S * 60;
-        warn(() -> m_pidController.setReference(
+        warn(() -> m_pidController.setSetpoint(
                 motorRev_M, ControlType.kVelocity, ClosedLoopSlot.kSlot1, FF, ArbFFUnits.kVoltage));
 
         m_log_desired_speed.log(() -> motorRev_S);
@@ -203,7 +203,7 @@ public abstract class CANSparkMotor implements BareMotor {
 
         final double FF = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
 
-        warn(() -> m_pidController.setReference(
+        warn(() -> m_pidController.setSetpoint(
                 motorRev, ControlType.kPosition, ClosedLoopSlot.kSlot0, FF, ArbFFUnits.kVoltage));
 
         m_log_desired_position.log(() -> motorRev);

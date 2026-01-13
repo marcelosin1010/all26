@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * kind of overkill.
  */
 public class Pen extends SubsystemBase {
-    // TODO: calibration
+    // These are fake values
     private static final double UP = 0.25;
     private static final double DOWN = 0.75;
 

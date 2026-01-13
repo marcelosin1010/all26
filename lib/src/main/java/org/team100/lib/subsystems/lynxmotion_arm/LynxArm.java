@@ -37,10 +37,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * background:
  * 
  * https://motion.cs.illinois.edu/RoboticSystems/Kinematics.html
- * 
- * TODO: calibrate the PWM pulse width range.
- * TODO: move this to lib when it's done.
- * TODO: compute gravity effect on each joint, adjust estimated position
  */
 public class LynxArm extends SubsystemBase implements AutoCloseable {
     private static final boolean DEBUG = false;
@@ -94,19 +90,16 @@ public class LynxArm extends SubsystemBase implements AutoCloseable {
                 new AffineFunction(-3.081, 1.54));
 
         // the grip axis measures the width of the jaws.
-        // TODO: calibrate in meters
         m_grip = new CalibratedServo(5,
                 new Clamp(0, 0.033),
                 new AffineFunction(-0.041, 0.036));
 
         // initialize the servo values so that the solver doesn't freak out
-        // TODO: why was it freaking out?
         m_swing.set(0);
         m_boom.set(-2.0 * Math.PI / 3);
         m_stick.set(Math.PI / 2);
         m_wrist.set(Math.PI / 2);
         m_twist.set(0);
-        // TODO: make sure this means "open"
         m_grip.set(0.02);
 
         // set the initial position to the actual desired value
@@ -133,10 +126,7 @@ public class LynxArm extends SubsystemBase implements AutoCloseable {
      * For indeterminate axes, we do nothing.
      * 
      * Pose does not include grip state.
-     * 
-     * TODO: use the previous value for indeterminate axes.
      */
-
     public void setPosition(Pose3d end) {
         if (DEBUG)
             System.out.println("setPosition()");
@@ -160,8 +150,6 @@ public class LynxArm extends SubsystemBase implements AutoCloseable {
     /**
      * Compute the pose that gets to this translation, using the current z value.
      * There's no feasibility check here.
-     * 
-     * TODO: add feasibility checking.
      */
     public void setPosition(Translation2d t) {
         Pose3d p = getPosition().p6();
@@ -237,12 +225,10 @@ public class LynxArm extends SubsystemBase implements AutoCloseable {
         return new MoveZ(this, 0.0);
     }
 
-    // TODO: to a separate subsystem
     public Command closeGrip() {
         return new MoveGrip(this, 0);
     }
 
-    // TODO: to a separate subsystem
     public Command openGrip() {
         return new MoveGrip(this, 0.02);
     }

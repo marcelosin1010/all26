@@ -46,7 +46,6 @@ public class DiamondConstraint implements TimingConstraint {
 
     @Override
     public double maxAccel(PathSE2Point point, double velocityM_S) {
-        // TODO: this should also have a diamond shape
         return m_maxAccel.getAsDouble();
     }
 

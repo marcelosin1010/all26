@@ -12,8 +12,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N2;
 
 public class SplineSE2ToVectorSeries {
-    private static final boolean DEBUG = false;
-
     private static final double POINTS = 50;
     /** Length of the vector indicating heading */
     private final double m_scale;

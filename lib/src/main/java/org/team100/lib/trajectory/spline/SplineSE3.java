@@ -2,6 +2,7 @@ package org.team100.lib.trajectory.spline;
 
 import org.team100.lib.geometry.DirectionSE3;
 import org.team100.lib.geometry.WaypointSE3;
+import org.team100.lib.trajectory.CurveUtil;
 import org.team100.lib.trajectory.path.PathSE3Entry;
 import org.team100.lib.trajectory.path.PathSE3Parameter;
 import org.team100.lib.trajectory.path.PathSE3Point;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.numbers.N3;
  * independent one-dimensional splines, with respect to a parameter s∈[0,1].
  */
 public class SplineSE3 {
+    private static final double DEFAULT_SCALE = 1;
     private static final boolean DEBUG = false;
 
     // these are for position
@@ -136,11 +138,6 @@ public class SplineSE3 {
         m_yaw = SplineR1.get(0.0, yawDelta, dyaw0, dyaw1, ddyaw0, ddyaw1);
     }
 
-    /**
-     * TODO: remove the "1" scale here
-     * 
-     * @param s [0,1]
-     */
     public PathSE3Point sample(double s) {
         Vector<N3> K = K(s);
         Vector<N3> H = headingRate(s);
@@ -148,7 +145,7 @@ public class SplineSE3 {
     }
 
     public WaypointSE3 waypoint(double s) {
-        return new WaypointSE3(pose(s), course(s), 1);
+        return new WaypointSE3(pose(s), course(s), DEFAULT_SCALE);
     }
 
     public Pose3d pose(double s) {
@@ -272,7 +269,7 @@ public class SplineSE3 {
      * see MATH.md
      */
     public Vector<N3> K(double s) {
-        return SplineUtil.K(rprime(s), rprimeprime(s));
+        return CurveUtil.K(rprime(s), rprimeprime(s));
     }
 
     /**

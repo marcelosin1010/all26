@@ -1,11 +1,9 @@
 package org.team100.lib.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 public class IndirectDualMeasurementTest {
-
+    @SuppressWarnings("unused")
     @Test
     void test0() {
         // setup

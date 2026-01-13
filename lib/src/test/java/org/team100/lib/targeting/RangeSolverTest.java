@@ -104,8 +104,9 @@ public class RangeSolverTest {
         double rError = R - s.range();
         double tError = t - s.tof();
         double eError = elevation - s.targetElevation();
-        // System.out.printf("%6.3f, %6.3f, %10.7f, %10.7f\n", v, elevation, rError,
-        // tError);
+        if (DEBUG)
+            System.out.printf("%6.3f, %6.3f, %10.7f, %10.7f, %10.7f\n",
+                    v, elevation, rError, tError, eError);
         // coarse DT means expected position error is a little higher
         assertEquals(R, s.range(), 0.01);
         assertEquals(t, s.tof(), DELTA);
@@ -239,17 +240,11 @@ public class RangeSolverTest {
                     double t = 2 * v * Math.sin(elevation) / g;
                     FiringSolution s = RangeSolver.solveWithDt(d, v, 0, elevation, dt);
                     double rangeAbsoluteError = Math.abs(R - s.range());
-                    double rangeRelativeError = rangeAbsoluteError / R;
                     double tofAbsoluteError = Math.abs(t - s.tof());
-                    double tofRelativeError = tofAbsoluteError / t;
                     if (rangeAbsoluteError > 0.01) // 1 cm tolerance
                         continue;
-                    // if (rangeRelativeError > 0.01) // 1%
-                    // continue;
                     if (tofAbsoluteError > 0.02) // roborio clock
                         continue;
-                    // if (tofRelativeError > 0.01) // 1%
-                    // continue;
                     if (DEBUG)
                         System.out.printf("%6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %10.7f, %10.7f\n",
                                 dt, v, elevation, R, s.range(), t, s.tof());
@@ -269,8 +264,6 @@ public class RangeSolverTest {
         double R = v * v * Math.sin(2 * elevation) / g;
         double t = 2 * v * Math.sin(elevation) / g;
         FiringSolution s = RangeSolver.solveWithDt(d, v, 0, elevation, dt);
-        double rangeRelativeError = Math.abs(R - s.range()) / R;
-        double tofRelativeError = Math.abs(t - s.tof()) / t;
         if (DEBUG)
             System.out.printf("%6.3f, %6.3f, %6.3f, %6.3f, %6.3f, %10.7f, %10.7f\n",
                     dt, v, elevation, R, s.range(), t, s.tof());

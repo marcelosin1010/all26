@@ -14,9 +14,6 @@ import edu.wpi.first.wpilibj.Servo;
  * exactly the commanded position.
  */
 public class CalibratedServo implements AutoCloseable {
-    /**
-     * TODO: allow the pulse width range to be specified
-     */
     private final Servo m_servo;
 
     /** Implements mechanical limits. */
@@ -30,8 +27,6 @@ public class CalibratedServo implements AutoCloseable {
      * The calibration goes from PWM to measurement, instead of the reverse, which
      * is what we actually want, because there's no actual measurement signal from a
      * servo.
-     * 
-     * TODO: are all servos linear like this? Maybe allow nonlinear transfer.
      */
     private final AffineFunction m_transfer;
 

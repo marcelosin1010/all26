@@ -16,6 +16,7 @@ package org.team100.lib.util;
  * This is similar to the "Chinese Remainder Theorem," but in this case the
  * measurements are continuous, not integers.
  */
+@SuppressWarnings("unused")
 public class IndirectDualMeasurement {
 
     /** final gear teeth */

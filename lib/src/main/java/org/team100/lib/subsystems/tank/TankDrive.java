@@ -91,7 +91,6 @@ public class TankDrive extends SubsystemBase {
         // This twist is relative to the center of rotation, which is near the midpoint
         // of the drive wheel axis, not the center of the robot, unless the drive wheels
         // happen to be in the center.
-        // TODO: something about that?  or maybe just define "center" differently?
         Twist2d twist = twist();
         m_pose = m_pose.exp(twist);
     }

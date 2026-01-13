@@ -47,7 +47,6 @@ public class TrajectoryUtil {
         // PathSE2Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, timeInterp);
         // The parameter isn't distance either, but at least this looks less wrong.
         PathSE2Entry entryLerp = PathUtil.interpolate(aEntry, bEntry, distanceInterp);
-        // TODO: scale the interpolant correctly.
         
         return new TrajectorySE2Entry(
                 entryLerp.parameter(),

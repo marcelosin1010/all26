@@ -27,7 +27,7 @@ public class PathSE2ToVectorSeries {
         double l = path.distance(path.length() - 1);
         double dl = l / POINTS;
         for (double d = 0; d < l; d += dl) {
-            PathSE2Point point = PathUtil.sample(path, d);
+            PathSE2Point point = path.sample(d);
             Pose2d p = point.waypoint().pose();
             double x = p.getX();
             double y = p.getY();
@@ -46,7 +46,7 @@ public class PathSE2ToVectorSeries {
         double l = path.distance(path.length() - 1);
         double dl = l / POINTS;
         for (double d = 0; d < l; d += dl) {
-            PathSE2Point point = PathUtil.sample(path, d);
+            PathSE2Point point = path.sample(d);
             Pose2d p = point.waypoint().pose();
             double x = p.getX();
             double y = p.getY();

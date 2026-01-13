@@ -20,11 +20,10 @@ public class MoveManually extends Command {
     private static final boolean DEBUG = false;
 
     // prefer vertical grip. beyond this radius, extend it.
-    private static final double VERTICAL_LIMIT = 0.3;
-    // TODO: find the actual limits
+    // private static final double VERTICAL_LIMIT = 0.3;
     private static final double MIN_HEIGHT = .04004;
     private static final double MIN_RADIUS_BIRDSEYE = 0.2;
-    private static final double MIN_RADIUS = .1;
+    // private static final double MIN_RADIUS = .1;
     private static final double MAX_RADIUS = 0.42;
     // meters per second
     private static final double SPEED = 0.25;
@@ -41,7 +40,7 @@ public class MoveManually extends Command {
     private double m_y;
     private double m_z;
 
-    private boolean mode;
+    // private boolean mode;
     // when mode = true, pitch = 0
     // when mode = false, pitch = 1
 
@@ -55,7 +54,7 @@ public class MoveManually extends Command {
         m_ySpeed = ySpeed;
         m_zSpeed = zSpeed;
         addRequirements(arm);
-        mode = true;
+        // mode = true;
     }
 
     @Override
@@ -104,7 +103,7 @@ public class MoveManually extends Command {
         //     // driver update is ok
         //     m_x = m_x + m_xSpeed.getAsDouble() * STEP;
         //     m_y = m_y + m_ySpeed.getAsDouble() * STEP;
-        //     // TODO: make a spherical limit including z
+        //     
         //     if (m_z >= MIN_HEIGHT + STEP ||  m_z + m_zSpeed.getAsDouble() * STEP > m_z){
         //         m_z = m_z + m_zSpeed.getAsDouble() * STEP;
         //     }

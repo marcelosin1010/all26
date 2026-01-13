@@ -5,8 +5,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Joel eyeballed these on 10/23/25.
- * 
- * TODO: more field points, like scoring, pickup, etc.
  */
 public class MechanicalMayhem2025 {
     public static final Pose2d START_RED_RIGHT = new Pose2d(0.55, 0.55, Rotation2d.kZero);

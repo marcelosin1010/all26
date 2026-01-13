@@ -2,7 +2,7 @@ package org.team100.lib.trajectory.path;
 
 import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.WaypointSE2;
-import org.team100.lib.trajectory.spline.SplineUtil;
+import org.team100.lib.trajectory.CurveUtil;
 import org.team100.lib.util.Math100;
 import org.team100.lib.util.StrUtil;
 
@@ -40,14 +40,21 @@ public class PathSE2Point {
     }
 
     /**
-     * Radians per meter, which is the reciprocal of the radius.
+     * Signed curvature, rad/m, the reciprocal of the radius of the osculating
+     * circle.
      * 
-     * TODO: change the name of this method to kappa.
+     * https://en.wikipedia.org/wiki/Curvature
      */
-    public double getCurvatureRad_M() {
-        return SplineUtil.kappaSigned(m_waypoint.course().T(), m_K);
+    public double k() {
+        return CurveUtil.kappaSigned(m_waypoint.course().T(), m_K);
     }
 
+    /**
+     * Curvature vector, points at the center of the osculating circle, magnitude is
+     * the reciprocal of the radius.
+     *
+     * https://en.wikipedia.org/wiki/Curvature 
+     */
     public Vector<N2> K() {
         return m_K;
     }

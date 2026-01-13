@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class ZeroPivot extends Command {
 
     private final PivotSubsystem m_pivot;
-    private double prevAngle;
+    // private double prevAngle;
     private boolean ready;
 
     public ZeroPivot(PivotSubsystem pivot) {

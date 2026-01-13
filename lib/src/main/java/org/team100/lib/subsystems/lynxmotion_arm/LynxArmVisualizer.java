@@ -89,7 +89,6 @@ public class LynxArmVisualizer {
 
     public void periodic() {
         // Orbit in yaw.
-        // TODO: Also use POV to move around?
         m_yaw += 0.002;
         paintAll();
     }
@@ -142,7 +141,6 @@ public class LynxArmVisualizer {
         paint(m_base, "tabletop", m_cameraPose, tList3, Color.kGray);
     }
 
-    /** TODO: render the joint axes too */
     void paint(
             MechanismLigament2d base,
             String name,

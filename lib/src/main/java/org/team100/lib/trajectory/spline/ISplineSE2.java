@@ -13,9 +13,7 @@ public interface ISplineSE2 {
 
     Vector<N2> K(double s);
 
-    // TODO:maybe make this default
     PathSE2Entry entry(double d);
 
-    // TODO: maybe make this default
     WaypointSE2 waypoint(double s0);
 }

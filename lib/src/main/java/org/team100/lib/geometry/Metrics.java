@@ -107,8 +107,6 @@ public class Metrics {
      * This is not the projected geodesic distance, which is zero for spin-in-place.
      * It's just the L2 norm for all three dimensions.
      * 
-     * TODO: adjustable weights
-     * 
      * Note the Chirikjian paper below suggests using mass and inertia for weighting
      * 
      * Don't compare this distance to R2 (xy) planar distances.
