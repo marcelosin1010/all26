@@ -11,7 +11,7 @@ public class Sim {
     // 504 total
     final Zone redZone = new Zone("red", 24); // staged in the depot
     final Zone neutralZone = new Zone("mid", 360);
-    final Zone blueZone = new Zone("blue", 24);// staged in the depot
+    final Zone blueZone = new Zone("blu", 24);// staged in the depot
 
     final Outpost redOutpost = new Outpost(redZone, 24);
     final Outpost blueOutpost = new Outpost(blueZone, 24);
@@ -71,7 +71,6 @@ public class Sim {
         int MATCH_LENGTH_SEC = 160;
         header();
         for (matchTimer = 0; matchTimer < MATCH_LENGTH_SEC; ++matchTimer) {
-            balls();
             updateActiveHubs();
             List<Runnable> actions = new ArrayList<>();
             for (Actor actor : actors) {
@@ -80,8 +79,8 @@ public class Sim {
             for (Runnable runnable : actions) {
                 runnable.run();
             }
+            row();
         }
-        balls();
         score();
     }
 
@@ -159,26 +158,31 @@ public class Sim {
     /** print the ball location header */
     void header() {
         System.out.print(
-                "matchTimer, total, redZone, neutralZone, blueZone, redHub, blueHub, redOutpost, blueOutpost, ");
+                "             |------ZONE------|  |--HUB--|  |OUTPOST|");
+        System.out.print("  |--ACTIVE--|");
         System.out.print(
-                red1.header() + ", " + red2.header() + ", " + red3.header() + ", "
-                        + blue1.header() + ", " + blue1.header() + ", " + blue1.header());
-        System.out.print(",  ract,  bact\n");
+                "   |----------RED 1-----------|   |----------RED 2-----------|   |----------RED 3-----------|   |----------BLUE 1----------|   |----------BLUE 2----------|   |----------BLUE 3----------|\n");
+        System.out.print(
+                "time, total, red, neutral, blue, red, blue, red, blue, ");
+        System.out.print("  red,  blue,  ");
+        System.out.print(
+                red1.header() + ",  " + red2.header() + ",  " + red3.header() + ",  "
+                        + blue1.header() + ",  " + blue1.header() + ",  " + blue1.header() + "\n");
     }
 
-    /** print the ball locations */
-    void balls() {
-        System.out.printf("%10d, %5d, %7d, %11d, %8d, %6d, %7d, %10d, %11d, ",
+    /** print the states and events */
+    void row() {
+        System.out.printf("%4d, %5d, %3d, %7d, %4d, %3d, %4d, %3d, %4d, ",
                 matchTimer, total(),
                 redZone.count(), neutralZone.count(), blueZone.count(),
                 redHub.count(), blueHub.count(),
                 redOutpost.count(), blueOutpost.count());
+        System.out.printf("%5b, %5b, ",
+                redHub.active, blueHub.active);
 
-        System.out.printf("%s, %s, %s, %s, %s, %s, ",
+        System.out.printf(" %s,  %s,  %s,  %s,  %s,  %s\n",
                 red1, red2, red3, blue1, blue2, blue3);
 
-        System.out.printf("%5b, %5b\n",
-                redHub.active, blueHub.active);
     }
 
     void score() {
