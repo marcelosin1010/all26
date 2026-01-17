@@ -47,6 +47,7 @@ public class Sim {
 
     final List<BallContainer> containers;
     final List<Actor> actors;
+    final List<Robot> robots;
 
     // set after auto
     Alliance firstActive;
@@ -59,6 +60,7 @@ public class Sim {
         actors = List.of(redHub, blueHub,
                 redOutpost, blueOutpost,
                 red1, red2, red3, blue1, blue2, blue3);
+        robots = List.of(red1, red2, red3, blue1, blue2, blue3);
         System.out.printf("initial total %d\n", total());
     }
 
@@ -82,6 +84,10 @@ public class Sim {
             row();
         }
         score();
+    }
+
+    List<Robot> robots() {
+        return robots;
     }
 
     GamePhase phase() {

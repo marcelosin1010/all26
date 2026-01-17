@@ -7,7 +7,6 @@ import org.team100.sim2026.Sim;
 import org.team100.sim2026.Tower;
 import org.team100.sim2026.Zone;
 import org.team100.sim2026.actions.Climb;
-import org.team100.sim2026.actions.Move;
 
 /** Ferry during our active time, otherwise lob. */
 public class ExampleRobot extends Robot {
