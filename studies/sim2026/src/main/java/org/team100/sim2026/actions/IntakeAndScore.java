@@ -11,7 +11,7 @@ public class IntakeAndScore implements Action {
 
     @Override
     public String toString() {
-        return String.format("in %d score %d", taken, shot);
+        return String.format("in %2d score %2d", taken, shot);
     }
 
 }

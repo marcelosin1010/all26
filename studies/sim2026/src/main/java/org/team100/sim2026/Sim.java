@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import org.team100.sim2026.actions.Block;
+import org.team100.sim2026.robots.Defender;
 import org.team100.sim2026.robots.ExampleRobot;
 import org.team100.sim2026.robots.Robot;
+import org.team100.sim2026.robots.Scorer;
 
 /** The main simulation loop. */
 public class Sim {
@@ -16,9 +19,9 @@ public class Sim {
     private int matchTimer;
 
     // 504 total
-    final Zone redZone = new Zone("red", 24); // staged in the depot
-    final Zone neutralZone = new Zone("mid", 360);
-    final Zone blueZone = new Zone("blu", 24);// staged in the depot
+    public final Zone redZone = new Zone("red", 24); // staged in the depot
+    public final Zone neutralZone = new Zone("mid", 360);
+    public final Zone blueZone = new Zone("blu", 24);// staged in the depot
 
     final Outpost redOutpost = new Outpost(redZone, 24);
     final Outpost blueOutpost = new Outpost(blueZone, 24);
@@ -26,24 +29,32 @@ public class Sim {
     final Score redScore = new Score(this::phase);
     final Score blueScore = new Score(this::phase);
 
-    final Hub redHub = new Hub(redScore, neutralZone);
-    final Hub blueHub = new Hub(blueScore, neutralZone);
+    public final Hub redHub = new Hub(redScore, neutralZone);
+    public final Hub blueHub = new Hub(blueScore, neutralZone);
 
-    final Tower redTower = new Tower(redScore);
-    final Tower blueTower = new Tower(blueScore);
+    public final Tower redTower = new Tower(redScore);
+    public final Tower blueTower = new Tower(blueScore);
 
-    final Robot red1 = new ExampleRobot("r1",
-            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
-    final Robot red2 = new ExampleRobot("r2",
-            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
-    final Robot red3 = new ExampleRobot("r3",
-            redZone, neutralZone, blueZone, redHub, redTower, 8, this::time);
-    final Robot blue1 = new ExampleRobot("b1",
-            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
-    final Robot blue2 = new ExampleRobot("b2",
-            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
-    final Robot blue3 = new ExampleRobot("b3",
-            blueZone, neutralZone, redZone, blueHub, blueTower, 8, this::time);
+    ///////////////
+    /// ALLIANCES
+    ///
+    /// TODO: make an alliance class
+    /// TODO: make robot performance parameters
+
+    // three-role alliance
+    final Robot red1 = new Scorer(Alliance.RED, "r1", 8, this);
+    final Robot red2 = new ExampleRobot(Alliance.RED, "r2", 8, this);
+    final Robot red3 = new Defender(Alliance.RED, "r3", 8, this);
+
+    // three-role alliance
+    // final Robot blue1 = new Scorer(Alliance.BLUE, "b1", 8, this);
+    // final Robot blue2 = new ExampleRobot(Alliance.BLUE, "b2", 8, this);
+    // final Robot blue3 = new Defender(Alliance.BLUE, "b3", 8, this);
+
+    // all-around alliance
+    final Robot blue1 = new ExampleRobot(Alliance.BLUE, "b1", 8, this);
+    final Robot blue2 = new ExampleRobot(Alliance.BLUE, "b2", 8, this);
+    final Robot blue3 = new ExampleRobot(Alliance.BLUE, "b3", 8, this);
 
     final List<BallContainer> containers;
     final List<Actor> actors;
@@ -72,11 +83,18 @@ public class Sim {
         header();
         for (matchTimer = 0; matchTimer < MATCH_LENGTH_SEC; ++matchTimer) {
             updateActiveHubs();
+            // Ask each actor what they want to do, without doing anything.
             List<Runnable> actions = new ArrayList<>();
             for (Actor actor : actors) {
                 actions.add(actor.step());
             }
-            // evaluate the actions in random order
+            // Update interactions.
+            // First clear the blocks.
+            robots.stream().forEach(r -> r.blocked = false);
+            // Then apply any blocks that exist.
+            robots.stream().filter(r -> r.action.getClass() == Block.class)
+                    .forEach(r -> ((Block) r.action).target.blocked = true);
+            // Execute the actions in random order.
             Collections.shuffle(actions);
             for (Runnable runnable : actions) {
                 runnable.run();
@@ -86,7 +104,7 @@ public class Sim {
         score();
     }
 
-    List<Robot> robots() {
+    public List<Robot> robots() {
         return robots;
     }
 
@@ -94,7 +112,7 @@ public class Sim {
         return GamePhase.at(matchTimer);
     }
 
-    int time() {
+    public int time() {
         return matchTimer;
     }
 

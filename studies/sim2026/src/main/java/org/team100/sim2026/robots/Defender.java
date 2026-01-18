@@ -4,17 +4,21 @@ import org.team100.sim2026.Alliance;
 import org.team100.sim2026.Sim;
 import org.team100.sim2026.actions.Climb;
 
-/** Ferry during our active time, otherwise lob. */
-public class ExampleRobot extends Robot {
+/**
+ * Lobs in the neutral zone while active.
+ * Defends in the opposite zone while inactive.
+ */
+public class Defender extends Robot {
     private static final int CLIMB_TIME = 5;
     private static final int CLIMB_BUFFER = 10;
 
-    public ExampleRobot(
+    public Defender(
             Alliance alliance,
             String name,
             int initialCount,
             Sim sim) {
-        super(alliance,
+        super(
+                alliance,
                 name,
                 initialCount,
                 sim);
@@ -24,6 +28,10 @@ public class ExampleRobot extends Robot {
         if (sim.time() < 20) {
             // auton
             ferry();
+        } else if (location == otherZone
+                && sim.time() >= Sim.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + 2 * TRAVEL_TIME)) {
+            // time to drive to the neutral zone
+            moveTo(neutralZone);
         } else if (location == neutralZone
                 && sim.time() >= Sim.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + TRAVEL_TIME)) {
             // time to drive to our zone.
@@ -37,11 +45,12 @@ public class ExampleRobot extends Robot {
         } else {
             // teleop
             if (active) {
-                ferry();
+                lobOnly();
             } else {
-                lob();
+                defendInOppositeZone();
             }
         }
+
     }
 
 }

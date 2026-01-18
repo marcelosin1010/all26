@@ -1,14 +1,15 @@
 package org.team100.sim2026.robots;
 
-import java.util.function.IntSupplier;
-
 import org.team100.sim2026.Actor;
+import org.team100.sim2026.Alliance;
 import org.team100.sim2026.BallAcceptor;
 import org.team100.sim2026.BallContainer;
 import org.team100.sim2026.Hub;
+import org.team100.sim2026.Sim;
 import org.team100.sim2026.Tower;
 import org.team100.sim2026.Zone;
 import org.team100.sim2026.actions.Action;
+import org.team100.sim2026.actions.Block;
 import org.team100.sim2026.actions.Climb;
 import org.team100.sim2026.actions.Idle;
 import org.team100.sim2026.actions.IntakeAndLob;
@@ -33,7 +34,6 @@ public abstract class Robot implements Actor, BallContainer {
     final Zone otherZone;
     final Hub myHub;
     final Tower myTower;
-    final IntSupplier matchTimer;
     Zone location;
     int count;
 
@@ -43,26 +43,27 @@ public abstract class Robot implements Actor, BallContainer {
     int travelTimer;
     public boolean active;
 
-    Action action = new Idle();
+    public Action action = new Idle();
     // 2 chars
-    final String name;
+    public final String name;
+    final Sim sim;
+    final Alliance alliance;
+    /** another robot is blocking us, which slows everything down. */
+    public boolean blocked;
 
     public Robot(
+            Alliance alliance,
             String name,
-            Zone myZone,
-            Zone neutralZone,
-            Zone otherZone,
-            Hub myHub,
-            Tower myTower,
             int initialCount,
-            IntSupplier matchTimer) {
+            Sim sim) {
+        this.alliance = alliance;
+        this.sim = sim;
         this.name = name;
-        this.myZone = myZone;
-        this.neutralZone = neutralZone;
-        this.otherZone = otherZone;
-        this.myHub = myHub;
-        this.myTower = myTower;
-        this.matchTimer = matchTimer;
+        this.myZone = alliance == Alliance.RED ? sim.redZone : sim.blueZone;
+        this.neutralZone = sim.neutralZone;
+        this.otherZone = alliance == Alliance.RED ? sim.blueZone : sim.redZone;
+        this.myHub = alliance == Alliance.RED ? sim.redHub : sim.blueHub;
+        this.myTower = alliance == Alliance.RED ? sim.redTower : sim.blueTower;
         // initial location is my own zone
         this.location = myZone;
         count = initialCount;
@@ -113,18 +114,16 @@ public abstract class Robot implements Actor, BallContainer {
     /** Decide what to do during this period. */
     abstract void action();
 
+    /**
+     * score until our zone is exhausted, then move to the neutral zone.
+     */
     void score() {
         if (location != myZone)
             throw new IllegalStateException("only score from my zone");
         // we're in our zone, so attempt to score whatever
         // we have in the bin, and whatever is nearby.
         if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
-            // there are balls nearby so shoot them
-            int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), INTAKE_RATE);
-            int taken = location.take(intakeCount);
-            count += taken;
-            int actual = shoot(myHub);
-            action = new IntakeAndScore(taken, actual);
+            intakeAndScore();
         } else {
             if (count > MIN_COUNT_TO_SHOOT) {
                 // we have balls to shoot, so shoot them
@@ -137,6 +136,47 @@ public abstract class Robot implements Actor, BallContainer {
         }
     }
 
+    /**
+     * Intake and score from our zone.
+     */
+    void scoreOnly() {
+        if (location != myZone) {
+            moveTo(myZone);
+        } else if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
+            intakeAndScore();
+        } else {
+            if (count > MIN_COUNT_TO_SHOOT) {
+                // we have balls to shoot, so shoot them
+                int actual = shoot(myHub);
+                action = new ScoreOnly(actual);
+            } else {
+                // nothing left, wait
+                action = new Idle();
+            }
+        }
+    }
+
+    int intakeRate() {
+        if (blocked)
+            return INTAKE_RATE / 2;
+        return INTAKE_RATE;
+    }
+
+    void intakeAndScore() {
+        // there are balls nearby so shoot them
+        int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), intakeRate());
+        int taken = location.take(intakeCount);
+        count += taken;
+        int actual = shoot(myHub);
+        action = new IntakeAndScore(taken, actual);
+    }
+
+    /**
+     * LOB:
+     * * move to the neutral zone
+     * * lob balls from there into our zone
+     * * when exhausted, drive to our zone and score
+     */
     void lob() {
         if (location == myZone) {
             if (active) {
@@ -147,12 +187,7 @@ public abstract class Robot implements Actor, BallContainer {
         } else {
             // we're in the neutral zone
             if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
-                // both intake and lob
-                int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), INTAKE_RATE);
-                int taken = location.take(intakeCount);
-                count += taken;
-                int lobbed = shoot(myZone);
-                action = new IntakeAndLob(taken, lobbed);
+                intakeAndLob();
             } else {
                 if (count > MIN_COUNT_TO_SHOOT) {
                     // lob the remainder
@@ -166,6 +201,44 @@ public abstract class Robot implements Actor, BallContainer {
         }
     }
 
+    /**
+     * LOB ONLY:
+     * * lob without scoring
+     */
+    void lobOnly() {
+        if (location == myZone) {
+            moveTo(neutralZone);
+        } else {
+            // we're in the neutral zone
+            if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
+                intakeAndLob();
+            } else {
+                if (count > MIN_COUNT_TO_SHOOT) {
+                    // lob the remainder
+                    int lobbed = shoot(myZone);
+                    action = new LobOnly(lobbed);
+                }
+            }
+        }
+    }
+
+    private void intakeAndLob() {
+        // both intake and lob
+        int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), intakeRate());
+        int taken = location.take(intakeCount);
+        count += taken;
+        int lobbed = shoot(myZone);
+        action = new IntakeAndLob(taken, lobbed);
+    }
+
+    /**
+     * FERRY:
+     * repeat:
+     * * drive to the neutral zone
+     * * pick up until full
+     * * drive to our zone
+     * * score
+     */
     void ferry() {
         if (location == myZone) {
             score();
@@ -177,14 +250,41 @@ public abstract class Robot implements Actor, BallContainer {
                 moveTo(myZone);
             } else {
                 if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
-                    int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), INTAKE_RATE);
-                    int taken = location.take(intakeCount);
-                    count += taken;
-                    action = new IntakeOnly(taken);
+                    intakeOnly();
                 } else {
                     // nothing left here to pick up so go back
                     moveTo(myZone);
                 }
+            }
+        }
+    }
+
+    void intakeOnly() {
+        int intakeCount = Math.min(Math.max(0, BIN_CAPACITY - count), intakeRate());
+        int taken = location.take(intakeCount);
+        count += taken;
+        action = new IntakeOnly(taken);
+    }
+
+    /**
+     * * drive to the opposite zone
+     * * block opponents if any
+     * * steal and lob to our zone
+     */
+    void defendInOppositeZone() {
+        if (location == myZone) {
+            moveTo(neutralZone);
+        } else if (location == neutralZone) {
+            moveTo(otherZone);
+        } else {
+            for (Robot r : sim.robots()) {
+                if (r.location == otherZone && r != this) {
+                    action = new Block(r);
+                    return;
+                }
+            }
+            if (location.count() > MIN_ON_FLOOR_TO_INTAKE) {
+                intakeAndLob();
             }
         }
     }
@@ -195,8 +295,14 @@ public abstract class Robot implements Actor, BallContainer {
         action = new Move(zone.name);
     }
 
+    int shootRate() {
+        if (blocked)
+            return SHOOT_RATE / 2;
+        return SHOOT_RATE;
+    }
+
     int shoot(BallAcceptor target) {
-        int actual = Math.min(count, SHOOT_RATE);
+        int actual = Math.min(count, shootRate());
         target.accept(actual);
         count = count - actual;
         return actual;

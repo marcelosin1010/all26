@@ -4,7 +4,7 @@ import org.team100.sim2026.robots.Robot;
 
 public class Block implements Action {
 
-    private final Robot target;
+    public final Robot target;
 
     public Block(Robot target) {
         this.target = target;
@@ -16,8 +16,7 @@ public class Block implements Action {
 
     @Override
     public String toString() {
-        return "block";
+        return String.format("block %s", target.name);
     }
 
 }
-    

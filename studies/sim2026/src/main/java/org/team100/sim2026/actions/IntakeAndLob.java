@@ -11,6 +11,6 @@ public class IntakeAndLob implements Action {
 
     @Override
     public String toString() {
-        return String.format("in %d lob %d", taken, lobbed);
+        return String.format("in %2d lob %2d", taken, lobbed);
     }
 }
