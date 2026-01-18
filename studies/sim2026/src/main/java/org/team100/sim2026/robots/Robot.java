@@ -1,11 +1,11 @@
 package org.team100.sim2026.robots;
 
 import org.team100.sim2026.Actor;
-import org.team100.sim2026.Alliance;
+import org.team100.sim2026.AllianceColor;
 import org.team100.sim2026.BallAcceptor;
 import org.team100.sim2026.BallContainer;
 import org.team100.sim2026.Hub;
-import org.team100.sim2026.Sim;
+import org.team100.sim2026.SimRun;
 import org.team100.sim2026.Tower;
 import org.team100.sim2026.Zone;
 import org.team100.sim2026.actions.Action;
@@ -46,24 +46,24 @@ public abstract class Robot implements Actor, BallContainer {
     public Action action = new Idle();
     // 2 chars
     public final String name;
-    final Sim sim;
-    final Alliance alliance;
+    final SimRun sim;
+    final AllianceColor alliance;
     /** another robot is blocking us, which slows everything down. */
     public boolean blocked;
 
     public Robot(
-            Alliance alliance,
+            AllianceColor alliance,
             String name,
             int initialCount,
-            Sim sim) {
+            SimRun sim) {
         this.alliance = alliance;
         this.sim = sim;
         this.name = name;
-        this.myZone = alliance == Alliance.RED ? sim.redZone : sim.blueZone;
+        this.myZone = alliance == AllianceColor.RED ? sim.redZone : sim.blueZone;
         this.neutralZone = sim.neutralZone;
-        this.otherZone = alliance == Alliance.RED ? sim.blueZone : sim.redZone;
-        this.myHub = alliance == Alliance.RED ? sim.redHub : sim.blueHub;
-        this.myTower = alliance == Alliance.RED ? sim.redTower : sim.blueTower;
+        this.otherZone = alliance == AllianceColor.RED ? sim.blueZone : sim.redZone;
+        this.myHub = alliance == AllianceColor.RED ? sim.redHub : sim.blueHub;
+        this.myTower = alliance == AllianceColor.RED ? sim.redTower : sim.blueTower;
         // initial location is my own zone
         this.location = myZone;
         count = initialCount;

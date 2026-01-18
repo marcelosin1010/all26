@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.team100.sim2026.actions.Block;
-import org.team100.sim2026.robots.Defender;
-import org.team100.sim2026.robots.ExampleRobot;
 import org.team100.sim2026.robots.Robot;
-import org.team100.sim2026.robots.Scorer;
 
-/** The main simulation loop. */
-public class Sim {
+/** The main simulation loop, runs one simulation scenario. */
+public class SimRun {
     // note 10 seconds longer this year
     public static final int MATCH_LENGTH_SEC = 160;
 
@@ -38,32 +35,29 @@ public class Sim {
     ///////////////
     /// ALLIANCES
     ///
-    /// TODO: make an alliance class
     /// TODO: make robot performance parameters
 
-    // three-role alliance
-    final Robot red1 = new Scorer(Alliance.RED, "r1", 8, this);
-    final Robot red2 = new ExampleRobot(Alliance.RED, "r2", 8, this);
-    final Robot red3 = new Defender(Alliance.RED, "r3", 8, this);
-
-    // three-role alliance
-    // final Robot blue1 = new Scorer(Alliance.BLUE, "b1", 8, this);
-    // final Robot blue2 = new ExampleRobot(Alliance.BLUE, "b2", 8, this);
-    // final Robot blue3 = new Defender(Alliance.BLUE, "b3", 8, this);
-
-    // all-around alliance
-    final Robot blue1 = new ExampleRobot(Alliance.BLUE, "b1", 8, this);
-    final Robot blue2 = new ExampleRobot(Alliance.BLUE, "b2", 8, this);
-    final Robot blue3 = new ExampleRobot(Alliance.BLUE, "b3", 8, this);
+    final Robot red1, red2, red3;
+    final Robot blue1, blue2, blue3;
 
     final List<BallContainer> containers;
     final List<Actor> actors;
     final List<Robot> robots;
 
     // set after auto
-    Alliance firstActive;
+    AllianceColor firstActive;
 
-    public Sim() {
+    public SimRun(Scenario scenario) {
+        // TODO: avoid "this" leakage here.
+        Alliance red = scenario.red(this);
+        Alliance blue = scenario.blue(this);
+        red1 = red.robot1;
+        red2 = red.robot2;
+        red3 = red.robot3;
+        blue1 = blue.robot1;
+        blue2 = blue.robot2;
+        blue3 = blue.robot3;
+
         containers = List.of(redZone, neutralZone, blueZone,
                 redHub, blueHub,
                 redOutpost, blueOutpost,
@@ -116,14 +110,14 @@ public class Sim {
         return matchTimer;
     }
 
-    void red(boolean active) {
+    void redActive(boolean active) {
         redHub.active = active;
         red1.active = active;
         red2.active = active;
         red3.active = active;
     }
 
-    void blue(boolean active) {
+    void blueActive(boolean active) {
         blueHub.active = active;
         blue1.active = active;
         blue2.active = active;
@@ -135,46 +129,46 @@ public class Sim {
         if (matchTimer == 20) {
             // this should only happen once per match
             if (blueScore.autoFuel > redScore.autoFuel) {
-                firstActive = Alliance.RED;
+                firstActive = AllianceColor.RED;
             } else if (blueScore.autoFuel < redScore.autoFuel) {
-                firstActive = Alliance.BLUE;
+                firstActive = AllianceColor.BLUE;
             } else {
-                firstActive = new Random().nextBoolean() ? Alliance.RED : Alliance.BLUE;
+                firstActive = new Random().nextBoolean() ? AllianceColor.RED : AllianceColor.BLUE;
             }
         }
         // then set the active hubs
         switch (phase()) {
             case AUTO -> {
-                red(true);
-                blue(true);
+                redActive(true);
+                blueActive(true);
             }
             case TRANSITION -> {
-                red(true);
-                blue(true);
+                redActive(true);
+                blueActive(true);
             }
             case SHIFT_1 -> {
-                boolean redActive = firstActive == Alliance.RED;
-                red(redActive);
-                blue(!redActive);
+                boolean redActive = firstActive == AllianceColor.RED;
+                redActive(redActive);
+                blueActive(!redActive);
             }
             case SHIFT_2 -> {
-                boolean redActive = firstActive == Alliance.BLUE;
-                red(redActive);
-                blue(!redActive);
+                boolean redActive = firstActive == AllianceColor.BLUE;
+                redActive(redActive);
+                blueActive(!redActive);
             }
             case SHIFT_3 -> {
-                boolean redActive = firstActive == Alliance.RED;
-                red(redActive);
-                blue(!redActive);
+                boolean redActive = firstActive == AllianceColor.RED;
+                redActive(redActive);
+                blueActive(!redActive);
             }
             case SHIFT_4 -> {
-                boolean redActive = firstActive == Alliance.BLUE;
-                red(redActive);
-                blue(!redActive);
+                boolean redActive = firstActive == AllianceColor.BLUE;
+                redActive(redActive);
+                blueActive(!redActive);
             }
             case END_GAME -> {
-                red(true);
-                blue(true);
+                redActive(true);
+                blueActive(true);
             }
         }
     }

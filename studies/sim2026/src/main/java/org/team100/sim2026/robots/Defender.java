@@ -1,7 +1,7 @@
 package org.team100.sim2026.robots;
 
-import org.team100.sim2026.Alliance;
-import org.team100.sim2026.Sim;
+import org.team100.sim2026.AllianceColor;
+import org.team100.sim2026.SimRun;
 import org.team100.sim2026.actions.Climb;
 
 /**
@@ -13,10 +13,10 @@ public class Defender extends Robot {
     private static final int CLIMB_BUFFER = 10;
 
     public Defender(
-            Alliance alliance,
+            AllianceColor alliance,
             String name,
             int initialCount,
-            Sim sim) {
+            SimRun sim) {
         super(
                 alliance,
                 name,
@@ -29,15 +29,15 @@ public class Defender extends Robot {
             // auton
             ferry();
         } else if (location == otherZone
-                && sim.time() >= Sim.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + 2 * TRAVEL_TIME)) {
+                && sim.time() >= SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + 2 * TRAVEL_TIME)) {
             // time to drive to the neutral zone
             moveTo(neutralZone);
         } else if (location == neutralZone
-                && sim.time() >= Sim.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + TRAVEL_TIME)) {
+                && sim.time() >= SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + TRAVEL_TIME)) {
             // time to drive to our zone.
             moveTo(myZone);
         } else if (location == myZone
-                && sim.time() >= Sim.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME)) {
+                && sim.time() >= SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME)) {
             if (action.getClass() == Climb.class)
                 return;
             // time to climb.
