@@ -4,16 +4,16 @@ import org.team100.sim2026.Alliance;
 import org.team100.sim2026.AllianceColor;
 import org.team100.sim2026.SimRun;
 
-public class BalancedVsUniform implements Scenario {
+public class FerryVsLob implements Scenario {
 
     @Override
     public Alliance red(SimRun sim) {
-        return Alliance.balanced("balanced", AllianceColor.RED, sim);
+        return Alliance.ferryOnly("ferry", AllianceColor.RED, sim);
     }
 
     @Override
     public Alliance blue(SimRun sim) {
-        return Alliance.uniform("uniform", AllianceColor.BLUE, sim);
+        return Alliance.lobOnly("lob", AllianceColor.BLUE, sim);
     }
 
 }

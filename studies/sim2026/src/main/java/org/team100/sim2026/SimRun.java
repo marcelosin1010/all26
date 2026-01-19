@@ -218,7 +218,7 @@ public class SimRun {
     }
 
     void score() {
-        System.out.printf("RED:   %s %s\nBLUE:  %s %s\n", red.name, redScore, blue.name, blueScore);
+        System.out.printf("RED:   %10s %s\nBLUE:  %10s %s\n", red.name, redScore, blue.name, blueScore);
     }
 
 }

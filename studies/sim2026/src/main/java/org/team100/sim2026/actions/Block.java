@@ -2,6 +2,7 @@ package org.team100.sim2026.actions;
 
 import org.team100.sim2026.robots.Robot;
 
+/** TODO: make Block also slow down travel */
 public class Block implements Action {
 
     public final Robot target;

@@ -26,8 +26,17 @@ public abstract class Robot implements Actor, BallContainer {
     private static final int MIN_ON_FLOOR_TO_INTAKE = 5;
     /** The last few take longer to shoot so don't bother */
     private static final int MIN_COUNT_TO_SHOOT = 5;
-    private static final int INTAKE_RATE = 25;
-    private static final int SHOOT_RATE = 10;
+    static final int CLIMB_TIME = 5;
+    static final int CLIMB_BUFFER = 10;
+
+    final SimRun sim;
+    final AllianceColor alliance;
+
+    public final String name;
+    private final int capacity;
+    private final int intakeRate;
+    private final int shootRate;
+
     final Zone myZone;
     final Zone neutralZone;
     final Zone otherZone;
@@ -43,12 +52,7 @@ public abstract class Robot implements Actor, BallContainer {
     public boolean active;
 
     public Action action = new Idle();
-    // 2 chars
-    public final String name;
-    private final int capacity;
 
-    final SimRun sim;
-    final AllianceColor alliance;
     /** another robot is blocking us, which slows everything down. */
     public boolean blocked;
 
@@ -56,12 +60,16 @@ public abstract class Robot implements Actor, BallContainer {
             AllianceColor alliance,
             String name,
             int capacity,
+            int intakeRate,
+            int shootRate,
             int initialCount,
             SimRun sim) {
         this.alliance = alliance;
         this.sim = sim;
         this.name = name;
         this.capacity = capacity;
+        this.intakeRate = intakeRate;
+        this.shootRate = shootRate;
         this.myZone = alliance == AllianceColor.RED ? sim.redZone : sim.blueZone;
         this.neutralZone = sim.neutralZone;
         this.otherZone = alliance == AllianceColor.RED ? sim.blueZone : sim.redZone;
@@ -69,8 +77,17 @@ public abstract class Robot implements Actor, BallContainer {
         this.myTower = alliance == AllianceColor.RED ? sim.redTower : sim.blueTower;
         // initial location is my own zone
         this.location = myZone;
-        count = initialCount;
+        this.count = initialCount;
     }
+
+    /** Decide what to do during this auton period. */
+    abstract void auton();
+
+    /** Decide what do to when active. */
+    abstract void active();
+
+    /** Decide what do to when inactive. */
+    abstract void inactive();
 
     @Override
     public Runnable step() {
@@ -81,8 +98,34 @@ public abstract class Robot implements Actor, BallContainer {
             if (stillMoving()) {
                 return;
             }
-            action();
+            if (sim.time() < 20) {
+                auton();
+                return;
+            }
+            if (endgame()) {
+                return;
+            }
+            if (active) {
+                active();
+                return;
+            }
+            inactive();
         };
+    }
+
+    /** For now, all climb behaviors are the same. */
+    boolean endgame() {
+        if (shouldGoFromOtherZoneToNeutralToClimb()) {
+            moveTo(neutralZone);
+            return true;
+        } else if (shouldGoFromNeutralToOurZoneToClimb()) {
+            moveTo(myZone);
+            return true;
+        } else if (shouldClimb()) {
+            climb();
+            return true;
+        }
+        return false;
     }
 
     // TODO: make this use the "action" and work for all actions with duration.
@@ -113,9 +156,6 @@ public abstract class Robot implements Actor, BallContainer {
         }
         return false;
     }
-
-    /** Decide what to do during this period. */
-    abstract void action();
 
     /**
      * score until our zone is exhausted, then move to the neutral zone.
@@ -160,13 +200,23 @@ public abstract class Robot implements Actor, BallContainer {
     }
 
     int intakeRate() {
-        if (blocked)
-            return INTAKE_RATE / 2;
-        return INTAKE_RATE;
+        int rate = intakeRate;
+        int count = location.count();
+        if (count < 2 * MIN_ON_FLOOR_TO_INTAKE) {
+            // as the floor density goes down, intake takes longer
+            rate = rate / 2;
+        }
+        if (blocked) {
+            // defense slows down intaking
+            return rate / 2;
+        }
+        return rate;
     }
 
+    /** Intake and shoot simultaneously. */
     void intakeAndScore() {
-        // there are balls nearby so shoot them
+        if (location != myZone)
+            throw new IllegalStateException();
         int intakeCount = Math.min(Math.max(0, capacity - count), intakeRate());
         int taken = location.take(intakeCount);
         count += taken;
@@ -178,7 +228,7 @@ public abstract class Robot implements Actor, BallContainer {
      * LOB:
      * * move to the neutral zone
      * * lob balls from there into our zone
-     * * when exhausted, drive to our zone and score
+     * * when exhausted and active, drive to our zone and score
      */
     void lob() {
         if (location == myZone) {
@@ -196,9 +246,11 @@ public abstract class Robot implements Actor, BallContainer {
                     // lob the remainder
                     int lobbed = shoot(myZone);
                     action = new LobOnly(lobbed);
-                } else {
-                    // nothing on the floor, nothing in the bin
+                } else if (active) {
+                    // nothing on the floor, nothing in the bin, can score
                     moveTo(myZone);
+                } else {
+                    // wait
                 }
             }
         }
@@ -209,7 +261,7 @@ public abstract class Robot implements Actor, BallContainer {
      * * lob without scoring
      */
     void lobOnly() {
-        if (location == myZone) {
+        if (location != neutralZone) {
             moveTo(neutralZone);
         } else {
             // we're in the neutral zone
@@ -242,7 +294,7 @@ public abstract class Robot implements Actor, BallContainer {
      * * drive to our zone
      * * score
      */
-    void ferry() {
+    void ferryAndScore() {
         if (location == myZone) {
             score();
         } else {
@@ -292,6 +344,14 @@ public abstract class Robot implements Actor, BallContainer {
         }
     }
 
+    void climb() {
+        if (action.getClass() == Climb.class) {
+            // already climbing
+            return;
+        }
+        action = new Climb(myTower, CLIMB_TIME);
+    }
+
     void moveTo(Zone zone) {
         destination = zone;
         travelTimer = TRAVEL_TIME;
@@ -300,8 +360,8 @@ public abstract class Robot implements Actor, BallContainer {
 
     int shootRate() {
         if (blocked)
-            return SHOOT_RATE / 2;
-        return SHOOT_RATE;
+            return shootRate / 2;
+        return shootRate;
     }
 
     int shoot(BallAcceptor target) {
@@ -325,4 +385,37 @@ public abstract class Robot implements Actor, BallContainer {
     public int count() {
         return count;
     }
+
+    boolean shouldGoFromOtherZoneToNeutralToClimb() {
+        return location == otherZone && sim.time() >= farGoClimbDeadline();
+    }
+
+    boolean shouldGoFromNeutralToOurZoneToClimb() {
+        return location == neutralZone && sim.time() >= goClimbDeadline();
+    }
+
+    boolean shouldClimb() {
+        return location == myZone && sim.time() >= climbDeadline();
+    }
+
+    /**
+     * When we should drive from the neutral zone to our zone, to prepare to climb.
+     */
+    private int goClimbDeadline() {
+        return SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + TRAVEL_TIME);
+    }
+
+    /** When we should start climbing. */
+    private int climbDeadline() {
+        return SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME);
+    }
+
+    /**
+     * When we should drive from other zone to the neutral zone, to prepare to
+     * climb.
+     */
+    private int farGoClimbDeadline() {
+        return SimRun.MATCH_LENGTH_SEC - (CLIMB_BUFFER + CLIMB_TIME + 2 * TRAVEL_TIME);
+    }
+
 }

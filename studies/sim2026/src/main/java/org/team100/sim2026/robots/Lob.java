@@ -4,12 +4,12 @@ import org.team100.sim2026.AllianceColor;
 import org.team100.sim2026.SimRun;
 
 /**
- * Active: Intake and score in our zone.
- * Inctive: Intake in our zone until full.
+ * Inactive: Lob from the neutral zone.
+ * Active: Ferry and score.
  */
-public class Scorer extends Robot {
+public class Lob extends Robot {
 
-    public Scorer(AllianceColor alliance, String name, int capacity,
+    public Lob(AllianceColor alliance, String name, int capacity,
             int intakeRate, int shootRate, int initialCount, SimRun sim) {
         super(alliance, name, capacity,
                 intakeRate, shootRate, initialCount, sim);
@@ -17,17 +17,17 @@ public class Scorer extends Robot {
 
     @Override
     void auton() {
-        intakeAndScore();
+        ferryAndScore();
     }
 
     @Override
     void active() {
-        intakeAndScore();
+        lob();
     }
 
     @Override
     void inactive() {
-        intakeOnly();
+        lob();
     }
 
 }
