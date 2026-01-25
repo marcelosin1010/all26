@@ -19,6 +19,7 @@ import org.team100.lib.motor.ctre.Kraken6Motor;
 import org.team100.lib.motor.rev.NeoVortexCANSparkMotor;
 import org.team100.lib.util.CanId;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,9 +38,9 @@ public class Robot extends TimedRobot {
     LoggerFactory parent = rootLogger.type(this);
 
     top = new NeoVortexCANSparkMotor(parent.name("Top"), new CanId(1), NeutralMode.BRAKE, MotorPhase.FORWARD, 200,
-        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.0002,0.000001,0.0004));
+        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.0002,0.0000001,0.0004));
     bottom = new NeoVortexCANSparkMotor(parent.name("Bottom"), new CanId(2), NeutralMode.BRAKE, MotorPhase.FORWARD, 200,
-        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.00005,0.000001,0.0001));
+        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.00005,0.00000001,0.0001));
   }
   @Override
   public void robotPeriodic() {
@@ -48,6 +49,7 @@ public class Robot extends TimedRobot {
     top.periodic();
     bottom.periodic();
     CommandScheduler.getInstance().run();
+    NetworkTableInstance.getDefault().flush();
   }
 
   @Override
@@ -84,7 +86,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    top.setVelocity(Math.PI * 160, 0, 0);
+    top.setVelocity(Math.PI * -160, 0, 0);
     bottom.setVelocity(Math.PI * 160, 0, 0);
   }
 
