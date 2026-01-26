@@ -37,7 +37,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
     @Test
     void testEndToEnd() throws IOException, InterruptedException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         // these lists receive the updates
         final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
         final List<Double> timeEstimate = new ArrayList<Double>();
@@ -107,7 +108,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
     @Test
     void testEstimateRobotPose() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         // these lists receive the updates
         final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
         final List<Double> timeEstimate = new ArrayList<Double>();
@@ -161,7 +163,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
     @Test
     void testEstimateRobotPose2() throws IOException {
         // robot is panned right 45, translation is ignored.
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         final List<Pose2d> poseEstimate = new ArrayList<Pose2d>();
         final List<Double> timeEstimate = new ArrayList<Double>();
         DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(-Math.PI / 4));
@@ -239,7 +242,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // tag 4 in red is at about (0, 2.5)
         // tag 3 in red is at about (0, 3)
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
 
         DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(3 * Math.PI / 4));
 
@@ -280,7 +284,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 2.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -318,7 +323,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 2.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout =
+         new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -359,7 +365,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 2.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -402,7 +409,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 2.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout =
+         new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -444,7 +452,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 3.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -484,7 +493,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 3.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -524,7 +534,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 3.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -563,7 +574,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 3.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);
@@ -605,7 +617,8 @@ class AprilTagRobotLocalizerTest implements Timeless {
         // -0.039, 2.662, 1.451 in red.
         // so the robot pose should be 1, 3.662, 1.451
 
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         Pose3d tag4pose = layout.getTagPose(Alliance.Red, 4).get();
         assertEquals(8.272, tag4pose.getX(), DELTA);
         assertEquals(1.914, tag4pose.getY(), DELTA);

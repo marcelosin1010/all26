@@ -1,4 +1,4 @@
-package org.team100.frc2025;
+package org.team100.frc2026;
 
 import edu.wpi.first.wpilibj.RobotBase;
 
