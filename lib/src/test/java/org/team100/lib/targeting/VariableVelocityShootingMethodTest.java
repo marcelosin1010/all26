@@ -22,22 +22,25 @@ public class VariableVelocityShootingMethodTest {
     private static final boolean DEBUG = false;
 
     /** Verify the Jacobian is doing what it should do. */
-
     @Test
     void testJacobian1() {
-        testJacobian(true);
+            Drag d = new Drag(0, 0, 0, 1, 0);
+        RangeSolver rangeSolver = new RangeSolver(d, 0);
+        IVVRange range = new VariableVelocityRangeCache(rangeSolver, 0);
+        testJacobian(range);
     }
 
     @Test
     void testJacobian2() {
-        testJacobian(false);
+            Drag d = new Drag(0, 0, 0, 1, 0);
+        RangeSolver rangeSolver = new RangeSolver(d, 0);
+        IVVRange ivvr = (v, e) -> rangeSolver. getSolution(v, 0, e);
+        testJacobian(ivvr);
     }
 
-    void testJacobian(boolean useCache) {
+    void testJacobian(IVVRange ivvr) {
         // this is a parabola
-        Drag d = new Drag(0, 0, 0, 1, 0);
-        double targetElevation = 0.5;
-        VariableVelocityRange range = new VariableVelocityRange(d, 0, useCache);
+        double targetElevation = 0.5;    
         Translation2d robotPosition = new Translation2d();
         GlobalVelocityR2 robotVelocity = GlobalVelocityR2.ZERO;
         Translation2d targetPosition = new Translation2d(2, 0);
@@ -52,7 +55,7 @@ public class VariableVelocityShootingMethodTest {
             if (DEBUG)
                 System.out.printf("x az %f v %f el %f\n",
                         azimuth.getRadians(), velocity, elevation);
-            FiringSolution rangeSolution = range.get(velocity, elevation);
+            FiringSolution rangeSolution = ivvr.get(velocity, elevation);
             if (DEBUG)
                 System.out.printf("soln %s\n", rangeSolution);
             Translation2d b = new Translation2d(rangeSolution.range(), azimuth);
@@ -107,20 +110,23 @@ public class VariableVelocityShootingMethodTest {
 
     @Test
     void testMotionlessParabolic1() {
-        testMotionlessParabolic(false);
+        Drag d = new Drag(0, 0, 0, 1, 0);
+        RangeSolver rangeSolver = new RangeSolver(d, 0);
+        IVVRange ivvr = (v, e) -> rangeSolver.getSolution(v, 0, e);
+        testMotionlessParabolic(ivvr);
     }
 
     @Test
     void testMotionlessParabolic2() {
-        testMotionlessParabolic(true);
+        Drag d = new Drag(0, 0, 0, 1, 0);
+        RangeSolver rangeSolver = new RangeSolver(d, 0);
+        IVVRange ivvr = new VariableVelocityRangeCache(rangeSolver, 0);
+        testMotionlessParabolic(ivvr);
     }
 
-    void testMotionlessParabolic(boolean useCache) {
-        double g = 9.81;
-        Drag d = new Drag(0, 0, 0, 1, 0);
-        VariableVelocityRange range = new VariableVelocityRange(d, 0, useCache);
+    void testMotionlessParabolic(final IVVRange ivvr) {
         double tolerance = 0.01;
-        VariableVelocityShootingMethod m = new VariableVelocityShootingMethod(range, tolerance);
+        VariableVelocityShootingMethod m = new VariableVelocityShootingMethod(ivvr, tolerance);
         Translation2d robotPosition = new Translation2d();
         GlobalVelocityR2 robotVelocity = GlobalVelocityR2.ZERO;
         Translation2d targetPosition = new Translation2d(2, 0);
@@ -139,6 +145,7 @@ public class VariableVelocityShootingMethodTest {
         double azimuth = 0;
         double elevation = 0.5;
         double R = 2;
+        double g = 9.81;
         double v = Math.sqrt(R * g / Math.sin(2 * elevation));
         double tof = 2 * v * Math.sin(elevation) / g;
 
@@ -146,7 +153,7 @@ public class VariableVelocityShootingMethodTest {
         assertEquals(v, x.velocity(), 0.01);
         assertEquals(elevation, x.elevation().getRadians(), 0.01);
 
-        FiringSolution s = range.get(x.velocity(), x.elevation().getRadians());
+        FiringSolution s = ivvr.get(x.velocity(), x.elevation().getRadians());
         assertEquals(R, s.range(), 0.01);
         assertEquals(tof, s.tof(), 0.01);
 

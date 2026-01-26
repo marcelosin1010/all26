@@ -1,6 +1,7 @@
 package org.team100.lib.targeting;
 
 import java.util.Optional;
+import java.util.function.DoubleFunction;
 
 import org.team100.lib.geometry.GlobalVelocityR2;
 
@@ -25,11 +26,17 @@ public class TimeOfFlightRecursion {
     }
 
     /** Look up solution parameters for range. */
-    private final InverseRange m_inverseRange;
+    private final DoubleFunction<FiringParameters> m_inverseRange;
     /** Solution TOF tolerance, seconds. */
     private final double m_tolerance;
 
-    public TimeOfFlightRecursion(InverseRange inverseRange, double tolerance) {
+    /**
+     * @param inverseRange FiringParameters as a function of desired range
+     * @param tolerance    complete when the solution doesn't change more than this,
+     *                     in seconds
+     */
+    public TimeOfFlightRecursion(
+            DoubleFunction<FiringParameters> inverseRange, double tolerance) {
         m_inverseRange = inverseRange;
         m_tolerance = tolerance;
     }
@@ -45,12 +52,12 @@ public class TimeOfFlightRecursion {
         GlobalVelocityR2 vT = targetVelocity.minus(robotVelocity);
 
         double range = T0.getNorm();
-        double tof = m_inverseRange.get(range).tof();
+        double tof = m_inverseRange.apply(range).tof();
         double iter = 100;
         while (iter-- > 0) {
             Translation2d T = vT.integrate(T0, tof);
             range = T.getNorm();
-            FiringParameters p2 = m_inverseRange.get(range);
+            FiringParameters p2 = m_inverseRange.apply(range);
             if (DEBUG)
                 System.out.printf("range %f elevation %f tof %f\n", range, p2.elevation(), p2.tof());
             if (Math.abs(tof - p2.tof()) < m_tolerance)

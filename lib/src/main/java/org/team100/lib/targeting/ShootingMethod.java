@@ -53,11 +53,11 @@ public class ShootingMethod {
      */
     private static final double DX_LIMIT = 0.1;
     /** Shooting range solver. */
-    private final Range m_range;
+    private final IRange m_range;
     /** Solution tolerance, radial distance to target in meters. */
     private final double m_tolerance;
 
-    public ShootingMethod(Range range, double tolerance) {
+    public ShootingMethod(IRange range, double tolerance) {
         m_range = range;
         m_tolerance = tolerance;
     }

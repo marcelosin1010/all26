@@ -56,10 +56,10 @@ public class VariableVelocityShootingMethod {
      */
     private static final double DX_LIMIT = 0.1;
 
-    private final VariableVelocityRange m_range;
+    private final IVVRange m_range;
     private final double m_tolerance;
 
-    public VariableVelocityShootingMethod(VariableVelocityRange range, double tolerance) {
+    public VariableVelocityShootingMethod(IVVRange range, double tolerance) {
         m_range = range;
         m_tolerance = tolerance;
     }

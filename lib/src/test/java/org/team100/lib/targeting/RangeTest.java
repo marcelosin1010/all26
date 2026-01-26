@@ -1,21 +1,9 @@
 package org.team100.lib.targeting;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 public class RangeTest {
     private static final boolean DEBUG = false;
-    private static final double DELTA = 0.001;
-
-    @Test
-    void testRange() {
-        Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-        Range r = new Range(d, 8, 50, false);
-        FiringSolution s = r.get(Math.PI / 4);
-        assertEquals(2.825, s.range(), DELTA);
-        assertEquals(1.011, s.tof(), DELTA);
-    }
 
     /**
      * Is it worth caching?
@@ -31,14 +19,15 @@ public class RangeTest {
      */
     @Test
     void testPerformance() {
+        Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
+        RangeSolver rangeSolver = new RangeSolver(d, 0);
+
         double uncachedETperCall;
         {
-            Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-            Range r = new Range(d, 10, 1, false);
             int iterations = 10000;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < iterations; ++i) {
-                r.get(1);
+                rangeSolver.getSolution(10, 1, 1);
             }
             long finishTime = System.currentTimeMillis();
             if (DEBUG) {
@@ -49,8 +38,7 @@ public class RangeTest {
         }
         double cachedETperCall;
         {
-            Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-            Range r = new Range(d, 10, 1, true);
+            RangeCache r = new RangeCache(rangeSolver, 10, 1);
             int iterations = 10000000;
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < iterations; ++i) {

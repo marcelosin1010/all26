@@ -23,7 +23,8 @@ import org.team100.lib.servo.OnboardAngularPositionServo;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.targeting.Drag;
 import org.team100.lib.targeting.Intercept;
-import org.team100.lib.targeting.Range;
+import org.team100.lib.targeting.RangeCache;
+import org.team100.lib.targeting.RangeSolver;
 import org.team100.lib.targeting.ShootingMethod;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -85,7 +86,9 @@ public class Turret extends SubsystemBase {
         m_speed = speed;
         m_intercept = new Intercept(log);
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-        Range range = new Range(d, speed, 0, true);
+        double TARGET_HEIGHT = 0;
+        RangeSolver rangeSolver = new RangeSolver(d, TARGET_HEIGHT);
+        RangeCache range = new RangeCache(rangeSolver, speed, 0);
         m_shootingMethod = new ShootingMethod(range, 0.01);
         m_aiming = false;
     }

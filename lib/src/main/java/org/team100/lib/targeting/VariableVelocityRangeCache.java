@@ -9,7 +9,7 @@ import edu.wpi.first.math.interpolation.InverseInterpolator;
  * Uses a constant spin rate, which is probably wrong. Maybe spin rate is a
  * function of velocity?
  */
-public class VariableVelocityRange {
+public class VariableVelocityRangeCache implements IVVRange {
     /**
      * Precomputation lower bound. Very low velocities don't work well with the
      * solvers and they're not useful anyway.
@@ -29,8 +29,6 @@ public class VariableVelocityRange {
     /** Precomputation step. */
     private static final double ELEVATION_STEP = 0.05;
 
-    private final Drag d;
-    private final double omega;
     /**
      * Cache.
      * 
@@ -47,38 +45,26 @@ public class VariableVelocityRange {
      */
     private final NestedInterpolatingTreeMap<Double, FiringSolution> m_map;
 
-    public VariableVelocityRange(Drag d, double omega, boolean useCache) {
-        this.d = d;
-        this.omega = omega;
-        if (useCache) {
-            m_map = init(d, omega);
-        } else {
-            m_map = null;
-        }
-    }
-
-    public FiringSolution get(double v, double elevation) {
-        if (m_map != null)
-            return m_map.get(v, elevation);
-        return RangeSolver.getSolution(d, v, omega, elevation);
-    }
-
-    /**
-     * Pre-populate the map.
-     */
-    private static NestedInterpolatingTreeMap<Double, FiringSolution> init(Drag d, double omega) {
-        NestedInterpolatingTreeMap<Double, FiringSolution> map = new NestedInterpolatingTreeMap<>(
+    public VariableVelocityRangeCache(RangeSolver rangeSolver, double omega) {
+        m_map = new NestedInterpolatingTreeMap<>(
                 InverseInterpolator.forDouble(), new FiringSolutionInterpolator());
         for (double v = MIN_V; v < MAX_V; v += V_STEP) {
             for (double elevation = MIN_ELEVATION; elevation < MAX_ELEVATION; elevation += ELEVATION_STEP) {
-                FiringSolution solution = RangeSolver.getSolution(d, v, omega, elevation);
+                FiringSolution solution = rangeSolver.getSolution(v, omega, elevation);
                 if (solution == null) {
                     // no solution
                     continue;
                 }
-                map.put(v, elevation, solution);
+                m_map.put(v, elevation, solution);
             }
         }
-        return map;
+    }
+
+    /**
+     * @param v         velocity in m/s
+     * @param elevation in radians
+     */
+    public FiringSolution get(double v, double elevation) {
+        return m_map.get(v, elevation);
     }
 }

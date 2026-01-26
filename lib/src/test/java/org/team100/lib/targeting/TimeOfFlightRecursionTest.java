@@ -15,10 +15,9 @@ public class TimeOfFlightRecursionTest {
     /** See ShootingMethodTest.testMotionlessParabolic() */
     @Test
     void testMotionlessParabolic() {
-        double g = 9.81;
         Drag d = new Drag(0, 0, 0, 1, 0);
         double v = 7;
-        InverseRange ir = new InverseRange(d, v, 0);
+        InverseRange ir = new InverseRange(d, 0, v, 0);
         TimeOfFlightRecursion tofr = new TimeOfFlightRecursion(ir, 0.01);
         Translation2d robotPosition = new Translation2d();
         GlobalVelocityR2 robotVelocity = GlobalVelocityR2.ZERO;
@@ -41,7 +40,7 @@ public class TimeOfFlightRecursionTest {
     @Test
     void testAwayFromTarget() {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
-        InverseRange ir = new InverseRange(d, 10, 0);
+        InverseRange ir = new InverseRange(d, 0, 10, 0);
         TimeOfFlightRecursion tofr = new TimeOfFlightRecursion(ir, 0.0001);
         Translation2d robotPosition = new Translation2d();
         // driving away from the target
@@ -62,7 +61,7 @@ public class TimeOfFlightRecursionTest {
     void testStrafing() {
         Drag d = new Drag(0.5, 0.025, 0.1, 0.1, 0.1);
         double v = 7;
-        InverseRange ir = new InverseRange(d, v, 0);
+        InverseRange ir = new InverseRange(d, 0, v, 0);
         TimeOfFlightRecursion tofr = new TimeOfFlightRecursion(ir, 0.001);
         Translation2d robotPosition = new Translation2d();
         // driving to the left
