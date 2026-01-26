@@ -42,7 +42,8 @@ public class SimulatedTagDetectorTest {
                 Camera.FUNNEL,
                 Camera.CORAL_LEFT,
                 Camera.CORAL_RIGHT);
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         // right in front of tag 7
         SimulatedTagDetector sim = new SimulatedTagDetector(
                 cameras,
@@ -171,7 +172,8 @@ public class SimulatedTagDetectorTest {
     @Test
     void testTag6() throws IOException {
         Camera camera = Camera.TEST6;
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout =
+         new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
         // right in front of tag 7
         Pose2d robotPose = new Pose2d(2.6576, 4.0259, Rotation2d.kZero);
         Pose3d robotPose3d = new Pose3d(robotPose);

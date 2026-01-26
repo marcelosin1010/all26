@@ -479,7 +479,8 @@ class PoseEstimationHelperTest {
 
         // first try the "corrected" layout, which is "into the page" tag orientation.
         // this is CORRECT
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
 
         Pose3d tagInFieldCoords = layout.getTagPose(Alliance.Blue, 7).get();
 

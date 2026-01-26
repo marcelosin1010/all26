@@ -15,7 +15,8 @@ public class AprilTagFieldLayoutWithCorrectOrientationTest {
 
     @Test
     void testGetTagPoseRed() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         Pose3d pose = layout.getTagPose(Alliance.Red, 1).get();
         // tag 1 coordinates for red
         assertEquals(0.851, pose.getX(), DELTA);
@@ -25,7 +26,8 @@ public class AprilTagFieldLayoutWithCorrectOrientationTest {
 
     @Test
     void testGetPoseBlue() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         Pose3d pose = layout.getTagPose(Alliance.Blue, 1).get();
         // tag 1 coordinates for blue
         assertEquals(16.697, pose.getX(), DELTA);

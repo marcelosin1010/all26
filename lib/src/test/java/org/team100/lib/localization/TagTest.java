@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * Remind myself what's in the JSON file.
@@ -22,7 +22,8 @@ class TagTest {
 
     @Test
     void testBlueLayout() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation(
+                "2025-reefscape.json");
         /*
          * from the blue perspective, tag 7 has small x
          * and large y, and oriented at pi theta.
@@ -39,7 +40,8 @@ class TagTest {
 
     @Test
     void testRedLayout() throws IOException {
-        AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
+        AprilTagFieldLayoutWithCorrectOrientation layout = 
+        new AprilTagFieldLayoutWithCorrectOrientation("2025-reefscape.json");
 
         /*
          * from the red perspective, tag 7 has large x

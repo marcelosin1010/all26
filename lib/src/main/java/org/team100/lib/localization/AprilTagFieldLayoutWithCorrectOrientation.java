@@ -39,11 +39,12 @@ import edu.wpi.first.wpilibj.Filesystem;
  * 
  * @see https://github.com/AprilRobotics/apriltag/wiki/AprilTag-User-Guide#coordinate-system
  * 
- * NOTE: the AprilTag object is just the raw JSON, not corrected for alliance
- * orientation.  Do not use the AprilTag object!
+ *      NOTE: the AprilTag object is just the raw JSON, not corrected for
+ *      alliance
+ *      orientation. Do not use the AprilTag object!
  */
 public class AprilTagFieldLayoutWithCorrectOrientation {
-    private static final String FILENAME = "2025-reefscape.json";
+    private static final String FILENAME = "2026-rebuilt-andymark.json";
 
     // Inverts yaw
     private static final Transform3d FIX = new Transform3d(
@@ -53,7 +54,12 @@ public class AprilTagFieldLayoutWithCorrectOrientation {
     private final Map<Alliance, AprilTagFieldLayout> layouts = new EnumMap<>(Alliance.class);
 
     public AprilTagFieldLayoutWithCorrectOrientation() throws IOException {
-        Path path = Filesystem.getDeployDirectory().toPath().resolve(FILENAME);
+        this(FILENAME);
+    }
+
+    /** For testing only */
+    AprilTagFieldLayoutWithCorrectOrientation(String filename) throws IOException {
+        Path path = Filesystem.getDeployDirectory().toPath().resolve(filename);
 
         AprilTagFieldLayout blueLayout = new AprilTagFieldLayout(path);
         blueLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
