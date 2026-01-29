@@ -38,11 +38,11 @@ public class Robot extends TimedRobot {
     LoggerFactory parent = rootLogger.type(this);
 
     top = new NeoVortexCANSparkMotor(parent.name("Top"), new CanId(1), NeutralMode.BRAKE, MotorPhase.FORWARD, 200,
-        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.0002,0.0000001,0.0004));
+        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.0002,0.0000005,0.0004));
     bottom = new NeoVortexCANSparkMotor(parent.name("Bottom"), new CanId(2), NeutralMode.BRAKE, MotorPhase.FORWARD, 200,
-        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.00005,0.00000001,0.0001));
+        Feedforward100.makeNeoVortex(rootLogger), PIDConstants.makeVelocityPID(rootLogger, 0.00005,0.0000005,0.0001));
   }
-  @Override
+  @Override 
   public void robotPeriodic() {
     Takt.update();
     Cache.refresh();
@@ -86,8 +86,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    top.setVelocity(Math.PI * -160, 0, 0);
-    bottom.setVelocity(Math.PI * 160, 0, 0);
+    top.setVelocity(Math.PI * -200, 0, 0);
+    bottom.setVelocity(Math.PI * 200, 0, 0);
   }
 
   @Override
