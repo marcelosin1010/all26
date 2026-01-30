@@ -41,7 +41,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * past (and replays up to the present).
  */
 public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
-    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = true;
 
     /** Maximum age of the sights we publish for diagnosis. */
     private static final double HISTORY_DURATION = 1.0;

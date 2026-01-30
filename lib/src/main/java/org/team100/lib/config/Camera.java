@@ -113,6 +113,11 @@ public enum Camera {
                     new Translation3d(0, 0.1, 1),
                     new Rotation3d(0, 0, 0))),
 
+    DEV("364f07fb090a3bf7",
+            new Transform3d(
+                    new Translation3d(0.174, -0.29, 0.155+.24),
+                    new Rotation3d(0.04, 0.17, 0.36).unaryMinus())),
+
     TEST6("test6",
             new Transform3d(
                     new Translation3d(0.198, 0.284, 0.811),
