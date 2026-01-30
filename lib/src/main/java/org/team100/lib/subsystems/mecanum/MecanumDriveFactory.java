@@ -36,7 +36,7 @@ public class MecanumDriveFactory {
         LoggerFactory logRR = log.name("rearRight");
 
         // all wheels need the same ff/pid values
-        Feedforward100 ff = Feedforward100.makeNeo(log);
+        Feedforward100 ff = NeoCANSparkMotor.ff(log);
         // 10/22/25: Anay found this value worked well
         // PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.00005);
 // Doubled the value for auton 

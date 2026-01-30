@@ -31,7 +31,7 @@ class AnglePositionServoProfileTest implements Timeless {
     double previousMotorSpeed = 0;
 
     public AnglePositionServoProfileTest() {
-        motor = new MockBareMotor(Feedforward100.makeSimple(logger));
+        motor = new MockBareMotor(Feedforward100.test(logger));
         sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 logger,

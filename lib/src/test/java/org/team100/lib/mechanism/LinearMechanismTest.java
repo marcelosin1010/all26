@@ -18,7 +18,7 @@ public class LinearMechanismTest implements Timeless {
     /** Show that the limits have effect. */
     @Test
     void testLimits() {
-        Feedforward100 ff = Feedforward100.makeSimple(logger);
+        Feedforward100 ff = Feedforward100.test(logger);
         MockBareMotor motor = new MockBareMotor(ff);
         MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
         double gearRatio = 1;
@@ -58,7 +58,7 @@ public class LinearMechanismTest implements Timeless {
     /** Same cases as above, but unlimited */
     @Test
     void testUnlimited() {
-        Feedforward100 ff = Feedforward100.makeSimple(logger);
+        Feedforward100 ff = Feedforward100.test(logger);
         MockBareMotor motor = new MockBareMotor(ff);
         MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
         double gearRatio = 1;

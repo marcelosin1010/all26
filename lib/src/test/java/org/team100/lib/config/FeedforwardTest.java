@@ -43,7 +43,9 @@ class FeedforwardTest implements Timeless {
     @Test
     void test100() {
         // behaves the same as the naive model above, ignoring friction.
-        Feedforward100 ff100 = new Feedforward100(log, 1, 1, 1, 0, 0, 0);
+        Feedforward100 ff100 = new Feedforward100(
+                log, 1, 1, 1,
+                new Friction(log, 0, 0, 0, 0));
         assertEquals(1, ff100.velocityFFVolts(1), DELTA);
         assertEquals(1, ff100.accelFFVolts(1, 1), DELTA);
     }
@@ -51,7 +53,9 @@ class FeedforwardTest implements Timeless {
     @Test
     void testkD() {
         // kd is lower
-        Feedforward100 ff100 = new Feedforward100(log, 1, 1, 0.1, 0, 0, 0);
+        Feedforward100 ff100 = new Feedforward100(
+                log, 1, 1, 0.1,
+                new Friction(log, 0, 0, 0, 0));
         assertEquals(1, ff100.accelFFVolts(1, 1), DELTA);
         assertEquals(0.1, ff100.accelFFVolts(-1, 1), DELTA);
     }
@@ -60,7 +64,9 @@ class FeedforwardTest implements Timeless {
     @Test
     void testFriction() {
         // static friction = 2, dynamic friction = 1
-        Feedforward100 ff100 = new Feedforward100(log, 1, 1, 1, 2, 1, 1);
+        Feedforward100 ff100 = new Feedforward100(
+                log, 1, 1, 1,
+                new Friction(log, 2, 1, 0, 1));
         // under the static friction limit, so this is static
         assertEquals(2, ff100.frictionFFVolts(0.5), DELTA);
         // over the static friction limit, so sliding

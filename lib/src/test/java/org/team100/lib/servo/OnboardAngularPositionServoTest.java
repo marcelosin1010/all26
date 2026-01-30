@@ -27,7 +27,7 @@ public class OnboardAngularPositionServoTest implements Timeless {
 
     @Test
     void testOnboard() {
-        final MockBareMotor turningMotor = new MockBareMotor(Feedforward100.makeSimple(logger));
+        final MockBareMotor turningMotor = new MockBareMotor(Feedforward100.test(logger));
         final MockRotaryPositionSensor positionSensor = new MockRotaryPositionSensor();
         final RotaryMechanism mech = new RotaryMechanism(
                 logger, turningMotor, positionSensor, 1, Double.NEGATIVE_INFINITY,

@@ -23,7 +23,7 @@ public class DrumShooterFactory {
         CanId canL = new CanId(39);
         CanId canR = new CanId(19);
 
-        Feedforward100 ff = Feedforward100.makeNeo550(log);
+        Feedforward100 ff = Neo550CANSparkMotor.ff(log);
         // This P value is a guess
         PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.0002);
 

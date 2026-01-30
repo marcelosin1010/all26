@@ -1,6 +1,5 @@
 package org.team100.lib.subsystems.shooter;
 
-import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -25,7 +24,7 @@ public class PivotSubsystem extends SubsystemBase {
                 new CanId(5),
                 MotorPhase.FORWARD,
                 currentLimit,
-                Feedforward100.makeNeo550(logger),
+                Neo550CANSparkMotor.ff(logger),
                 PIDConstants.zero(logger));
     }
 

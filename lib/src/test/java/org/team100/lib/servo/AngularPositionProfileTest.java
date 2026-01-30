@@ -32,7 +32,7 @@ class AngularPositionProfileTest implements Timeless {
     private OnboardAngularPositionServo servo;
 
     public AngularPositionProfileTest() {
-        motor = new MockBareMotor(Feedforward100.makeSimple(logger));
+        motor = new MockBareMotor(Feedforward100.test(logger));
         sensor = new MockRotaryPositionSensor();
         mech = new RotaryMechanism(
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

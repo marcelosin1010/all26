@@ -2,7 +2,6 @@ package org.team100.frc2025.Climber;
 
 import java.util.function.DoubleSupplier;
 
-import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.PIDFeedback;
@@ -45,7 +44,7 @@ public class Climber extends SubsystemBase {
                 Falcon6Motor motor = new Falcon6Motor(log, canID, NeutralMode.BRAKE, MotorPhase.REVERSE,
                         20, 20,
                         PIDConstants.makePositionPID(log, 1),
-                        Feedforward100.makeArmPivot(log));
+                        Falcon6Motor.ff2(log));
 
                 double inputOffset = 0.440602;
                 RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(

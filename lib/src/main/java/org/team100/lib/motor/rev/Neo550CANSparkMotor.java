@@ -1,6 +1,7 @@
 package org.team100.lib.motor.rev;
 
 import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -52,5 +53,12 @@ public class Neo550CANSparkMotor extends CANSparkMotor {
     @Override
     public double kTNm_amp() {
         return 0.009;
+    }
+
+    public static Feedforward100 ff(LoggerFactory log) {
+        // free speed is 11000 RPM at 12.0 V so kV = 0.065
+        // TODO: friction?
+        return new Feedforward100(log, 0.065, 0, 0,
+                new Friction(log, 0, 0.07, 0.055, 0));
     }
 }
