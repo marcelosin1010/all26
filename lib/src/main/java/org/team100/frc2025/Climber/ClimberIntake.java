@@ -1,6 +1,5 @@
 package org.team100.frc2025.Climber;
 
-import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -30,7 +29,7 @@ public class ClimberIntake extends SubsystemBase {
                         20, // og 50
                         20, // og 2
                         PIDConstants.zero(log),
-                        Feedforward100.makeKrakenClimberIntake(log));
+                        Kraken6Motor.highFrictionFF(log));
             }
             default -> {
                 m_motor = new LazySimulatedBareMotor(

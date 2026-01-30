@@ -18,7 +18,7 @@ public class RotaryMechanismTest implements Timeless {
     /** Show that the limits have effect. */
     @Test
     void testLimits() {
-        Feedforward100 ff = Feedforward100.makeSimple(logger);
+        Feedforward100 ff = Feedforward100.test(logger);
         MockBareMotor motor = new MockBareMotor(ff);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
@@ -56,7 +56,7 @@ public class RotaryMechanismTest implements Timeless {
     /** Same cases as above, but unlimited */
     @Test
     void testUnlimited() {
-        Feedforward100 ff = Feedforward100.makeSimple(logger);
+        Feedforward100 ff = Feedforward100.test(logger);
         MockBareMotor motor = new MockBareMotor(ff);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
@@ -95,7 +95,7 @@ public class RotaryMechanismTest implements Timeless {
     @Test
     void testWrapNearMeasurement() {
         LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
-        MockBareMotor motor = new MockBareMotor(Feedforward100.makeSimple(log));
+        MockBareMotor motor = new MockBareMotor(Feedforward100.test(log));
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
