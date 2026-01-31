@@ -41,7 +41,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
  * past (and replays up to the present).
  */
 public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
-    private static final boolean DEBUG = true;
+    private static final boolean DEBUG = false;
 
     /** Maximum age of the sights we publish for diagnosis. */
     private static final double HISTORY_DURATION = 1.0;
@@ -58,7 +58,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      * Set this to some large number (e.g. 100) to disable gyro-derived rotation and
      * always use the camera.
      */
-    private static final double TAG_ROTATION_BELIEF_THRESHOLD_M = 0;
+    private static final double TAG_ROTATION_BELIEF_THRESHOLD_M = 100;
 
     /** Discard results further than this from the previous one. */
     private static final double VISION_CHANGE_TOLERANCE_M = 0.1;

@@ -15,7 +15,7 @@ public class ControllerFactorySE2 {
                 return new FullStateControllerSE2(log, 2.9, 3.5, 0.025, 0.01, 0.02, 0.3, 1, 1);
             }
             case SWERVE_ONE -> {
-                return new FullStateControllerSE2(log, 3, 3.5, 0.05, 0, 0.01, 0.01, 1, 1);
+                return new FullStateControllerSE2(log, 2, 2, 0.01, 0, 0.01, 0.01, 1, 1);
             }
             case SWERVE_TWO -> {
                 return new FullStateControllerSE2(log,
