@@ -264,7 +264,7 @@ class RealCamera(Camera):
                 "AnalogueGain": 8,
                 # "AeEnable": False,
                 # 3/29/25: JOEL changed AUTO EXPOSURE to TRUE here because we're OUTSIDE.
-                "AeEnable": False,
+                "AeEnable": True,
                 "AwbEnable": False,
                 "ExposureTime": RealCamera.__get_exposure_time(identity),
                 # The first argument is the red gain, second is blue gain, values are from testing in the new gym lighting(1.2,2.2)
