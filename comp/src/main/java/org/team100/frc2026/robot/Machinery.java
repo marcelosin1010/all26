@@ -2,8 +2,8 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
-import org.team100.frc2026.IntakeExtend;
 import org.team100.frc2026.Intake;
+import org.team100.frc2026.IntakeExtend;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -114,7 +114,8 @@ public class Machinery {
                 fieldLogger,
                 layout,
                 history,
-                visionUpdater);
+                visionUpdater,
+            100);
 
         ////////////////////////////////////////////////////////////
         //

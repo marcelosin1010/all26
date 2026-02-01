@@ -182,7 +182,7 @@ public class DriveWithTrajectoryTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(localizer, odometryUpdater, history);
         SwerveLocal swerveLocal = new SwerveLocal(logger, swerveKinodynamics, collection);
         SwerveLimiter limiter = new SwerveLimiter(logger, swerveKinodynamics, () -> 12);

@@ -46,6 +46,10 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
     /** Maximum age of the sights we publish for diagnosis. */
     private static final double HISTORY_DURATION = 1.0;
 
+    /** Discard results further than this from the previous one. */
+    private static final double VISION_CHANGE_TOLERANCE_M = 0.1;
+    // private static final double VISION_CHANGE_TOLERANCE_M = 1;
+
     /**
      * If the tag is closer than this threshold, then the camera's estimate of tag
      * rotation might be more accurate than the gyro, so we use the camera's
@@ -58,12 +62,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      * Set this to some large number (e.g. 100) to disable gyro-derived rotation and
      * always use the camera.
      */
-    private static final double TAG_ROTATION_BELIEF_THRESHOLD_M = 100;
-
-    /** Discard results further than this from the previous one. */
-    private static final double VISION_CHANGE_TOLERANCE_M = 0.1;
-    // private static final double VISION_CHANGE_TOLERANCE_M = 1;
-
+    private final double m_tagRotationBeliefThreshold;
     private final DoubleFunction<ModelSE2> m_history;
     private final VisionUpdater m_visionUpdater;
     private final AprilTagFieldLayoutWithCorrectOrientation m_layout;
@@ -133,8 +132,10 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             LoggerFactory fieldLogger,
             AprilTagFieldLayoutWithCorrectOrientation layout,
             DoubleFunction<ModelSE2> history,
-            VisionUpdater visionUpdater) {
+            VisionUpdater visionUpdater,
+            double tagRotationBeliefThreshold) {
         super(parent, "vision", "blips", StructBuffer.create(Blip24.struct));
+        m_tagRotationBeliefThreshold = tagRotationBeliefThreshold;
         LoggerFactory log = parent.type(this);
         m_layout = layout;
         m_history = history;
@@ -331,7 +332,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
      */
     private Transform3d maybeOverrideRotation(
             Transform3d cameraOffset, Pose2d historicalPose, Pose3d tagInField, Transform3d tagInCamera) {
-        if (tagInCamera.getTranslation().getNorm() > TAG_ROTATION_BELIEF_THRESHOLD_M) {
+        if (tagInCamera.getTranslation().getNorm() > m_tagRotationBeliefThreshold) {
             m_log_using_gyro.log(() -> true);
             tagInCamera = PoseEstimationHelper.tagInCamera(
                     cameraOffset, tagInField, tagInCamera, new Rotation3d(historicalPose.getRotation()));

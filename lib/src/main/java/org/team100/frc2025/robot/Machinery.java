@@ -132,7 +132,8 @@ public class Machinery {
                 fieldLogger,
                 layout,
                 history,
-                visionUpdater);
+                visionUpdater,
+                100);
         m_targets = new Targets(driveLog, fieldLogger, history);
 
         ////////////////////////////////////////////////////////////

@@ -71,7 +71,7 @@ public class SimulatedDrivingTest implements Timeless {
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         FreshSwerveEstimate estimate = new FreshSwerveEstimate(
                 localizer, odometryUpdater, history);

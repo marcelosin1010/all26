@@ -53,7 +53,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         // client instance
         NetworkTableInstance inst = NetworkTableInstance.create();
@@ -125,7 +125,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         // in red layout blip 7 is on the other side of the field
 
@@ -177,7 +177,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         // camera sees the tag straight ahead in the center of the frame,
         // but rotated pi/4 to the left. this is ignored anyway.
@@ -255,7 +255,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
             }
         };
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 2.4),
@@ -300,7 +300,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
             }
         };
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         // tag is 1m away on bore
         final Blip24 tag4 = new Blip24(4, new Transform3d(
@@ -340,7 +340,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 1),
@@ -383,7 +383,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag3 = new Blip24(3, new Transform3d(
                 new Translation3d(0.561, 0, 1),
@@ -427,7 +427,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -470,7 +470,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(-1, 0, 1),
@@ -511,7 +511,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         };
 
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -551,7 +551,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
             }
         };
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 1.4142),
@@ -591,7 +591,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
             }
         };
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         Blip24 tag4 = new Blip24(4, new Transform3d(
                 new Translation3d(0, 0, 2),
@@ -634,7 +634,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
             }
         };
         AprilTagRobotLocalizer localizer = new AprilTagRobotLocalizer(
-                logger, fieldLogger, layout, history, visionUpdater);
+                logger, fieldLogger, layout, history, visionUpdater, 0);
 
         // 30 degrees, long side is sqrt2, so hypotenuse is sqrt2/sqrt3/2
         Blip24 tag4 = new Blip24(4, new Transform3d(
