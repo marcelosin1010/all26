@@ -50,8 +50,8 @@ public class SwerveModulePosition100Struct implements Struct<SwerveModulePositio
 
     @Override
     public void pack(ByteBuffer bb, SwerveModulePosition100 value) {
-        bb.putDouble(value.distanceMeters);
-        OptionalRotation2d.struct.pack(bb, new OptionalRotation2d(value.unwrappedAngle));
+        bb.putDouble(value.distanceMeters());
+        OptionalRotation2d.struct.pack(bb, new OptionalRotation2d(value.unwrappedAngle()));
     }
 
 }

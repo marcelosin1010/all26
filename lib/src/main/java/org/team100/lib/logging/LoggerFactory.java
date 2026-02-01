@@ -814,9 +814,9 @@ public class LoggerFactory {
             if (!allow(m_level))
                 return;
             SwerveModulePosition100 val = vals.get();
-            m_distanceLogger.log(() -> val.distanceMeters);
-            if (val.unwrappedAngle.isPresent()) {
-                m_rotation2dLogger.log(val.unwrappedAngle::get);
+            m_distanceLogger.log(() -> val.distanceMeters());
+            if (val.unwrappedAngle().isPresent()) {
+                m_rotation2dLogger.log(val.unwrappedAngle()::get);
             }
         }
     }

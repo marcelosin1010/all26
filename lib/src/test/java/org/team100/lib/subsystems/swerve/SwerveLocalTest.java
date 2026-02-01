@@ -29,6 +29,6 @@ class SwerveLocalTest implements Timeless {
                 new SwerveModuleState100(0, Optional.of(new Rotation2d())),
                 new SwerveModuleState100(0, Optional.of(new Rotation2d())),
                 new SwerveModuleState100(0, Optional.of(new Rotation2d()))));
-        assertEquals(0, local.positions().frontLeft().distanceMeters, DELTA);
+        assertEquals(0, local.positions().frontLeft().distanceMeters(), DELTA);
     }
 }

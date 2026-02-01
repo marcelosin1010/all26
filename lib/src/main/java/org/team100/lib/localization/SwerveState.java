@@ -12,29 +12,24 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.interpolation.Interpolatable;
 
-class InterpolationRecord implements Interpolatable<InterpolationRecord> {
+class SwerveState implements Interpolatable<SwerveState> {
     private final SwerveDriveKinematics100 m_kinematics;
-
-    final ModelSE2 m_state;
-
-    final SwerveModulePositions m_wheelPositions;
+    private final ModelSE2 m_state;
+    private final SwerveModulePositions m_wheelPositions;
 
     /**
-     * Constructs an Interpolation Record with the specified parameters.
-     *
-     * @param kinematics
-     * @param state          The pose observed given the current sensor inputs and
-     *                       the previous pose.
-     * @param wheelPositions The current encoder readings. Makes a copy.
+     * @param kinematics Passed here for convenience.
+     * @param state      Position and velocity.
+     * @param positions  Current encoder readings. Makes a copy.
      */
-    InterpolationRecord(
+    SwerveState(
             SwerveDriveKinematics100 kinematics,
             ModelSE2 state,
-            SwerveModulePositions wheelPositions) {
+            SwerveModulePositions positions) {
         m_kinematics = kinematics;
         m_state = state;
         // this copy is important, don't keep the passed one.
-        m_wheelPositions = new SwerveModulePositions(wheelPositions);
+        m_wheelPositions = new SwerveModulePositions(positions);
     }
 
     /**
@@ -51,7 +46,7 @@ class InterpolationRecord implements Interpolatable<InterpolationRecord> {
      * @return The interpolated value.
      */
     @Override
-    public InterpolationRecord interpolate(InterpolationRecord endValue, double t) {
+    public SwerveState interpolate(SwerveState endValue, double t) {
         if (t < 0) {
             return this;
         }
@@ -77,7 +72,7 @@ class InterpolationRecord implements Interpolatable<InterpolationRecord> {
         VelocitySE2 velocity = startVelocity.plus(endVelocity.minus(startVelocity).times(t));
 
         ModelSE2 newState = new ModelSE2(pose, velocity);
-        return new InterpolationRecord(m_kinematics, newState, wheelLerp);
+        return new SwerveState(m_kinematics, newState, wheelLerp);
     }
 
     @Override
@@ -85,12 +80,20 @@ class InterpolationRecord implements Interpolatable<InterpolationRecord> {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof InterpolationRecord)) {
+        if (!(obj instanceof SwerveState)) {
             return false;
         }
-        InterpolationRecord rec = (InterpolationRecord) obj;
+        SwerveState rec = (SwerveState) obj;
         return Objects.equals(m_wheelPositions, rec.m_wheelPositions)
                 && Objects.equals(m_state, rec.m_state);
+    }
+
+    public ModelSE2 state() {
+        return m_state;
+    }
+
+    public SwerveModulePositions positions() {
+        return m_wheelPositions;
     }
 
     @Override

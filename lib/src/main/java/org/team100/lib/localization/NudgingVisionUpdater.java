@@ -47,15 +47,15 @@ public class NudgingVisionUpdater implements VisionUpdater {
         }
 
         // Sample the history at the measurement time.
-        InterpolationRecord sample = m_history.getRecord(timestampS);
+        SwerveState sample = m_history.getRecord(timestampS);
 
         // If there is a sample, nudge it towards the measurement.
         Pose2d nudged = nudge(
-                sample.m_state.pose(), measurement, stateSigma, visionSigma);
+                sample.state().pose(), measurement, stateSigma, visionSigma);
         m_history.put(
                 timestampS,
-                new ModelSE2(nudged, sample.m_state.velocity()),
-                sample.m_wheelPositions);
+                new ModelSE2(nudged, sample.state().velocity()),
+                sample.positions());
         m_odometryUpdater.replay(timestampS);
         m_latestTimeS = Takt.get();
     }

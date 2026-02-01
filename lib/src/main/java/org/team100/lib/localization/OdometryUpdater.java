@@ -113,7 +113,7 @@ public class OdometryUpdater {
             SwerveModulePositions wheelPositions) {
 
         // the entry right before this one, the basis for integration.
-        Entry<Double, InterpolationRecord> lowerEntry = m_history.lowerEntry(
+        Entry<Double, SwerveState> lowerEntry = m_history.lowerEntry(
                 currentTimeS);
 
         if (lowerEntry == null) {
@@ -124,14 +124,14 @@ public class OdometryUpdater {
         }
 
         double dt = currentTimeS - lowerEntry.getKey();
-        InterpolationRecord value = lowerEntry.getValue();
-        ModelSE2 previousState = value.m_state;
+        SwerveState value = lowerEntry.getValue();
+        ModelSE2 previousState = value.state();
         if (DEBUG) {
             System.out.printf("previous x %.6f y %.6f\n", previousState.pose().getX(), previousState.pose().getY());
         }
 
         SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
-                value.m_wheelPositions,
+                value.positions(),
                 wheelPositions);
         if (DEBUG) {
             System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
@@ -176,16 +176,16 @@ public class OdometryUpdater {
     /** Replay odometry after the sample time. */
     void replay(double timestamp) {
         // Note the exclusive tailmap: we don't see the entry at timestamp.
-        for (Map.Entry<Double, InterpolationRecord> entry : m_history.exclusiveTailMap(timestamp).entrySet()) {
+        for (Map.Entry<Double, SwerveState> entry : m_history.exclusiveTailMap(timestamp).entrySet()) {
             double entryTimestampS = entry.getKey();
-            InterpolationRecord value = entry.getValue();
+            SwerveState value = entry.getValue();
 
             // this is what the gyro must have been given the pose and offset
             // note that stale gyro offsets never occur, because the gyro offset is
             // reset at the same time the buffer is emptied.
-            Rotation2d entryGyroAngle = value.m_state.pose().getRotation().minus(m_gyroOffset);
-            double entryGyroRate = value.m_state.theta().v();
-            SwerveModulePositions wheelPositions = value.m_wheelPositions;
+            Rotation2d entryGyroAngle = value.state().pose().getRotation().minus(m_gyroOffset);
+            double entryGyroRate = value.state().theta().v();
+            SwerveModulePositions wheelPositions = value.positions();
 
             put(entryTimestampS, entryGyroAngle, entryGyroRate, wheelPositions);
         }

@@ -34,10 +34,10 @@ class SimulatedHeadingTest implements Timeless {
         SwerveKinodynamics l = SwerveKinodynamicsFactory.forRealisticTest(logger);
         SwerveModuleCollection c = SwerveModuleCollection.get(logger, 10, 20, l);
         SwerveModulePositions p = c.positions();
-        assertEquals(0, p.frontLeft().distanceMeters, DELTA);
-        assertEquals(0, p.frontRight().distanceMeters, DELTA);
-        assertEquals(0, p.rearLeft().distanceMeters, DELTA);
-        assertEquals(0, p.rearRight().distanceMeters, DELTA);
+        assertEquals(0, p.frontLeft().distanceMeters(), DELTA);
+        assertEquals(0, p.frontRight().distanceMeters(), DELTA);
+        assertEquals(0, p.rearLeft().distanceMeters(), DELTA);
+        assertEquals(0, p.rearRight().distanceMeters(), DELTA);
         SimulatedGyro h = new SimulatedGyro(logger, l, c);
         ChassisSpeeds speeds = new ChassisSpeeds(1, 0, 0);
         // includes discretization
@@ -52,10 +52,10 @@ class SimulatedHeadingTest implements Timeless {
         assertEquals(0, h.getYawNWU().getRadians(), DELTA);
         assertEquals(0, h.getYawRateNWU(), DELTA);
         p = c.positions();
-        assertEquals(0.42, p.frontLeft().distanceMeters, 0.03);
-        assertEquals(0.42, p.frontRight().distanceMeters, 0.03);
-        assertEquals(0.42, p.rearLeft().distanceMeters, 0.03);
-        assertEquals(0.42, p.rearRight().distanceMeters, 0.03);
+        assertEquals(0.42, p.frontLeft().distanceMeters(), 0.03);
+        assertEquals(0.42, p.frontRight().distanceMeters(), 0.03);
+        assertEquals(0.42, p.rearLeft().distanceMeters(), 0.03);
+        assertEquals(0.42, p.rearRight().distanceMeters(), 0.03);
     }
 
     @Test
@@ -74,7 +74,7 @@ class SimulatedHeadingTest implements Timeless {
             c.setDesiredStates(states);
             if (DEBUG)
                 System.out.printf("rotation %6.3f yaw %6.3f\n",
-                        c.positions().frontLeft().unwrappedAngle.get().getRadians(),
+                        c.positions().frontLeft().unwrappedAngle().get().getRadians(),
                         h.getYawNWU().getRadians());
             stepTime();
         }

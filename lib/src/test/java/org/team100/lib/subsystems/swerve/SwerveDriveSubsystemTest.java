@@ -38,7 +38,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         assertEquals(1, fixture.collection.states().frontLeft().speedMetersPerSecond());
 
         drive.periodic();
-        assertEquals(0.02, fixture.collection.positions().frontLeft().distanceMeters, 1e-6);
+        assertEquals(0.02, fixture.collection.positions().frontLeft().distanceMeters(), 1e-6);
 
         assertEquals(1, fixture.collection.states().frontLeft().speedMetersPerSecond());
 
@@ -85,7 +85,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         drive.periodic();
 
         // at 1 m/s for 0.02 s, so we go 0.02 m
-        assertEquals(0.02, fixture.collection.positions().frontLeft().distanceMeters, 1e-6);
+        assertEquals(0.02, fixture.collection.positions().frontLeft().distanceMeters(), 1e-6);
 
         // it took 0.02 s to go from 0 m/s to 1 m/s, so we accelerated 50 m/s/s.
         verify(drive, 0.02, 1.00, 50.0);

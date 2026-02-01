@@ -75,9 +75,9 @@ public class SwerveModuleDelta {
     public static SwerveModuleDelta delta(
             SwerveModulePosition100 start,
             SwerveModulePosition100 end) {
-        double deltaM = end.distanceMeters - start.distanceMeters;
-        if (end.unwrappedAngle.isPresent()) {
-            return new SwerveModuleDelta(deltaM, end.unwrappedAngle);
+        double deltaM = end.distanceMeters() - start.distanceMeters();
+        if (end.unwrappedAngle().isPresent()) {
+            return new SwerveModuleDelta(deltaM, end.unwrappedAngle());
         }
         // the angle might be empty, if the encoder has failed
         // (which can seem to happen if the robot is *severely* overrunning).

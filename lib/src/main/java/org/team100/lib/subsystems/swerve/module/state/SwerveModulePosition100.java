@@ -24,8 +24,11 @@ public class SwerveModulePosition100
         Interpolatable<SwerveModulePosition100>,
         StructSerializable {
     private static final boolean DEBUG = false;
+    /** SwerveModulePosition struct for serialization. */
+    public static final SwerveModulePosition100Struct struct = new SwerveModulePosition100Struct();
+
     /** Distance measured by the wheel of the module. */
-    public double distanceMeters;
+    private double distanceMeters;
 
     /**
      * Angle of the module. It can be empty, in cases where the angle is
@@ -33,10 +36,7 @@ public class SwerveModulePosition100
      * 
      * This is "unwrapped": its domain is infinite, not periodic within +/- pi.
      */
-    public Optional<Rotation2d> unwrappedAngle = Optional.empty();
-
-    /** SwerveModulePosition struct for serialization. */
-    public static final SwerveModulePosition100Struct struct = new SwerveModulePosition100Struct();
+    private Optional<Rotation2d> unwrappedAngle = Optional.empty();
 
     /** Zero distance and empty angle. */
     public SwerveModulePosition100() {
@@ -45,6 +45,14 @@ public class SwerveModulePosition100
     public SwerveModulePosition100(double distanceMeters, Optional<Rotation2d> unwrappedAngle) {
         this.distanceMeters = distanceMeters;
         this.unwrappedAngle = unwrappedAngle;
+    }
+
+    public double distanceMeters() {
+        return distanceMeters;
+    }
+
+    public Optional<Rotation2d> unwrappedAngle() {
+        return unwrappedAngle;
     }
 
     /**
