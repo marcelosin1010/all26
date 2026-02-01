@@ -11,6 +11,7 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.team100.lib.geometry.DeltaSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
@@ -30,6 +31,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
@@ -69,6 +71,34 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
     }
 
     @Test
+    void testMix() {
+        // all zero, nothing happens
+        assertEquals(0, OdometryUpdater.mix(new Twist2d(0, 0, 0), 0, 1).dtheta, DELTA);
+        // at rest, gyro ignored
+        assertEquals(0, OdometryUpdater.mix(new Twist2d(0, 0, 0), 1, 1).dtheta, DELTA);
+        // moving fast, gyro preferred
+        assertEquals(1, OdometryUpdater.mix(new Twist2d(10, 0, 0), 1, 1).dtheta, DELTA);
+        // moving slowly, mixture.
+        assertEquals(0.5, OdometryUpdater.mix(new Twist2d(0.833, 0, 0), 1, 1).dtheta, DELTA);
+    }
+
+    @Test
+    void testVeloMix() {
+        // all zero, nothing happens
+        assertEquals(0, OdometryUpdater.mix(
+                new DeltaSE2(new Translation2d(0, 0), new Rotation2d(0)), 0).theta(), DELTA);
+        // at rest, gyro ignored
+        assertEquals(0, OdometryUpdater.mix(
+                new DeltaSE2(new Translation2d(0, 0), new Rotation2d(0)), 1).theta(), DELTA);
+        // moving fast, gyro preferred
+        assertEquals(1, OdometryUpdater.mix(
+                new DeltaSE2(new Translation2d(10, 0), new Rotation2d(0)), 1).theta(), DELTA);
+        // moving slowly, mixture.
+        assertEquals(0.5, OdometryUpdater.mix(
+                new DeltaSE2(new Translation2d(0.833, 0), new Rotation2d(0)), 1).theta(), DELTA);
+    }
+
+    @Test
     void testGyroOffset() {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
@@ -87,7 +117,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         assertEquals(0, p.getX(), DELTA);
         assertEquals(0, p.getY(), DELTA);
         assertEquals(0, p.getRotation().getRadians(), DELTA);
-        assertEquals(0, ou.getGyroOffset().getRadians(), DELTA);
+        // assertEquals(0, ou.getGyroOffset().getRadians(), DELTA);
         // force the pose to rotate 90
         ou.reset(new Pose2d(0, 0, Rotation2d.kCCW_90deg), 0);
         p = history.apply(0).pose();
@@ -96,7 +126,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         // and we get that back
         assertEquals(Math.PI / 2, p.getRotation().getRadians(), DELTA);
         // and the offset is correct since the gyro itself didn't change.
-        assertEquals(Math.PI / 2, ou.getGyroOffset().getRadians(), DELTA);
+        // assertEquals(Math.PI / 2, ou.getGyroOffset().getRadians(), DELTA);
     }
 
     @Test

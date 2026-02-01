@@ -5,9 +5,8 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.experiments.Experiment;
-import org.team100.lib.experiments.Experiments;
 import org.team100.lib.geometry.DeltaSE2;
+import org.team100.lib.geometry.Metrics;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.sensor.gyro.Gyro;
 import org.team100.lib.state.ModelSE2;
@@ -21,13 +20,8 @@ import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * Updates SwerveModelHistory with new odometry by selecting the most-recent
- * pose
- * and applying the pose delta represented by the odometry.
- * 
- * Uses the gyro angle and rate instead of the odometry-derived values, because
- * the gyro is more accurate.
- * 
- * Manages the gyro offset.
+ * pose and applying the pose delta represented by the odometry, with the gyro
+ * mixed in.
  * 
  * Note we use methods on the specific history implementation; the interface
  * won't work here.
@@ -40,8 +34,6 @@ public class OdometryUpdater {
     private final SwerveHistory m_history;
     private final Supplier<SwerveModulePositions> m_positions;
 
-    private Rotation2d m_gyroOffset;
-
     public OdometryUpdater(
             SwerveKinodynamics kinodynamics,
             Gyro gyro,
@@ -51,10 +43,6 @@ public class OdometryUpdater {
         m_gyro = gyro;
         m_history = estimator;
         m_positions = positions;
-    }
-
-    Rotation2d getGyroOffset() {
-        return m_gyroOffset;
     }
 
     /**
@@ -84,8 +72,12 @@ public class OdometryUpdater {
     }
 
     /**
-     * Empty the history, reset the gyro offset, and add the given measurements.
-     * Uses the module position supplier passed to the constructor.
+     * Empty the history, reset the gyro offset, and add the given measurements at
+     * the current instane.
+     * 
+     * Uses the module position supplier passed to the constructor, and the gyro.
+     * When this is called by the bound command, it provides a pose with the current
+     * translation and a rotation of zero (or 180 for the other button).
      */
     public void reset(Pose2d pose) {
         reset(m_gyro.getYawNWU(), pose, Takt.get());
@@ -93,22 +85,22 @@ public class OdometryUpdater {
 
     /** For testing. */
     public void reset(Pose2d pose, double timestampSeconds) {
-        m_gyroOffset = pose.getRotation().minus(m_gyro.getYawNWU());
-        m_history.reset(
-                m_positions.get(),
-                pose,
-                timestampSeconds,
-                m_gyro.getYawNWU());
+        reset(m_gyro.getYawNWU(), pose, timestampSeconds);
     }
 
     /**
-     * For testing.
+     * Empty the history, reset the gyro offset, and add the given measurements.
+     * Uses the module position supplier passed to the constructor.
+     * When this is called by the bound command, it provides a pose with the current
+     * translation and a rotation of zero (or 180 for the other button).
+     * The gyro angle is whatever the gyro says, not zero.
+     * 
+     * Package private for testing.
      */
     void reset(
             Rotation2d gyroAngle,
             Pose2d pose,
             double timestampSeconds) {
-        m_gyroOffset = pose.getRotation().minus(gyroAngle);
         m_history.reset(
                 m_positions.get(),
                 pose,
@@ -120,9 +112,9 @@ public class OdometryUpdater {
 
     private void put(
             double currentTimeS,
-            Rotation2d gyroAngleRadNWU,
-            double gyroRateRad_SNWU,
-            SwerveModulePositions wheelPositions) {
+            Rotation2d gyroYaw,
+            double gyroRate,
+            SwerveModulePositions positions) {
 
         // the entry right before this one, the basis for integration.
         Entry<Double, SwerveState> lowerEntry = m_history.lowerEntry(
@@ -136,15 +128,15 @@ public class OdometryUpdater {
         }
 
         double dt = currentTimeS - lowerEntry.getKey();
-        SwerveState value = lowerEntry.getValue();
-        ModelSE2 previousState = value.state();
+        SwerveState previousValue = lowerEntry.getValue();
+        ModelSE2 previousState = previousValue.state();
         if (DEBUG) {
-            System.out.printf("previous x %.6f y %.6f\n", previousState.pose().getX(), previousState.pose().getY());
+            System.out.printf("previous x %.6f y %.6f\n",
+                    previousState.pose().getX(), previousState.pose().getY());
         }
 
         SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
-                value.positions(),
-                wheelPositions);
+                previousValue.positions(), positions);
         if (DEBUG) {
             System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
         }
@@ -154,15 +146,8 @@ public class OdometryUpdater {
             System.out.printf("twist x %.6f y %.6f theta %.6f\n", twist.dx, twist.dy, twist.dtheta);
         }
 
-        if (!Experiments.instance.enabled(Experiment.IgnoreGyroInOdometry)) {
-            // replace the twist dtheta with one derived from the current
-            // pose angle based on the gyro (which is more accurate)
-            Rotation2d angle = gyroAngleRadNWU.plus(m_gyroOffset);
-            if (DEBUG) {
-                System.out.printf("angle %.6f\n", angle.getRadians());
-            }
-            twist.dtheta = angle.minus(previousState.pose().getRotation()).getRadians();
-        }
+        double gyroDTheta = gyroYaw.minus(previousValue.gyroYaw()).getRadians();
+        twist = mix(twist, gyroDTheta, dt);
 
         Pose2d newPose = previousState.pose().exp(twist);
         if (DEBUG) {
@@ -170,36 +155,66 @@ public class OdometryUpdater {
         }
 
         // this is the backward finite difference velocity from odometry
+        // TODO: don't use delta to represent velocity
         DeltaSE2 odoVelo = DeltaSE2.delta(
                 previousState.pose(), newPose)
                 .div(dt);
 
-        // use the gyro rate instead of the odometry-derived rate
-        VelocitySE2 velocity = new VelocitySE2(
-                odoVelo.getX(),
-                odoVelo.getY(),
-                gyroRateRad_SNWU);
+        VelocitySE2 velocity = mix(odoVelo, gyroRate);
 
         ModelSE2 swerveState = new ModelSE2(newPose, velocity);
 
-        m_history.put(currentTimeS, swerveState, wheelPositions, gyroAngleRadNWU);
+        m_history.put(currentTimeS, swerveState, positions, gyroYaw);
+    }
+
+    /**
+     * Mix the gyro dtheta with the twist dtheta, depending on the twist norm.
+     * If we're not moving very fast, then the odometry is pretty reliable: the gyro
+     * signal is mostly drift. But if we're moving fast, then the wheels are
+     * probably slipping against the carpet, so we should pay more attention to the
+     * gyro signal. In particular, if we're not moving at all (or nearly so), we
+     * should ignore the gyro entirely.
+     */
+    static Twist2d mix(Twist2d twist, double gyroDTheta, double dt) {
+        double velocity = Metrics.l2Norm(twist) / dt;
+        // Try a Gaussian. Set this to a very small number to recover the previous
+        // behavior, where the gyro always overrides.
+        double width = 1.0;
+        double odoFraction = Math.exp(-width * velocity * velocity);
+        double gyroFraction = 1 - odoFraction;
+        return new Twist2d(
+                twist.dx,
+                twist.dy,
+                odoFraction * twist.dtheta + gyroFraction * gyroDTheta);
+    }
+
+    /**
+     * Same as above, for velocity.
+     * TODO: combine these, since there's really just one "delta" here.
+     */
+    static VelocitySE2 mix(DeltaSE2 odoVelo, double gyroRateRad_S) {
+        double velocity = odoVelo.l2Norm();
+        double width = 1.0;
+        double odoFraction = Math.exp(-width * velocity * velocity);
+        double gyroFraction = 1 - odoFraction;
+        return new VelocitySE2(
+                odoVelo.getX(),
+                odoVelo.getY(),
+                odoFraction * odoVelo.getRadians() + gyroFraction * gyroRateRad_S);
     }
 
     /** Replay odometry after the sample time. */
-    void replay(double timestamp) {
+    void replay(double sampleTime) {
         // Note the exclusive tailmap: we don't see the entry at timestamp.
-        for (Map.Entry<Double, SwerveState> entry : m_history.exclusiveTailMap(timestamp).entrySet()) {
-            double entryTimestampS = entry.getKey();
+        for (Map.Entry<Double, SwerveState> entry : m_history.exclusiveTailMap(sampleTime).entrySet()) {
+            double timestamp = entry.getKey();
             SwerveState value = entry.getValue();
 
-            // this is what the gyro must have been given the pose and offset
-            // note that stale gyro offsets never occur, because the gyro offset is
-            // reset at the same time the buffer is emptied.
-            Rotation2d entryGyroAngle = value.state().pose().getRotation().minus(m_gyroOffset);
-            double entryGyroRate = value.state().theta().v();
-            SwerveModulePositions wheelPositions = value.positions();
+            Rotation2d gyroYaw = value.gyroYaw();
+            double gyroRate = value.state().theta().v();
+            SwerveModulePositions positions = value.positions();
 
-            put(entryTimestampS, entryGyroAngle, entryGyroRate, wheelPositions);
+            put(timestamp, gyroYaw, gyroRate, positions);
         }
     }
 

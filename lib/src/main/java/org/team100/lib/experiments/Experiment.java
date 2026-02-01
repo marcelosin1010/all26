@@ -85,11 +85,5 @@ public enum Experiment {
     /**
      * Use "shooting method" for turret solution
      */
-    TurretShootingMethod,
-    /**
-     * We usually overwrite the odometry-derived rotation update with a value
-     * derived from the gyro. If this experiment is enabled, we don't do that, we
-     * just use the odometry directly.
-     */
-    IgnoreGyroInOdometry
+    TurretShootingMethod
 }

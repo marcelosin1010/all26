@@ -35,6 +35,10 @@ public record VelocitySE2(double x, double y, double theta) {
         return Math.hypot(x, y);
     }
 
+    public double l2norm() {
+        return Math.sqrt(x * x + y * y + theta * theta);
+    }
+
     public VelocitySE2 normalize() {
         double norm = norm();
         if (norm < 1e-6)

@@ -21,7 +21,9 @@ public class GyroFactory {
                 return new ReduxGyro(parent, new CanId(60));
             default:
                 // for simulation
-                return new SimulatedGyro(parent, kinodynamics, collection, 0.01);
+                // this is a very high drift rate, to make it more obvious.
+                double driftRateRad_S = 0.5;
+                return new SimulatedGyro(parent, kinodynamics, collection, driftRateRad_S);
         }
     }
 
