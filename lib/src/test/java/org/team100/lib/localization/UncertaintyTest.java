@@ -14,18 +14,23 @@ public class UncertaintyTest {
     private static final double DELTA = 0.001;
 
     @Test
+    void testFigure5() {
+        assertEquals(0.03, Uncertainty.figure5(1), DELTA);
+        assertEquals(0.00, Uncertainty.figure5(0), DELTA);
+    }
+
+    @Test
     void testFigure6() {
-        double offAxisAngleRad = Math.PI / 4;
-        double err = Uncertainty.figure6(offAxisAngleRad);
-        assertEquals(Math.toRadians(0.342), err, DELTA);
+        assertEquals(Math.toRadians(0.342), Uncertainty.figure6(Math.PI / 4), DELTA);
+        assertEquals(Double.MAX_VALUE, Uncertainty.figure6(0), DELTA);
     }
 
     @Test
     void testVisionStdDevs() {
         double targetRangeM = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0);
-        assertEquals(0.04, visionStdDev.cartesian(), DELTA);
-        assertEquals(Double.MAX_VALUE, visionStdDev.rotation(), DELTA);
+        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0.1);
+        assertEquals(0.041, visionStdDev.cartesian(), DELTA);
+        assertEquals(0.041, visionStdDev.rotation(), DELTA);
     }
 
     @Test

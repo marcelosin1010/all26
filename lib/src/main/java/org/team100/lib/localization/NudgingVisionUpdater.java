@@ -38,10 +38,10 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * Put a new state estimate based on the supplied pose. If not current,
      * subsequent wheel updates are replayed.
      * 
-     * @param timestamp
-     * @param measurement robot pose from vision data
-     * @param stateSigma
-     * @param visionSigma
+     * @param timestamp   When the measurement was made.
+     * @param measurement Robot pose from vision.
+     * @param stateSigma  Standard deviation of the state.
+     * @param visionSigma Standard deviation of the measurement.
      */
     @Override
     public void put(
