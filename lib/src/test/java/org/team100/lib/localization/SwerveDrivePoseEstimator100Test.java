@@ -160,14 +160,14 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         verifyVelocity(5.000, history.apply(0.02));
 
         // big vision update
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         vu.put(0.00, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         // position slides over there
-        verify(0.167, history.apply(0.00));
+        verify(0.038, history.apply(0.00));
         verifyVelocity(0.000, history.apply(0.00));
         // odometry adds to that
-        verify(0.267, history.apply(0.02));
+        verify(0.138, history.apply(0.02));
         // velocity is unchanged.
         verifyVelocity(5.000, history.apply(0.02));
     }
@@ -177,8 +177,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -210,7 +210,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         verify(0.000, history.apply(0.00));
         verifyVelocity(0.000, history.apply(0.00));
         // not sure what's happening here
-        verify(0.25, history.apply(0.02));
+        verify(0.135, history.apply(0.02));
         // velocity is STILL unchanged, i.e. not consistent with the pose history, which
         // is probably better
         // than making velocity reflect the camera noise.
@@ -222,8 +222,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -261,7 +261,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         // than making velocity reflect the camera noise.
         verifyVelocity(5.000, history.apply(0.02));
         // this is 0.1 towards the camera 1.0
-        verify(0.25, history.apply(0.04));
+        verify(0.135, history.apply(0.04));
         // still velo is unaffected
         verifyVelocity(5.000, history.apply(0.04));
     }
@@ -272,8 +272,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -302,7 +302,7 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         // now vision says we're one meter away, so pose goes towards that
         vu.put(0.01, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.01));
+        verify(0.038, history.apply(0.01));
 
         // if we had added this vision measurement here, it would have pulled the
         // estimate further
@@ -316,8 +316,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         ou.update(0.02);
 
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.01));
-        verify(0.167, history.apply(0.02));
+        verify(0.038, history.apply(0.01));
+        verify(0.038, history.apply(0.02));
 
         // wheels have moved 0.1m in +x, at t=0.04.
         // the "odometry opinion" should be 0.1 since the last odometry estimate was
@@ -328,61 +328,61 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         ou.update(0.04);
 
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.267, history.apply(0.04));
+        verify(0.038, history.apply(0.02));
+        verify(0.138, history.apply(0.04));
 
         // here's the delayed update from above, which moves the estimate to 0.305 and
         // then the odometry is applied on top of that, yielding 0.405.
         vu.put(0.015, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.015));
+        verify(0.075, history.apply(0.015));
         // odometry thinks no motion at 0.02 so repeat the vision estimate here
-        verify(0.305, history.apply(0.02));
+        verify(0.075, history.apply(0.02));
         // odometry of 0.1 + the vision estimate from 0.02.
-        verify(0.405, history.apply(0.04));
+        verify(0.175, history.apply(0.04));
 
         // wheels are in the same position as the previous iteration,
         positions = position01;
         ou.update(0.06);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.02));
-        verify(0.405, history.apply(0.04));
-        verify(0.405, history.apply(0.06));
-        verify(0.405, history.apply(0.08));
+        verify(0.075, history.apply(0.02));
+        verify(0.175, history.apply(0.04));
+        verify(0.175, history.apply(0.06));
+        verify(0.175, history.apply(0.08));
 
         // a little earlier than the previous estimate does nothing
         vu.put(0.014, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
         // notices the vision input a bit earlier
-        verify(0.305, history.apply(0.014));
+        verify(0.075, history.apply(0.014));
         // but doesn't change this estimate since it's the same, and we're not moving,
         // we don't replay vision input
         // it would be better if two vision estimates pulled harder than one,
         // even if they come in out-of-order.
-        verify(0.305, history.apply(0.015));
-        verify(0.305, history.apply(0.02));
-        verify(0.405, history.apply(0.04));
-        verify(0.405, history.apply(0.06));
+        verify(0.075, history.apply(0.015));
+        verify(0.075, history.apply(0.02));
+        verify(0.175, history.apply(0.04));
+        verify(0.175, history.apply(0.06));
 
         // a little later than the previous estimate works normally.
         vu.put(0.016, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.014));
-        verify(0.305, history.apply(0.015));
+        verify(0.075, history.apply(0.014));
+        verify(0.075, history.apply(0.015));
         // drag the pose towards the vision estimate a bit.
-        verify(0.421, history.apply(0.016));
-        verify(0.421, history.apply(0.02));
-        verify(0.521, history.apply(0.04));
-        verify(0.521, history.apply(0.06));
+        verify(0.111, history.apply(0.016));
+        verify(0.111, history.apply(0.02));
+        verify(0.211, history.apply(0.04));
+        verify(0.211, history.apply(0.06));
 
         // wheels not moving -> no change,
         positions = position01;
         ou.update(0.08);
         verify(0.000, history.apply(0.00));
-        verify(0.421, history.apply(0.02));
-        verify(0.521, history.apply(0.04));
-        verify(0.521, history.apply(0.06));
-        verify(0.521, history.apply(0.08));
+        verify(0.111, history.apply(0.02));
+        verify(0.211, history.apply(0.04));
+        verify(0.211, history.apply(0.06));
+        verify(0.211, history.apply(0.08));
     }
 
     @Test
@@ -392,8 +392,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -428,10 +428,10 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         // now vision says we're one meter away, so pose goes towards that
         vu.put(0.01, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.167, history.apply(0.04));
-        verify(0.167, history.apply(0.06));
-        verify(0.167, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.038, history.apply(0.04));
+        verify(0.038, history.apply(0.06));
+        verify(0.038, history.apply(0.08));
 
         // if we had added this vision measurement here, it would have pulled the
         // estimate further
@@ -444,10 +444,10 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         positions = positionZero;
         ou.update(0.02);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.167, history.apply(0.04));
-        verify(0.167, history.apply(0.06));
-        verify(0.167, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.038, history.apply(0.04));
+        verify(0.038, history.apply(0.06));
+        verify(0.038, history.apply(0.08));
 
         // wheels have moved 0.1m in +x, at t=0.04.
         // the "odometry opinion" should be 0.1 since the last odometry estimate was
@@ -457,53 +457,53 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         positions = position01;
         ou.update(0.04);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.267, history.apply(0.04));
-        verify(0.267, history.apply(0.06));
-        verify(0.267, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.138, history.apply(0.04));
+        verify(0.138, history.apply(0.06));
+        verify(0.138, history.apply(0.08));
 
-        // here's the delayed update from above, which moves the estimate to 0.305 and
-        // then the odometry is applied on top of that, yielding 0.405.
+        // here's the delayed update from above, which moves the estimate and
+        // then the odometry is applied on top of that.
         vu.put(0.015, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.02));
-        verify(0.405, history.apply(0.04));
-        verify(0.405, history.apply(0.06));
-        verify(0.405, history.apply(0.08));
+        verify(0.075, history.apply(0.02));
+        verify(0.175, history.apply(0.04));
+        verify(0.175, history.apply(0.06));
+        verify(0.175, history.apply(0.08));
 
         // wheels are in the same position as the previous iteration
         positions = position01;
         ou.update(0.06);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.02));
-        verify(0.405, history.apply(0.04));
-        verify(0.405, history.apply(0.06));
-        verify(0.405, history.apply(0.08));
+        verify(0.075, history.apply(0.02));
+        verify(0.175, history.apply(0.04));
+        verify(0.175, history.apply(0.06));
+        verify(0.175, history.apply(0.08));
 
         // a little earlier than the previous estimate does nothing.
         vu.put(0.014, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.305, history.apply(0.02));
-        verify(0.405, history.apply(0.04));
-        verify(0.405, history.apply(0.06));
-        verify(0.405, history.apply(0.08));
+        verify(0.075, history.apply(0.02));
+        verify(0.175, history.apply(0.04));
+        verify(0.175, history.apply(0.06));
+        verify(0.175, history.apply(0.08));
 
         // a little later than the previous estimate works normally.
         vu.put(0.016, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.421, history.apply(0.02));
-        verify(0.521, history.apply(0.04));
-        verify(0.521, history.apply(0.06));
-        verify(0.521, history.apply(0.08));
+        verify(0.112, history.apply(0.02));
+        verify(0.212, history.apply(0.04));
+        verify(0.212, history.apply(0.06));
+        verify(0.212, history.apply(0.08));
 
         // wheels not moving -> no change
         positions = position01;
         ou.update(0.08);
         verify(0.000, history.apply(0.00));
-        verify(0.421, history.apply(0.02));
-        verify(0.521, history.apply(0.04));
-        verify(0.521, history.apply(0.06));
-        verify(0.521, history.apply(0.08));
+        verify(0.112, history.apply(0.02));
+        verify(0.212, history.apply(0.04));
+        verify(0.212, history.apply(0.06));
+        verify(0.212, history.apply(0.08));
     }
 
     @Test
@@ -513,8 +513,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -545,24 +545,24 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
 
         vu.put(0.02, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.167, history.apply(0.04));
-        verify(0.167, history.apply(0.06));
-        verify(0.167, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.038, history.apply(0.04));
+        verify(0.038, history.apply(0.06));
+        verify(0.038, history.apply(0.08));
 
         vu.put(0.04, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.305, history.apply(0.04));
-        verify(0.305, history.apply(0.06));
-        verify(0.305, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.075, history.apply(0.04));
+        verify(0.075, history.apply(0.06));
+        verify(0.075, history.apply(0.08));
 
         vu.put(0.06, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.167, history.apply(0.02));
-        verify(0.305, history.apply(0.04));
-        verify(0.421, history.apply(0.06));
-        verify(0.421, history.apply(0.08));
+        verify(0.038, history.apply(0.02));
+        verify(0.075, history.apply(0.04));
+        verify(0.112, history.apply(0.06));
+        verify(0.112, history.apply(0.08));
 
     }
 
@@ -572,8 +572,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 1.0, 1.0, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(1.0, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -603,24 +603,24 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
 
         vu.put(0.02, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.091, history.apply(0.04));
-        verify(0.091, history.apply(0.06));
-        verify(0.091, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.010, history.apply(0.04));
+        verify(0.010, history.apply(0.06));
+        verify(0.010, history.apply(0.08));
 
         vu.put(0.04, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.173, history.apply(0.04));
-        verify(0.173, history.apply(0.06));
-        verify(0.173, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.020, history.apply(0.04));
+        verify(0.020, history.apply(0.06));
+        verify(0.020, history.apply(0.08));
 
         vu.put(0.06, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.173, history.apply(0.04));
-        verify(0.249, history.apply(0.06));
-        verify(0.249, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.020, history.apply(0.04));
+        verify(0.029, history.apply(0.06));
+        verify(0.029, history.apply(0.08));
     }
 
     @Test
@@ -630,8 +630,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.05, 0.05, 0.05 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.05, 0.05);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
         positions = positionZero;
         SwerveHistory history = new SwerveHistory(
                 logger,
@@ -661,24 +661,24 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
 
         vu.put(0.02, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.091, history.apply(0.04));
-        verify(0.091, history.apply(0.06));
-        verify(0.091, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.010, history.apply(0.04));
+        verify(0.010, history.apply(0.06));
+        verify(0.010, history.apply(0.08));
 
         vu.put(0.04, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.173, history.apply(0.04));
-        verify(0.173, history.apply(0.06));
-        verify(0.173, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.020, history.apply(0.04));
+        verify(0.020, history.apply(0.06));
+        verify(0.020, history.apply(0.08));
 
         vu.put(0.06, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
         verify(0.000, history.apply(0.00));
-        verify(0.091, history.apply(0.02));
-        verify(0.173, history.apply(0.04));
-        verify(0.249, history.apply(0.06));
-        verify(0.249, history.apply(0.08));
+        verify(0.010, history.apply(0.02));
+        verify(0.020, history.apply(0.04));
+        verify(0.029, history.apply(0.06));
+        verify(0.029, history.apply(0.08));
     }
 
     @Test
@@ -690,8 +690,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
         Gyro gyro = new MockGyro();
 
-        double[] stateStdDevs = new double[] { 0.001, 0.001, 0.01 };
-        double[] visionMeasurementStdDevs = new double[] { 0.1, 0.1, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.01, 0.01);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.1, Double.MAX_VALUE);
         SwerveHistory history = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -790,8 +790,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         var bl = new SwerveModulePosition100();
         var br = new SwerveModulePosition100();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, 0.5 };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, 0.5);
         var estimator = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -949,8 +949,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         final SwerveModulePosition100 bl = new SwerveModulePosition100();
         final SwerveModulePosition100 br = new SwerveModulePosition100();
 
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.9, 0.9, 0.9 };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.9, 0.9);
         var estimator = new SwerveHistory(
                 logger,
                 kinodynamics,
@@ -1027,8 +1027,8 @@ class SwerveDrivePoseEstimator100Test implements Timeless {
         vu.put(
                 1,
                 new Pose2d(new Translation2d(10, 10), new Rotation2d(0.1)),
-                new double[] { 0.1, 0.1, 0.1 },
-                new double[] { 0.1, 0.1, 0.1 });
+                new IsotropicSigmaSE2(0.1, 0.1),
+                new IsotropicSigmaSE2(0.1, 0.1));
 
         Pose2d visionPose = estimator.apply(time).pose();
 

@@ -258,6 +258,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             m_allTags.add(correctedTimestamp, estimatedTagInField);
             logTagError(tagInField, estimatedTagInField);
 
+            // Compute the pose implied by the vision input.
             Pose2d robotPose2d = robotPose2d(samplePose, cameraOffset, tagInField, tagInCamera);
 
             // Clean the used-tags collection in case we don't end up writing to it.
@@ -331,8 +332,7 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
     }
 
     /**
-     * Project the 3d pose into a Pose2d, but use the historical pose rotation
-     * (which is the gyro rotation from that timestamp)
+     * Compute the robot pose implied by the vision input.
      * 
      * @param historicalPose sampled from history.
      * @param cameraInRobot  camera offset, from Camera.java.

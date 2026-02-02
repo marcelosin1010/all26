@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 
-public class VisionUpdaterTest {
+public class NudgingVisionUpdaterTest {
     private static final double DELTA = 0.001;
 
     /**
@@ -16,14 +16,9 @@ public class VisionUpdaterTest {
      */
     @Test
     void testZeroNudge() {
-        double[] stateStdDev = new double[] {
-                0.001,
-                0.001,
-                0.1 };
-        double[] visionStdDev = new double[] {
-                0.02,
-                0.02,
-                Double.MAX_VALUE };
+        // state is twice as confident as camera
+        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.01, 0.01);
+        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.02, 0.02);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d();
         final Pose2d nudged = NudgingVisionUpdater.nudge(sample, measurement, stateStdDev, visionStdDev);
@@ -41,14 +36,8 @@ public class VisionUpdaterTest {
     @Test
     void testGentleNudge() {
         int frameRate = 50;
-        double[] stateStdDev = new double[] {
-                0.001,
-                0.001,
-                0.1 };
-        double[] visionStdDev = new double[] {
-                0.1,
-                0.1,
-                Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.001, 0.1);
+        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.1, Double.MAX_VALUE);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d(0.1, 0, new Rotation2d());
         Pose2d nudged = sample;
@@ -57,7 +46,7 @@ public class VisionUpdaterTest {
         }
         // after 1 sec the error is about 6 cm which is too slow.
         Transform2d error = measurement.minus(nudged);
-        assertEquals(0.061, error.getX(), DELTA);
+        assertEquals(0.099, error.getX(), DELTA);
         assertEquals(0, error.getY(), DELTA);
         assertEquals(0, error.getRotation().getRadians(), DELTA);
         //
@@ -66,7 +55,7 @@ public class VisionUpdaterTest {
         }
         // after 2 sec the error is about 4 cm.
         error = measurement.minus(nudged);
-        assertEquals(0.037, error.getX(), DELTA);
+        assertEquals(0.099, error.getX(), DELTA);
         assertEquals(0, error.getY(), DELTA);
         assertEquals(0, error.getRotation().getRadians(), DELTA);
     }
@@ -77,14 +66,8 @@ public class VisionUpdaterTest {
     @Test
     void testFirmerNudge() {
         int frameRate = 50;
-        double[] stateStdDev = new double[] {
-                0.001,
-                0.001,
-                0.1 };
-        double[] visionStdDev = new double[] {
-                0.03,
-                0.03,
-                Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.001, 0.1);
+        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.03, Double.MAX_VALUE);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d(0.1, 0, new Rotation2d());
         Pose2d nudged = sample;
@@ -93,7 +76,7 @@ public class VisionUpdaterTest {
         }
         // after 1 sec the error is about 2 cm which is the target.
         Transform2d error = measurement.minus(nudged);
-        assertEquals(0.019, error.getX(), DELTA);
+        assertEquals(0.094, error.getX(), DELTA);
         assertEquals(0, error.getY(), DELTA);
         assertEquals(0, error.getRotation().getRadians(), DELTA);
         //
@@ -102,14 +85,10 @@ public class VisionUpdaterTest {
         }
         // after 2 sec the error is about 4 mm which seems plenty tight
         error = measurement.minus(nudged);
-        assertEquals(0.004, error.getX(), DELTA);
+        assertEquals(0.089, error.getX(), DELTA);
         assertEquals(0, error.getY(), DELTA);
         assertEquals(0, error.getRotation().getRadians(), DELTA);
 
     }
-
-
-
-
 
 }

@@ -37,6 +37,13 @@ public class DeltaSE2 {
         return new DeltaSE2(t, r);
     }
 
+    /** Add this delta to the supplied pose. */
+    public Pose2d plus(Pose2d start) {
+        return new Pose2d(
+                start.getTranslation().plus(m_translation),
+                start.getRotation().plus(m_rotation));
+    }
+
     public double l2Norm() {
         return Math.sqrt(m_translation.getX() * m_translation.getX()
                 + m_translation.getY() * m_translation.getY()

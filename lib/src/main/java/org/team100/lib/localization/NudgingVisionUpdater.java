@@ -1,13 +1,13 @@
 package org.team100.lib.localization;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.geometry.DeltaSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Twist2d;
 
 /**
  * Updates SwerveModelHistory with any vision input, by interpolating to find a
@@ -37,13 +37,18 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /**
      * Put a new state estimate based on the supplied pose. If not current,
      * subsequent wheel updates are replayed.
+     * 
+     * @param timestamp
+     * @param measurement robot pose from vision data
+     * @param stateSigma
+     * @param visionSigma
      */
     @Override
     public void put(
             double timestamp,
             Pose2d measurement,
-            double[] stateSigma,
-            double[] visionSigma) {
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma) {
 
         // Skip too-old measurement
         if (m_history.tooOld(timestamp)) {
@@ -86,18 +91,30 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /////////////////////////////////////////
 
     /**
-     * Nudge the sample towards the measurement.
+     * Nudge the sample towards the measurement. This used to use a Twist, which
+     * coupled the cartesian and rotational dimensions in an unphysical way; this
+     * now treats the three dimensions as independent.
+     * 
+     * TODO: make these arrays into objects
+     * 
+     * @param sample      historical pose
+     * @param measurement new input
+     * @param stateSigma  standard deviation of the sample
+     * @param visionSigma standard deviation of the measurement
      */
     static Pose2d nudge(
             Pose2d sample,
             Pose2d measurement,
-            double[] stateSigma,
-            double[] visionSigma) {
-        // Measure the twist between the odometry pose and the vision pose.
-        Twist2d twist = sample.log(measurement);
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma) {
+        // The difference between the odometry pose and the vision pose.
+        DeltaSE2 delta = DeltaSE2.delta(sample, measurement);
+        // Twist2d twist = sample.log(measurement);
         // Discount the twist based on the sigmas relative to each other.
-        Twist2d scaledTwist = Uncertainty.getScaledTwist(stateSigma, visionSigma, twist);
-        return sample.exp(scaledTwist);
+        // Twist2d scaledTwist = Uncertainty.getScaledTwist(stateSigma, visionSigma,
+        // twist);
+        DeltaSE2 scaledDelta = Uncertainty.getScaledDelta(stateSigma, visionSigma, delta);
+        return scaledDelta.plus(sample);
     }
 
 }

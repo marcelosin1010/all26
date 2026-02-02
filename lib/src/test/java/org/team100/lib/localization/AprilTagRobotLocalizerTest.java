@@ -46,7 +46,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 poseEstimate.add(p);
                 timeEstimate.add(t);
             }
@@ -118,7 +118,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 poseEstimate.add(p);
                 timeEstimate.add(t);
             }
@@ -170,7 +170,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(-Math.PI / 4));
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 poseEstimate.add(p);
                 timeEstimate.add(t);
             }
@@ -249,7 +249,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(-100, p.getX(), DELTA);
                 assertEquals(-100, p.getY(), DELTA);
             }
@@ -294,7 +294,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(1.914, p.getY(), DELTA);
             }
@@ -333,7 +333,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
         DoubleFunction<ModelSE2> history = t -> new ModelSE2(new Rotation2d(Math.PI));
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(10.272, p.getX(), DELTA);
                 assertEquals(1.914, p.getY(), DELTA);
             }
@@ -376,7 +376,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(0.96, p.getX(), DELTA);
                 assertEquals(2.66, p.getY(), DELTA);
             }
@@ -420,7 +420,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(1.914, p.getY(), DELTA);
             }
@@ -463,7 +463,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(2.914, p.getY(), DELTA);
             }
@@ -504,7 +504,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(2.914, p.getY(), DELTA);
             }
@@ -545,7 +545,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(0.914, p.getY(), DELTA);
             }
@@ -585,7 +585,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(0.914, p.getY(), DELTA);
             }
@@ -628,7 +628,7 @@ class AprilTagRobotLocalizerTest implements Timeless {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, double[] sd1, double[] sd2) {
+            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
                 assertEquals(9.272, p.getX(), DELTA);
                 assertEquals(0.914, p.getY(), DELTA);
             }

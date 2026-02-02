@@ -2,6 +2,7 @@ package org.team100.lib.localization;
 
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.geometry.DeltaSE2;
 
 import edu.wpi.first.math.geometry.Twist2d;
 
@@ -12,28 +13,34 @@ import edu.wpi.first.math.geometry.Twist2d;
  * https://docs.google.com/spreadsheets/d/1StMbOyksydpzFmpHbZBL7ICMQtHnOBubrOMeYSx0M6E
  */
 public class Uncertainty {
-    /** this is the default value which, in hindsight, seems ridiculously high. */
-    private static final double[] DEFAULT_STATE_STDDEV = new double[] {
-            0.1,
-            0.1,
-            0.1 };
+    /**
+     * this is the default value which, in hindsight, seems ridiculously high.
+     * TODO: do some calibration of this
+     */
+    private static final IsotropicSigmaSE2 DEFAULT_STATE_STDDEV = new IsotropicSigmaSE2(0.1, 0.1);
 
     /**
      * This value is tuned so that errors scale at 0.2x per second. See
      * SwerveDrivePoseEstimator100Test::testFirmerNudge.
+     * TODO: get rid of this
      */
-    static final double[] TIGHT_STATE_STDDEV = new double[] {
-            0.001,
-            0.001,
-            0.1 };
+    static final IsotropicSigmaSE2 TIGHT_STATE_STDDEV = new IsotropicSigmaSE2(0.001, 0.1);
 
-    static double[] visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
+    /**
+     * Standard deviation of vision updates in SE(2).
+     * 
+     * Data comes from eyeballing the graphs in the Wang paper.
+     * 
+     * Note that rotational uncertainty should affect translational uncertainty too:
+     * the tag uncertainty model is polar.
+     */
+    static IsotropicSigmaSE2 visionMeasurementStdDevs(double distanceM, double offAxisAngleRad) {
         // these extra 0.01 values are total guesses
         // TODO: remove them?
-        return new double[] {
-                figure5(distanceM) + 0.01,
-                figure5(distanceM) + 0.01,
-                figure6(offAxisAngleRad) + 0.01 };
+        double cartesianErrorM = figure5(distanceM) + 0.01;
+        double rotationErrorRad = figure6(offAxisAngleRad) + 0.01;
+        // TODO: add effect of rotation error on cartesian error
+        return new IsotropicSigmaSE2(cartesianErrorM, rotationErrorRad);
     }
 
     /**
@@ -58,49 +65,113 @@ public class Uncertainty {
         double offAxisDegrees = Math.toDegrees(offAxisAngleRad);
         if (offAxisDegrees < 3)
             return Double.MAX_VALUE;
-        return 10 / offAxisDegrees + 10 / Math.pow(85 - offAxisDegrees, 1.2);
+        double errorDeg = 10 / offAxisDegrees + 10 / Math.pow(85 - offAxisDegrees, 1.2);
+        return Math.toRadians(errorDeg);
     }
 
-    static double[] stateStdDevs() {
+    /**
+     * Standard devation of robot state in SE(2). Note this is just a 3 vector; the
+     * covariances are zero. We *could* use covariances here (so the shape of the
+     * error could be extended along a diagonal), but it would be more complicated
+     * for little benefit.
+     */
+    static IsotropicSigmaSE2 stateStdDevs() {
         if (Experiments.instance.enabled(Experiment.AvoidVisionJitter)) {
             return Uncertainty.TIGHT_STATE_STDDEV;
         }
         return Uncertainty.DEFAULT_STATE_STDDEV;
     }
 
+    /**
+     * @param stateSigma  standard deviation of state in SE(2)
+     * @param visionSigma standard deviation of vision update in SE(2)
+     * @param twist       from sample to measurement, i.e. in the intrinsic frame of
+     *                    the sample.
+     */
     static Twist2d getScaledTwist(
-            double[] stateSigma,
-            double[] visionSigma,
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma,
             Twist2d twist) {
-        // discount the vision update by this factor.
-        final double[] K = Uncertainty.getK(stateSigma, visionSigma);
-        Twist2d scaledTwist = new Twist2d(
-                K[0] * twist.dx,
-                K[1] * twist.dy,
-                K[2] * twist.dtheta);
-        return scaledTwist;
-    }
-
-    static double[] getK(double[] stateSigma, double[] visionSigma) {
-        return new double[] {
-                Uncertainty.mix(Math.pow(stateSigma[0], 2), Math.pow(visionSigma[0], 2)),
-                Uncertainty.mix(Math.pow(stateSigma[1], 2), Math.pow(visionSigma[1], 2)),
-                Uncertainty.mix(Math.pow(stateSigma[2], 2), Math.pow(visionSigma[2], 2))
-        };
+        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
+        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
+        return new Twist2d(
+                cartesianWeight * twist.dx,
+                cartesianWeight * twist.dy,
+                rotationWeight * twist.dtheta);
     }
 
     /**
-     * Given q and r stddev's, what mixture should that yield?
-     * This is the "closed form Kalman gain for continuous Kalman filter with A = 0
-     * and C = I. See wpimath/algorithms.md." ... but really it's just a mixer.
-     * 
-     * @param q state variance
-     * @param r vision variance
+     * @param stateSigma  standard deviation of state in SE(2)
+     * @param visionSigma standard deviation of vision update in SE(2)
+     * @param delta       from sample to measurement, in (extrinsic) field frame.
      */
-    static double mix(final double q, final double r) {
-        if (q == 0.0)
-            return 0.0;
-        return q / (q + Math.sqrt(q * r));
+    static DeltaSE2 getScaledDelta(
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma,
+            DeltaSE2 delta) {
+        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
+        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
+        return new DeltaSE2(
+                delta.getTranslation().times(cartesianWeight),
+                delta.getRotation().times(rotationWeight));
     }
 
+    /**
+     * Weights for the vision update, using inverse-variance weighting.
+     * 
+     * This used to use inverse-standard-deviation weighting, which is just wrong.
+     * 
+     * @param stateSigma  standard deviation of state in SE(2)
+     * @param visionSigma standard deviation of vision update in SE(2)
+     * @return update weight for cartesian dimensions
+     */
+    static double cartesianWeight(
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma) {
+        return inverseVarianceWeighting(
+                Math.pow(stateSigma.cartesian(), 2),
+                Math.pow(visionSigma.cartesian(), 2));
+    }
+
+    /**
+     * Weights for the vision update, using inverse-variance weighting.
+     * 
+     * This used to use inverse-standard-deviation weighting, which is just wrong.
+     * 
+     * @param stateSigma  standard deviation of state in SE(2)
+     * @param visionSigma standard deviation of vision update in SE(2)
+     * @return update weight for rotation
+     */
+    static double rotationWeight(
+            IsotropicSigmaSE2 stateSigma,
+            IsotropicSigmaSE2 visionSigma) {
+        return inverseVarianceWeighting(
+                Math.pow(stateSigma.rotation(), 2),
+                Math.pow(visionSigma.rotation(), 2));
+    }
+
+    /**
+     * Simple weighting by inverse variance.
+     * 
+     * Inverse-variance weighting is the "optimal" (i.e. maximum-likelihood) thing
+     * to do if the variables are independent and normal. They are neither, but we
+     * use this anyway.
+     * 
+     * The previous mixer weighted by standard deviation, which was just wrong.
+     * 
+     * https://en.wikipedia.org/wiki/Inverse-variance_weighting
+     * https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
+     * https://www.nist.gov/system/files/documents/2017/05/09/combine-1.pdf
+     * 
+     * @param q     state variance
+     * @param r     vision variance
+     * @param state weight of the update, in the range [0, 1]
+     */
+    static double inverseVarianceWeighting(double q, double r) {
+        if (q < 1e-6)
+            return 0;
+        if (r < 1e-6)
+            return 1;
+        return (1 / r) / (1 / q + 1 / r);
+    }
 }

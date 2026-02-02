@@ -56,8 +56,8 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
     // @Test
     void test0() {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
-        double[] stateStdDevs = new double[] { 0.1, 0.1, 0.1 };
-        double[] visionMeasurementStdDevs = new double[] { 0.5, 0.5, Double.MAX_VALUE };
+        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
+        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
 
         Gyro gyro = new MockGyro();
         SwerveHistory history = new SwerveHistory(
