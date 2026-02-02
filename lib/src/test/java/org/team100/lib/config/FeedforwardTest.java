@@ -21,9 +21,9 @@ class FeedforwardTest implements Timeless {
     @Test
     void testWPI() {
         // current v = 1, want a = 1.
-        // naive model says u = 2.
-        assertEquals(2,
-                new SimpleMotorFeedforward(0, 1, 1).calculate(1, 1),
+        // naive model says u = 2, this model says 2.01.
+        assertEquals(2.01,
+                new SimpleMotorFeedforward(0, 1, 1).calculateWithVelocities(1, 1.02),
                 DELTA);
 
         // current v = 1, a = 1 for 1 sec => next v = 2.

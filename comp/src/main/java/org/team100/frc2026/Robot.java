@@ -87,7 +87,7 @@ public class Robot extends TimedRobot100 {
         Command auton = m_allAutons.get();
         if (auton == null)
             return;
-        auton.schedule();
+        CommandScheduler.getInstance().schedule(auton);
     }
 
     @Override
