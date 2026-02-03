@@ -2,6 +2,7 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
+import org.team100.frc2026.Shooter;
 import org.team100.frc2026.Intake;
 import org.team100.frc2026.IntakeExtend;
 import org.team100.lib.coherence.Takt;
@@ -56,6 +57,7 @@ public class Machinery {
     final AprilTagRobotLocalizer m_localizer;
     final SwerveDriveSubsystem m_drive;
     final Beeper m_beeper;
+    final Shooter m_shooter;
     final Intake m_intake;
     final IntakeExtend m_extender;
     // final OdometryUpdater m_groundTruthUpdater;
@@ -71,6 +73,7 @@ public class Machinery {
         //
 
         // Subsystem initializers go here.
+        m_shooter = new Shooter(driveLog);
         m_intake = new Intake(driveLog);
         m_extender = new IntakeExtend(driveLog);
 

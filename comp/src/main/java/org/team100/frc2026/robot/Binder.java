@@ -111,6 +111,9 @@ public class Binder {
                         () -> new Translation2d(6, 4),
                         thetaFeedback));
 
+        m_machinery.m_shooter.setDefaultCommand(
+            m_machinery.m_shooter.stop()
+        );
         m_machinery.m_intake.setDefaultCommand(
                 m_machinery.m_intake.stop());
         m_machinery.m_extender.setDefaultCommand(
@@ -156,6 +159,7 @@ public class Binder {
         ///
         /// SUBSYSTEMS
         ///
+        whileTrue(driver::b, m_machinery.m_shooter.shoot());
         whileTrue(driver::x, m_machinery.m_intake.intake());
         // whileTrue(driver::y, m_machinery.m_extender.goToExtendedPosition());
         whileTrue(driver::a, m_machinery.m_extender.goToRetractedPosition());
