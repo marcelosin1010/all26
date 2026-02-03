@@ -43,21 +43,18 @@ public class Kraken6Motor extends Talon6Motor {
 
     /** Feedforward for swerve drive axis */
     public static Feedforward100 swerveDriveFF(LoggerFactory log) {
-        // FOC free speed is 5800 RPM at 12.0 V = 0.124 v-s/rev
         // TODO: friction here is probably too low.
-        return new Feedforward100(log, 0.124, 0.022, 0.007,
+        return new Feedforward100(log, 5800, 0.022, 0.007,
                 new Friction(log, 0.26, 0.26, 0.006, 0.06));
     }
 
     public static Feedforward100 highFrictionFF(LoggerFactory log) {
-        // FOC free speed is 5800 RPM at 12.0 V = 0.124 v-s/rev
-        return new Feedforward100(log, 0.124, 0.022, 0.007,
+        return new Feedforward100(log, 5800, 0.022, 0.007,
                 new Friction(log, 0.26, 0.26, 0.006, 0.06));
     }
 
     public static Feedforward100 lowFrictionFF(LoggerFactory log) {
-        // FOC free speed is 5800 RPM at 12.0 V = 0.124 v-s/rev
-        return new Feedforward100(log, 0.124, 0.005, 0.005,
+        return new Feedforward100(log, 5800, 0.005, 0.005,
                 new Friction(log, 0.005, 0.005, 0.011, 0.1));
     }
 }

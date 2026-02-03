@@ -2,9 +2,9 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
-import org.team100.frc2026.Shooter;
 import org.team100.frc2026.Intake;
 import org.team100.frc2026.IntakeExtend;
+import org.team100.frc2026.Shooter;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
@@ -27,7 +27,7 @@ import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
 import org.team100.lib.visualization.RobotPoseVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * This should contain all the hardware of the robot: all the subsystems etc
@@ -49,9 +49,9 @@ public class Machinery {
     private static final LoggerFactory fieldLogger = Logging.instance().fieldLogger;
 
     private final Runnable m_robotViz;
-    // private final Runnable m_groundTruthViz;
+    private final Runnable m_groundTruthViz;
     private final SwerveModuleCollection m_modules;
-    // private final Runnable m_simulatedTagDetector;
+    private final Runnable m_simulatedTagDetector;
 
     final SwerveKinodynamics m_swerveKinodynamics;
     final AprilTagRobotLocalizer m_localizer;
@@ -60,7 +60,6 @@ public class Machinery {
     final Shooter m_shooter;
     final Intake m_intake;
     final IntakeExtend m_extender;
-    // final OdometryUpdater m_groundTruthUpdater;
 
     public Machinery() {
 
@@ -125,40 +124,6 @@ public class Machinery {
                 100);
 
         ////////////////////////////////////////////////////////////
-        ///
-        /// GROUND TRUTH DRIVETRAIN
-        ///
-        /// To correctly simulate the influence of vision and gyro drift on robot
-        /// rotation, we need to track the "ground truth" of the robot separately from
-        /// the simulated measurements (which include drift).
-
-        // This gyro does not drift
-        // SimulatedGyro groundTruthGyro = new SimulatedGyro(driveLog, m_swerveKinodynamics, m_modules, 0);
-        // Separate history of ground-truth poses based only on odometry.
-        // SwerveHistory groundTruthHistory = new SwerveHistory(
-        //         driveLog,
-        //         m_swerveKinodynamics,
-        //         groundTruthGyro.getYawNWU(),
-        //         m_modules.positions(),
-        //         Pose2d.kZero,
-        //         Takt.get());
-        // read positions and ground truth gyro (which are perfectly consistent) and
-        // maintain the ground truth history.
-        // m_groundTruthUpdater = new OdometryUpdater(
-        //         m_swerveKinodynamics, groundTruthGyro, groundTruthHistory, m_modules::positions);
-        // m_groundTruthUpdater.reset(Pose2d.kZero);
-        // GroundTruthCache groundTruthCache = new GroundTruthCache(m_groundTruthUpdater, groundTruthHistory);
-
-        ////////////////////////////////////////////////////////////
-        //
-        // SIMULATED CAMERAS
-        //
-
-        // This uses the ground truth because the cameras are not aware of the pose
-        // estiamte.
-        // m_simulatedTagDetector = SimulatedTagDetector.get(layout, groundTruthHistory);
-
-        ////////////////////////////////////////////////////////////
         //
         // DRIVETRAIN
         //
@@ -172,17 +137,61 @@ public class Machinery {
         // NOTE: Initial rotation is 180 degrees, because that was common in, like,
         // 2024?
         // TODO: maybe don't do that?
-        Pose2d initialPose = new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d(Math.PI));
+        // Pose2d initialPose = new Pose2d(m_drive.getPose().getTranslation(), new
+        // Rotation2d(Math.PI));
         // Initialize both ground truth and observations.
-        m_drive.resetPose(initialPose);
-        // m_groundTruthUpdater.reset(initialPose);
+        // m_drive.resetPose(initialPose);
 
         // Visualization of the robot pose estimate
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
-        // Visualization of the simulated "ground truth" of the robot pose.
-        // m_groundTruthViz = new RobotPoseVisualization(
-        //         fieldLogger, () -> groundTruthCache.apply(Takt.get()).pose(), "ground truth");
+
+        ////////////////////////////////////////////////////////////
+        ///
+        /// GROUND TRUTH DRIVETRAIN FOR SIMULATION
+        ///
+        /// To correctly simulate the influence of vision and gyro drift on robot
+        /// rotation, we need to track the "ground truth" of the robot separately from
+        /// the simulated measurements (which include drift).
+        ///
+
+        if (RobotBase.isReal()) {
+            // Real robots get an empty simulated tag detector.
+            m_groundTruthViz = () -> {
+            };
+            m_simulatedTagDetector = () -> {
+            };
+        } else {
+            // This is all for simulation only.
+
+            // Ground-truth simulated gyro does not drift at all.
+            SimulatedGyro groundTruthGyro = new SimulatedGyro(driveLog,
+                    m_swerveKinodynamics, m_modules, 0);
+
+            // History of ground-truth poses is based only on odometry.
+            SwerveHistory groundTruthHistory = new SwerveHistory(
+                    driveLog,
+                    m_swerveKinodynamics,
+                    groundTruthGyro.getYawNWU(),
+                    m_modules.positions(),
+                    Pose2d.kZero,
+                    Takt.get());
+
+            // Read positions and ground truth gyro (which are perfectly consistent) and
+            // maintain the ground truth history.
+            OdometryUpdater groundTruthUpdater = new OdometryUpdater(
+                    m_swerveKinodynamics, groundTruthGyro, groundTruthHistory, m_modules::positions);
+
+            GroundTruthCache groundTruthCache = new GroundTruthCache(groundTruthUpdater, groundTruthHistory);
+
+            // Visualization of the simulated "ground truth" of the robot pose.
+            m_groundTruthViz = new RobotPoseVisualization(
+                    fieldLogger, () -> groundTruthCache.apply(Takt.get()).pose(), "ground truth");
+
+            // Simulated camera uses the ground truth because the real cameras are not aware
+            // of the pose estimate.
+            m_simulatedTagDetector = SimulatedTagDetector.get(layout, groundTruthHistory);
+        }
 
         ////////////////////////////////////////////////////////////
         //
@@ -197,11 +206,12 @@ public class Machinery {
 
     public void periodic() {
         // publish the simulated tag sightings.
-        // m_simulatedTagDetector.run();
+        m_simulatedTagDetector.run();
         // publish pose estimate
         m_robotViz.run();
         // publish ground truth pose
-        // m_groundTruthViz.run();
+        if (m_groundTruthViz != null)
+            m_groundTruthViz.run();
     }
 
     public void close() {

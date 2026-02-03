@@ -38,18 +38,18 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
 
     @Override
     public void setUnwrappedPosition(
-            double position, double velocity, double accelRad_S2, double torque) {
-        this.position = position;
-        this.velocity = velocity;
-        this.accel = accelRad_S2;
-        this.torque = torque;
+            double motorRad, double motorRad_S, double motorRad_S2, double torqueNm) {
+        this.position = motorRad;
+        this.velocity = motorRad_S;
+        this.accel = motorRad_S2;
+        this.torque = torqueNm;
 
-        final double motorRev_S = velocity / (2 * Math.PI);
-        final double motorRev_S2 = accelRad_S2 / (2 * Math.PI);
+        final double motorRev_S = motorRad_S / (2 * Math.PI);
+        final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
 
         frictionFFVolts = m_ff.frictionFFVolts(motorRev_S);
-        velocityFFVolts = m_ff.velocityFFVolts(motorRev_S);
-        torqueFFVolts = getTorqueFFVolts(torque);
+        velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
+        torqueFFVolts = getTorqueFFVolts(torqueNm);
         accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);
         ffVolts = frictionFFVolts + velocityFFVolts + torqueFFVolts + accelFFVolts;
     }

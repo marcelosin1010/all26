@@ -156,12 +156,12 @@ public abstract class CANSparkMotor implements BareMotor {
      * acceleration, and torque feedforwards.
      */
     @Override
-    public void setVelocity(double motorRad_S, double motorAccelRad_S2, double motorTorqueNm) {
+    public void setVelocity(double motorRad_S, double motorRad_S2, double motorTorqueNm) {
         final double motorRev_S = motorRad_S / (2 * Math.PI);
-        final double motorRev_S2 = motorAccelRad_S2 / (2 * Math.PI);
+        final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
 
         final double frictionFFVolts = m_ff.frictionFFVolts(motorRev_S);
-        final double velocityFFVolts = m_ff.velocityFFVolts(motorRev_S);
+        final double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
         final double accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);
         final double torqueFFVolts = getTorqueFFVolts(motorTorqueNm);
 
@@ -188,16 +188,16 @@ public abstract class CANSparkMotor implements BareMotor {
      */
     @Override
     public void setUnwrappedPosition(
-            double motorPositionRad,
-            double motorVelocityRad_S,
-            double motorAccelRad_S2,
+            double motorRad,
+            double motorRad_S,
+            double motorRad_S2,
             double motorTorqueNm) {
-        final double motorRev = motorPositionRad / (2 * Math.PI);
-        final double motorRev_S = motorVelocityRad_S / (2 * Math.PI);
-        final double motorRev_S2 = motorAccelRad_S2 / (2 * Math.PI);
+        final double motorRev = motorRad / (2 * Math.PI);
+        final double motorRev_S = motorRad_S / (2 * Math.PI);
+        final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
 
         final double frictionFFVolts = m_ff.frictionFFVolts(motorRev_S);
-        final double velocityFFVolts = m_ff.velocityFFVolts(motorRev_S);
+        final double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
         final double accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);
         final double torqueFFVolts = getTorqueFFVolts(motorTorqueNm);
 

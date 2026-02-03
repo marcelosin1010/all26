@@ -56,9 +56,8 @@ public class Neo550CANSparkMotor extends CANSparkMotor {
     }
 
     public static Feedforward100 ff(LoggerFactory log) {
-        // free speed is 11000 RPM at 12.0 V so kV = 0.065
         // TODO: friction?
-        return new Feedforward100(log, 0.065, 0, 0,
+        return new Feedforward100(log, 11000, 0, 0,
                 new Friction(log, 0, 0.07, 0.055, 0));
     }
 }

@@ -13,38 +13,55 @@ import org.team100.lib.tuning.Mutable;
  *      models.
  */
 public class Feedforward100 {
-    private final Mutable kV;
+    /**
+     * Back-EMF constant.
+     * 
+     * This is the voltage to maintain speed against the back-EMF of the motor.
+     * 
+     * V = kE * omega
+     * 
+     * so kE units are volt-sec/rad. This an intrinsic property of the motor.
+     * https://en.wikipedia.org/wiki/Motor_constants#Motor_velocity_constant,_back_EMF_constant
+     */
+    private final double kE;
     private final Mutable kA;
     private final Mutable kD;
     private final Friction friction;
 
     /**
-     * @param kV       Back-EMF. Voltage to maintain speed against the back-EMF of
-     *                 the motor. V = kV * omega, so kV units are volt-sec/rev.
-     *                 The value is an intrinsic property of the motor.
-     * @param kA       Acceleration. Voltage to produce acceleration of the motor
-     *                 shaft. V = kA * alpha, so kA units are volt-sec^2/rev.
-     *                 This reflects the motor torque and mechanism inertia. Torque
-     *                 is proportional to current, which is proportional to (net)
-     *                 voltage. The value will depend on the inertia of the
-     *                 mechanism.
-     * @param kD       Deceleration. like kA but when the motor is braking, i.e.
-     *                 acceleration is opposite to the current speed. Motors
-     *                 typically decelerate ("plugging") much better than they
-     *                 accelerate ("motoring").
-     * @param friction Models static, dynamic, and viscous friction.
+     * @param freeSpeedRPM Unloaded free speed in RPM, either from the manufacturer
+     *                     or experiment.
+     * @param kA           Acceleration. Voltage to produce acceleration of the
+     *                     motor shaft. V = kA * alpha, so kA units are
+     *                     volt-sec^2/rev. This reflects the motor torque and
+     *                     mechanism inertia. Torque is proportional to current,
+     *                     which is proportional to (net) voltage. The value will
+     *                     depend on the inertia of the mechanism.
+     * @param kD           Deceleration. like kA but when the motor is braking, i.e.
+     *                     acceleration is opposite to the current speed. Motors
+     *                     typically decelerate ("plugging") much better than they
+     *                     accelerate ("motoring").
+     * @param friction     Models static, dynamic, and viscous friction.
      */
     public Feedforward100(
             LoggerFactory log,
-            double kV,
+            double freeSpeedRPM,
             double kA,
             double kD,
             Friction friction) {
         LoggerFactory ffLog = log.type(this);
-        this.kV = new Mutable(ffLog, "kV", kV);
+        this.kE = freeSpeedToKE(freeSpeedRPM);
         this.kA = new Mutable(ffLog, "kA", kA);
         this.kD = new Mutable(ffLog, "kD", kD);
         this.friction = friction;
+    }
+
+    /**
+     * @param freeSpeedRPM motor free speed in RPM at 12.0 V.
+     * @return kE value in volt-sec/radian.
+     */
+    public static double freeSpeedToKE(double freeSpeedRPM) {
+        return 60 * 12 / (freeSpeedRPM * 2 * Math.PI);
     }
 
     /**
@@ -52,8 +69,8 @@ public class Feedforward100 {
      * 
      * @param motorRev_S setpoint speed
      */
-    public double velocityFFVolts(double motorRev_S) {
-        return kV.getAsDouble() * motorRev_S;
+    public double velocityFFVolts(double motorRad_S) {
+        return kE * motorRad_S;
     }
 
     /**
