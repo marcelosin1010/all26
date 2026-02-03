@@ -58,6 +58,6 @@ public class Neo550CANSparkMotor extends CANSparkMotor {
     public static Feedforward100 ff(LoggerFactory log) {
         // TODO: friction?
         return new Feedforward100(log, 11000, 0, 0,
-                new Friction(log, 0, 0.07, 0.055, 0));
+                new Friction(log, 0, 0.07, 0.01, 0.5));
     }
 }

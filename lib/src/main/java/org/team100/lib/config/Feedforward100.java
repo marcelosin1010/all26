@@ -108,10 +108,10 @@ public class Feedforward100 {
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).
      * 
-     * @param motorRev_S setpoint speed
+     * @param motorRad_S setpoint speed rad/s
      */
-    public double frictionFFVolts(double motorRev_S) {
-        return friction.frictionFFVolts(motorRev_S);
+    public double frictionFFVolts(double motorRad_S) {
+        return friction.frictionFFVolts(motorRad_S);
     }
 
     public static Feedforward100 zero(LoggerFactory log) {

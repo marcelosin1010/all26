@@ -47,7 +47,7 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
         final double motorRev_S = motorRad_S / (2 * Math.PI);
         final double motorRev_S2 = motorRad_S2 / (2 * Math.PI);
 
-        frictionFFVolts = m_ff.frictionFFVolts(motorRev_S);
+        frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
         velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
         torqueFFVolts = getTorqueFFVolts(torqueNm);
         accelFFVolts = m_ff.accelFFVolts(motorRev_S, motorRev_S2);

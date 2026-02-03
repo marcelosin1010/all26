@@ -45,16 +45,16 @@ public class Kraken6Motor extends Talon6Motor {
     public static Feedforward100 swerveDriveFF(LoggerFactory log) {
         // TODO: friction here is probably too low.
         return new Feedforward100(log, 5800, 0.022, 0.007,
-                new Friction(log, 0.26, 0.26, 0.006, 0.06));
+                new Friction(log, 0.26, 0.26, 0.006, 0.5));
     }
 
     public static Feedforward100 highFrictionFF(LoggerFactory log) {
         return new Feedforward100(log, 5800, 0.022, 0.007,
-                new Friction(log, 0.26, 0.26, 0.006, 0.06));
+                new Friction(log, 0.26, 0.26, 0.006, 0.5));
     }
 
     public static Feedforward100 lowFrictionFF(LoggerFactory log) {
         return new Feedforward100(log, 5800, 0.005, 0.005,
-                new Friction(log, 0.005, 0.005, 0.011, 0.1));
+                new Friction(log, 0.005, 0.005, 0.006, 0.5));
     }
 }

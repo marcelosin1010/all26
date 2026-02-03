@@ -10,12 +10,7 @@ import org.team100.lib.tuning.Mutable;
  * 
  * TODO: make a little library of friction configs based on experiment.
  * 
- * @param kS Static friction. Voltage to just barely get the mechanism moving
- *           from a stop.
- * @param kD Dynamic friction. Voltage to just barely keep the mechanism moving.
- * @param kV Viscous friction. Voltage to keep moving at a constant velocity.
- *           Volt-sec/rev.
- * @param vS Velocity threshold for static friction, rev/s.
+ * 
  * 
  * @see https://mogi.bme.hu/TAMOP/robot_applications/ch07.html
  * @see https://en.wikipedia.org/wiki/Friction
@@ -23,11 +18,25 @@ import org.team100.lib.tuning.Mutable;
  * @see https://engee.com/helpcenter/stable/en/fmod-mechanical-translational-elements/translational-friction.html
  */
 public class Friction {
+    /** Volts */
     private final Mutable kS;
+    /** Volts */
     private final Mutable kD;
+    /** Volt-sec/rad */
     private final Mutable kV;
+    /** rad/sec */
     private final double vS;
 
+    /**
+     * @param log for mutables
+     * @param kS  Static friction. Voltage to just barely get the mechanism moving
+     *            from a stop.
+     * @param kD  Dynamic friction. Voltage to just barely keep the mechanism
+     *            moving, independent of speed.
+     * @param kV  Viscous friction. Constant to compute voltage to keep moving at a
+     *            constant velocity. Units are Volt-sec/rad.
+     * @param vS  Velocity threshold for static friction, rad/s.
+     */
     public Friction(
             LoggerFactory log,
             double kS,
@@ -47,12 +56,12 @@ public class Friction {
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).
      * 
-     * @param motorRev_S setpoint speed
+     * @param motorRad_S setpoint speed rad/s
      */
-    public double frictionFFVolts(double motorRev_S) {
-        double viscous = kV.getAsDouble() * motorRev_S;
-        double direction = Math.signum(motorRev_S);
-        if (Math.abs(motorRev_S) < vS) {
+    public double frictionFFVolts(double motorRad_S) {
+        double viscous = kV.getAsDouble() * motorRad_S;
+        double direction = Math.signum(motorRad_S);
+        if (Math.abs(motorRad_S) < vS) {
             return viscous + kS.getAsDouble() * direction;
         }
         return viscous + kD.getAsDouble() * direction;
