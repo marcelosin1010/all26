@@ -4,7 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
@@ -186,9 +186,10 @@ public class FiveBarMech extends SubsystemBase {
 
     private Falcon6Motor makeMotor(LoggerFactory logger, CanId canId) {
         /** Units of positional PID are volts per revolution. */
-        PhoenixPIDConstants PID = PhoenixPIDConstants.makePositionPID(logger, 10.0);
+        PIDConstants pid = PIDConstants.makePositionPID(
+                logger, 2.0);
         /** We never use feedforward since all our goals are motionless. */
-        Feedforward100 FF = Feedforward100.zero(logger);
+        Feedforward100 ff = Feedforward100.zero(logger);
         return new Falcon6Motor(
                 logger,
                 canId,
@@ -196,8 +197,8 @@ public class FiveBarMech extends SubsystemBase {
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
-                PID,
-                FF);
+                pid,
+                ff);
     }
 
     /** For homing; ignores feasibility and limits. */

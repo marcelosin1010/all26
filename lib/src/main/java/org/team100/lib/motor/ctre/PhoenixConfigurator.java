@@ -2,7 +2,7 @@ package org.team100.lib.motor.ctre;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode;
 
@@ -36,7 +36,7 @@ public class PhoenixConfigurator {
     private final MotorPhase m_phase;
     private final double m_supply;
     private final double m_stator;
-    private final PhoenixPIDConstants m_pid;
+    private final PIDConstants m_pid;
 
     public PhoenixConfigurator(
             TalonFX motor,
@@ -44,7 +44,7 @@ public class PhoenixConfigurator {
             MotorPhase phase,
             double supply,
             double stator,
-            PhoenixPIDConstants pid) {
+            PIDConstants pid) {
         m_motor = motor;
         m_neutral = neutral;
         m_phase = phase;
@@ -130,21 +130,33 @@ public class PhoenixConfigurator {
     }
 
     /**
-     * Parameter units depend on the mode. We use velocityvoltage for velocity
-     * control, so the units would be volts per rev/s. For position control we use
-     * positionvoltage, so the units would be volts per revolution.
+     * CTRE PID units depend on the output type. Because we use "voltage" control
+     * types ("PositionVoltage" and "VelocityVoltage"), our output type is volts.
+     * 
+     * position
+     * P = volts per rev, start with 1.
+     * I = volts per rev * sec
+     * D = volts per rev/sec (volt-sec/rev)
+     * 
+     * velocity
+     * P = volts per rev/sec (volt-sec/rev), start with 0.01
+     * I = volts per rev
+     * D = volts per rev/s^2 (volt-sec^2/rev)
+     * 
+     * @see https://v6.docs.ctr-electronics.com/en/stable/docs/api-reference/device-specific/talonfx/basic-pid-control.html
      */
     public void pidConfig() {
         Slot0Configs slot0Configs = new Slot0Configs();
         Slot1Configs slot1Configs = new Slot1Configs();
         slot0Configs.kV = 0.0; // we use "arbitrary feedforward", not this.
         slot1Configs.kV = 0.0;
-        slot0Configs.kP = m_pid.getPositionP();
-        slot0Configs.kI = m_pid.getPositionI();
-        slot0Configs.kD = m_pid.getPositionD();
-        slot1Configs.kP = m_pid.getVelocityP();
-        slot1Configs.kI = m_pid.getVelocityI();
-        slot1Configs.kD = m_pid.getVelocityD();
+        // Our control modes use volts, so we can use the PID volt constants.
+        slot0Configs.kP = 2 * Math.PI * m_pid.getPositionPV_Rad();
+        slot0Configs.kI = 2 * Math.PI * m_pid.getPositionIV_RadS();
+        slot0Configs.kD = 2 * Math.PI * m_pid.getPositionDVS_Rad();
+        slot1Configs.kP = 2 * Math.PI * m_pid.getVelocityPVS_Rad();
+        slot1Configs.kI = 2 * Math.PI * m_pid.getVelocityIVolt_Rad();
+        slot1Configs.kD = 2 * Math.PI * m_pid.getVelocityDVS2_Rad();
         crash(() -> m_motor.getConfigurator().apply(slot0Configs, TIMEOUT_SEC));
         crash(() -> m_motor.getConfigurator().apply(slot1Configs, TIMEOUT_SEC));
     }

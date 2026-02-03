@@ -1,7 +1,7 @@
 package org.team100.frc2025.Climber;
 
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -28,7 +28,7 @@ public class ClimberIntake extends SubsystemBase {
                         log, canID, NeutralMode.COAST, MotorPhase.REVERSE,
                         20, // og 50
                         20, // og 2
-                        PhoenixPIDConstants.zero(log),
+                        PIDConstants.zero(log),
                         Kraken6Motor.highFrictionFF(log));
             }
             default -> {

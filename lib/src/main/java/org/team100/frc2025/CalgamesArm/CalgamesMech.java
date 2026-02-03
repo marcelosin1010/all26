@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import org.team100.lib.commands.MoveAndHold;
 import org.team100.lib.config.ElevatorUtil.ScoringLevel;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.geometry.AccelerationSE2;
 import org.team100.lib.geometry.DirectionSE2;
 import org.team100.lib.geometry.VelocitySE2;
@@ -169,7 +169,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         NeutralMode.BRAKE, MotorPhase.REVERSE,
                         100,
                         100,
-                        PhoenixPIDConstants.makePositionPID(elevatorfrontLog, 5),
+                        PIDConstants.makePositionPID(elevatorfrontLog, 1),
                         Falcon6Motor.swerveSteerFF(elevatorfrontLog));
                 IncrementalBareEncoder elevatorFrontEncoder = elevatorFrontMotor.encoder();
 
@@ -184,7 +184,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         NeutralMode.BRAKE, MotorPhase.FORWARD,
                         100, // orginally 60
                         100, // originally 90
-                        PhoenixPIDConstants.makePositionPID(elevatorbackLog, 5),
+                        PIDConstants.makePositionPID(elevatorbackLog, 1),
                         Falcon6Motor.swerveSteerFF(elevatorbackLog));
                 Talon6Encoder elevatorBackEncoder = elevatorBackMotor.encoder();
                 m_elevatorBack = new LinearMechanism(
@@ -199,7 +199,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         MotorPhase.REVERSE,
                         100, // og 60
                         100, // og 90
-                        PhoenixPIDConstants.makePositionPID(shoulderLog, 5),
+                        PIDConstants.makePositionPID(shoulderLog, 1),
                         Falcon6Motor.swerveSteerFF(shoulderLog));
                 Talon6Encoder shoulderEncoder = shoulderMotor.encoder();
                 // The shoulder has a 5048 on the intermediate shaft
@@ -229,7 +229,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                         NeutralMode.COAST, MotorPhase.FORWARD,
                         40, // og 60
                         60, // og 90
-                        PhoenixPIDConstants.makePositionPID(wristLog, 8), // og 10
+                        PIDConstants.makePositionPID(wristLog, 1),
                         Falcon6Motor.swerveSteerFF(wristLog));
                 // the wrist has no angle sensor, so it needs to start in the "zero" position.
                 Talon6Encoder wristEncoder = wristMotor.encoder();

@@ -3,7 +3,7 @@ package org.team100.lib.subsystems.swerve.module;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -146,7 +146,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             DriveRatio ratio) {
         Feedforward100 ff = Kraken6Motor.swerveDriveFF(parent);
         // note (10/2/24) 0.4 produces oscillation, on carpet.
-        PhoenixPIDConstants pid = PhoenixPIDConstants.makeVelocityPID(parent, 0.3);
+        PIDConstants pid = PIDConstants.makeVelocityPID(parent, 0.05);
         Kraken6Motor driveMotor = new Kraken6Motor(
                 parent,
                 driveMotorCanId,
@@ -174,7 +174,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             CanId driveMotorCanId,
             DriveRatio ratio) {
         Feedforward100 ff = Falcon6Motor.swerveDriveFF(parent);
-        PhoenixPIDConstants pid = PhoenixPIDConstants.makeVelocityPID(parent, 0.3);
+        PIDConstants pid = PIDConstants.makeVelocityPID(parent, 0.05);
         Falcon6Motor driveMotor = new Falcon6Motor(
                 parent,
                 driveMotorCanId,
@@ -207,7 +207,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         // Talon outboard POSITION PID
         // 10/2/24 drive torque produces about a 0.5 degree deviation so maybe
         // this is too low.
-        PhoenixPIDConstants lowLevelPID = PhoenixPIDConstants.makePositionPID(parent, 10.0);
+        PIDConstants pid = PIDConstants.makePositionPID(parent, 2.0);
 
         // java uses this to calculate feedforward voltages from target velocities etc
         Feedforward100 ff = Falcon6Motor.swerveSteerFF(parent);
@@ -219,7 +219,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
                 motorPhase,
                 STEERING_SUPPLY_LIMIT,
                 STEERING_STATOR_LIMIT,
-                lowLevelPID,
+                pid,
                 ff);
 
         // this reads the steering angle directly.

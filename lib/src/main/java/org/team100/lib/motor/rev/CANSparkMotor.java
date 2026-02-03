@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.RevPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -91,7 +91,7 @@ public abstract class CANSparkMotor implements BareMotor {
             MotorPhase motorPhase,
             int statorCurrentLimit,
             Feedforward100 ff,
-            RevPIDConstants pid) {
+            PIDConstants pid) {
         m_motor = motor;
         m_log = parent.type(this);
         m_ff = ff;

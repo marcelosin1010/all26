@@ -2,7 +2,7 @@ package org.team100.lib.motor.rev;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.config.RevPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode;
@@ -32,7 +32,7 @@ public class RevConfigurator {
     private final NeutralMode m_neutral;
     private final MotorPhase m_phase;
     private final Mutable m_statorCurrentLimit;
-    private final RevPIDConstants m_pid;
+    private final PIDConstants m_pid;
 
     /**
      * statorCurrentLimit is mutable.
@@ -44,7 +44,7 @@ public class RevConfigurator {
             NeutralMode neutral,
             MotorPhase phase,
             int statorCurrentLimit,
-            RevPIDConstants pid) {
+            PIDConstants pid) {
         m_motor = motor;
         m_neutral = neutral;
         m_phase = phase;
@@ -122,25 +122,41 @@ public class RevConfigurator {
     }
 
     /**
-     * The PID parameters here use units of duty cycle per RPM, so for a typical
-     * motor speed of a few thousand RPM, and a typical error of a few hundred RPM,
-     * a desired control output would be a duty cycle of 0.1 or so, which implies a
-     * value of P like 3e-4.
+     * The REV PID units are as follows:
+     * 
+     * position
+     * P = duty cycle per rev, start with 1.
+     * I = duty cycle per rev * ms
+     * D = duty cycle per rev/ms
+     * 
+     * velocity
+     * P = duty cycle per RPM, start with 0.0002; rev example is 0.00005
+     * I = duty cycle per RPM*ms
+     * D = duty cycle per RPM/ms
+     * 
+     * @see https://docs.revrobotics.com/revlib/spark/closed-loop/units
+     * @see https://github.com/REVrobotics/SPARK-MAX-Examples/blob/master/Java/Velocity%20Closed%20Loop%20Control/src/main/java/frc/robot/Robot.java
      */
     public void pidConfig() {
+        double supplyVoltage = 12.0;
         SparkMaxConfig conf = new SparkMaxConfig();
         conf.closedLoop.positionWrappingEnabled(false); // don't use position control
-        conf.closedLoop.p(m_pid.getPositionP(), ClosedLoopSlot.kSlot0);
-        conf.closedLoop.i(m_pid.getPositionI(), ClosedLoopSlot.kSlot0);
-        conf.closedLoop.d(m_pid.getPositionD(), ClosedLoopSlot.kSlot0);
-        conf.closedLoop.p(m_pid.getVelocityP(), ClosedLoopSlot.kSlot1);
-        conf.closedLoop.i(m_pid.getVelocityI(), ClosedLoopSlot.kSlot1);
-        conf.closedLoop.d(m_pid.getVelocityD(), ClosedLoopSlot.kSlot1);
-        conf.closedLoop.iZone(m_pid.getPositionIZone(), ClosedLoopSlot.kSlot0);
-        conf.closedLoop.iZone(m_pid.getVelocityIZone(), ClosedLoopSlot.kSlot1);
-        // we don't use this type of feedforward at all, we use "arbitrary" feedforward.
+        conf.closedLoop.p(2 * Math.PI * m_pid.getPositionPV_Rad() / supplyVoltage, ClosedLoopSlot.kSlot0);
+        conf.closedLoop.i(2 * Math.PI * m_pid.getPositionIV_RadS() / (1000 * supplyVoltage), ClosedLoopSlot.kSlot0);
+        conf.closedLoop.d(2 * Math.PI * 1000 * m_pid.getPositionDVS_Rad() / supplyVoltage, ClosedLoopSlot.kSlot0);
+
+        conf.closedLoop.p(2 * Math.PI * m_pid.getVelocityPVS_Rad() / (60 * supplyVoltage), ClosedLoopSlot.kSlot1);
+        conf.closedLoop.i(2 * Math.PI * m_pid.getVelocityIVolt_Rad() / (60 * 1000 * supplyVoltage),
+                ClosedLoopSlot.kSlot1);
+        conf.closedLoop.d(2 * Math.PI * 1000 * m_pid.getVelocityDVS2_Rad() / (60 * supplyVoltage),
+                ClosedLoopSlot.kSlot1);
+        // We don't use wind-up control.
+        conf.closedLoop.iZone(0, ClosedLoopSlot.kSlot0);
+        conf.closedLoop.iZone(0, ClosedLoopSlot.kSlot1);
+        // We don't use this type of feedforward at all, we use "arbitrary" feedforward.
         conf.closedLoop.apply(new FeedForwardConfig().kV(0, ClosedLoopSlot.kSlot0));
         conf.closedLoop.apply(new FeedForwardConfig().kV(0, ClosedLoopSlot.kSlot1));
+        // Maximum output range.
         conf.closedLoop.outputRange(-1, 1, ClosedLoopSlot.kSlot0);
         conf.closedLoop.outputRange(-1, 1, ClosedLoopSlot.kSlot1);
         crash(() -> m_motor.configure(conf, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters));

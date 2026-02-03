@@ -3,7 +3,7 @@ package org.team100.frc2025.Climber;
 import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -44,7 +44,7 @@ public class Climber extends SubsystemBase {
                 Falcon6Motor motor = new Falcon6Motor(
                         log, canID, NeutralMode.BRAKE, MotorPhase.REVERSE,
                         20, 20,
-                        PhoenixPIDConstants.makePositionPID(log, 1),
+                        PIDConstants.makePositionPID(log, 0.2),
                         Falcon6Motor.ff2(log));
 
                 double inputOffset = 0.440602;

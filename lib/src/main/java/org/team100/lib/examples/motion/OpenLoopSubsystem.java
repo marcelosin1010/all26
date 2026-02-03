@@ -2,7 +2,7 @@ package org.team100.lib.examples.motion;
 
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -42,7 +42,7 @@ public class OpenLoopSubsystem extends SubsystemBase {
                 CanId canId = new CanId(1);
                 int supplyLimit = 60;
                 int statorLimit = 90;
-                PhoenixPIDConstants PID = PhoenixPIDConstants.makeVelocityPID(log, 0.3);
+                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.05);
                 // you should make a case in the feedforward class for your constants
                 Feedforward100 FF = Feedforward100.test(log);
                 m_motor = new Falcon6Motor(

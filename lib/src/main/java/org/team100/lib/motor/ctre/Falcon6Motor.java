@@ -2,7 +2,7 @@ package org.team100.lib.motor.ctre;
 
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Friction;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode;
@@ -22,7 +22,7 @@ public class Falcon6Motor extends Talon6Motor {
             MotorPhase motorPhase,
             double supplyLimit,
             double statorLimit,
-            PhoenixPIDConstants pid,
+            PIDConstants pid,
             Feedforward100 ff) {
         super(parent, canId, neutral, motorPhase, supplyLimit, statorLimit, pid, ff);
     }

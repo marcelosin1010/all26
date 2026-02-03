@@ -6,52 +6,95 @@ import java.util.List;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.tuning.Mutable;
 
-/** Units of the fields here depend on the subclass. */
-abstract class PIDConstants {
+/**
+ * PID Units here use SI units:
+ * 
+ * position
+ * P = volt/rad -- start with 0.1.
+ * I = volt/rad-sec
+ * D = volt-sec/rad
+ * 
+ * velocity
+ * P = volt-sec/rad -- start with 0.001
+ * I = volt/rad
+ * D = volt-sec^2/rad
+ * 
+ * These units are converted to motor-native units by the consumers.
+ * 
+ * WARNING! REV velocity control does not work well for light mechanisms (e.g.
+ * flywheels), no matter what you do with PID, so don't do it.
+ */
+ public class PIDConstants {
     private final List<Runnable> m_listeners = new ArrayList<>();
 
     // private final double m_positionP;
+    /** volt/rad */
     private final Mutable m_positionP;
+    /** volt/rad-sec */
     private final double m_positionI;
+    /** volt-sec/rad */
     private final double m_positionD;
-    private final double m_positionIZone;
-    // private final double m_velocityP;
-    // try making velocity P not really a constant
-    private final Mutable m_velocityP;
-    private final double m_velocityI;
-    private final double m_velocityD;
-    private final double m_velocityIZone;
 
-    public double getPositionP() {
+    // private final double m_velocityP;
+    /** volt-sec/rad */
+    private final Mutable m_velocityP;
+    /** volt/rad */
+    private final double m_velocityI;
+    /** volt-sec^2/rad */
+    private final double m_velocityD;
+
+    /**
+     * @param p Volt/rad
+     */
+    public static PIDConstants makePositionPID(
+            LoggerFactory log, double p) {
+        return new PIDConstants(log, p, 0, 0, 0, 0, 0);
+    }
+
+    /**
+     * WARNING! REV velocity control does not work well for light mechanisms (e.g.
+     * flywheels), so don't do it.
+     * 
+     * @param p Volt-sec/rad
+     */
+    public static PIDConstants makeVelocityPID(
+            LoggerFactory log, double p) {
+        return new PIDConstants(log, 0, 0, 0, p, 0, 0);
+    }
+
+    /** Zero is for when you're not using the motor's PID controller */
+    public static PIDConstants zero(LoggerFactory log) {
+        return new PIDConstants(log, 0, 0, 0, 0, 0, 0);
+    }
+
+    /** volt/rad */
+    public double getPositionPV_Rad() {
         return m_positionP.getAsDouble();
     }
 
-    public double getPositionI() {
+    /** volt/rad-sec */
+    public double getPositionIV_RadS() {
         return m_positionI;
     }
 
-    public double getPositionD() {
+    /** volt-sec/rad */
+    public double getPositionDVS_Rad() {
         return m_positionD;
     }
 
-    public double getPositionIZone() {
-        return m_positionIZone;
-    }
-
-    public double getVelocityP() {
+    /** volt-sec/rad */
+    public double getVelocityPVS_Rad() {
         return m_velocityP.getAsDouble();
     }
 
-    public double getVelocityI() {
+    /** volt/rad */
+    public double getVelocityIVolt_Rad() {
         return m_velocityI;
     }
 
-    public double getVelocityD() {
+    /** volt-sec^2/rad */
+    public double getVelocityDVS2_Rad() {
         return m_velocityD;
-    }
-
-    public double getVelocityIZone() {
-        return m_velocityIZone;
     }
 
     public void register(Runnable listener) {
@@ -67,12 +110,11 @@ abstract class PIDConstants {
         m_positionP = new Mutable(log, "position P", positionP, this::onChange);
         m_positionI = positionI;
         m_positionD = positionD;
-        m_positionIZone = 0;
+
         // m_velocityP = velocityP;
         m_velocityP = new Mutable(log, "velocity P", velocityP, this::onChange);
         m_velocityI = velocityI;
         m_velocityD = velocityD;
-        m_velocityIZone = 0;
     }
 
     private void onChange(double ignored) {

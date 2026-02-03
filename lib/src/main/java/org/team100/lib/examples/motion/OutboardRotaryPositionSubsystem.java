@@ -1,7 +1,7 @@
 package org.team100.lib.examples.motion;
 
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.RevPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
@@ -70,8 +70,7 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                         MotorPhase.FORWARD,
                         10, // Stator current limit, amps
                         NeoCANSparkMotor.ff(log),
-                        RevPIDConstants.makePositionPID(log, 1)
-                );
+                        PIDConstants.makePositionPID(log, 0.2));
                 IncrementalBareEncoder encoder = motor.encoder();
                 return getMech(log, motor, encoder);
             }

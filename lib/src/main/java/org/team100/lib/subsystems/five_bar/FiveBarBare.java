@@ -4,7 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -49,7 +49,7 @@ public class FiveBarBare extends SubsystemBase {
     /////////////////////
 
     private BareMotor makeMotor(LoggerFactory logger, CanId canId) {
-        PhoenixPIDConstants PID = PhoenixPIDConstants.zero(logger);
+        PIDConstants PID = PIDConstants.zero(logger);
         Feedforward100 FF = Feedforward100.zero(logger);
         return new Falcon6Motor(
                 logger,

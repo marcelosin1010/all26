@@ -2,7 +2,7 @@ package org.team100.lib.subsystems.mecanum;
 
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.RevPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -35,14 +35,8 @@ public class MecanumDriveFactory {
         LoggerFactory logRL = log.name("rearLeft");
         LoggerFactory logRR = log.name("rearRight");
 
-        // all wheels need the same ff/pid values
         Feedforward100 ff = NeoCANSparkMotor.ff(log);
-        // 10/22/25: Anay found this value worked well
-        // RevPIDConstants pid = RevPIDConstants.makeVelocityPID(log, 0.00005);
-        // Doubled the value for auton
-        RevPIDConstants pid = RevPIDConstants.makeVelocityPID(log, 0.0001);
-        // 10/22/25: Lincoln used this value
-        // RevPIDConstants.makeVelocityPID(0.0003));
+        PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
 
         Gyro gyro = gyro(log, gyroId);
         slip = slip(slip);

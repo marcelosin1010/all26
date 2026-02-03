@@ -1,6 +1,6 @@
 package org.team100.lib.subsystems.shooter;
 
-import org.team100.lib.config.RevPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -25,7 +25,7 @@ public class PivotSubsystem extends SubsystemBase {
                 MotorPhase.FORWARD,
                 currentLimit,
                 Neo550CANSparkMotor.ff(logger),
-                RevPIDConstants.zero(logger));
+                PIDConstants.zero(logger));
     }
 
     public void dutyCycle(double set) {

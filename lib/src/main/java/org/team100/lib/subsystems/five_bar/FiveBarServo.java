@@ -3,7 +3,7 @@ package org.team100.lib.subsystems.five_bar;
 import java.util.function.DoubleSupplier;
 
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PhoenixPIDConstants;
+import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
@@ -66,7 +66,7 @@ public class FiveBarServo extends SubsystemBase {
 
     public FiveBarServo(LoggerFactory logger) {
         // zeros
-        PhoenixPIDConstants pid = PhoenixPIDConstants.zero(logger);
+        PIDConstants pid = PIDConstants.zero(logger);
         Feedforward100 ff = Feedforward100.zero(logger);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(
                 logger, MAX_VELOCITY, MAX_ACCEL, POSITION_TOLERANCE);
