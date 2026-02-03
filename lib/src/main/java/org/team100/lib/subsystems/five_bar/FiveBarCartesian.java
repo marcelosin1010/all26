@@ -3,7 +3,7 @@ package org.team100.lib.subsystems.five_bar;
 import java.util.function.Supplier;
 
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.PhoenixPIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
@@ -57,7 +57,7 @@ public class FiveBarCartesian extends SubsystemBase {
 
     public FiveBarCartesian(LoggerFactory logger) {
         // zeros
-        PIDConstants pid = PIDConstants.zero(logger);
+        PhoenixPIDConstants pid = PhoenixPIDConstants.zero(logger);
         Feedforward100 ff = Feedforward100.zero(logger);
 
         LoggerFactory loggerP1 = logger.name("p1");

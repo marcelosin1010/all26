@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.RevPIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -24,16 +24,19 @@ import com.revrobotics.spark.SparkClosedLoopController.ArbFFUnits;
 import com.revrobotics.spark.SparkLimitSwitch;
 
 /**
- * PID units for outboard positional control are duty cycle per revolution, so
- * if you want to control to 0.1 revolutions, P should be something like 2.
- * 
- * PID units for outboard velocity control are duty cycle per RPM, so if you
- * want to control to a few hundred RPM, P should be something like 0.0002.
+ * Base class for REV motors.
  * 
  * Relies on Memo and Takt, so you must put Memo.resetAll() and Takt.update() in
  * Robot.robotPeriodic().
  * 
  * Current limit is stator current.
+ * 
+ * WARNING! REV motors are not good for velocity-controlled flywheels, because
+ * the built-in encoder is noisy. The default filters induce much too much delay
+ * to be useful; turning the filters all the way down may help a tiny bit.
+ * 
+ * https://www.chiefdelphi.com/t/psa-default-neo-sparkmax-velocity-readings-are-still-bad-for-flywheels/454453
+ * https://www.chiefdelphi.com/t/shooter-encoder/400211/10
  * 
  * https://docs.revrobotics.com/brushless/spark-max/gs/make-it-spin#limiting-current
  * https://www.chiefdelphi.com/t/rev-robotics-2024-2025/471083/26
@@ -88,7 +91,7 @@ public abstract class CANSparkMotor implements BareMotor {
             MotorPhase motorPhase,
             int statorCurrentLimit,
             Feedforward100 ff,
-            PIDConstants pid) {
+            RevPIDConstants pid) {
         m_motor = motor;
         m_log = parent.type(this);
         m_ff = ff;

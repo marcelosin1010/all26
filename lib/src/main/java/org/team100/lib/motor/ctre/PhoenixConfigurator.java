@@ -2,7 +2,7 @@ package org.team100.lib.motor.ctre;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.PhoenixPIDConstants;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode;
 
@@ -36,7 +36,7 @@ public class PhoenixConfigurator {
     private final MotorPhase m_phase;
     private final double m_supply;
     private final double m_stator;
-    private final PIDConstants m_pid;
+    private final PhoenixPIDConstants m_pid;
 
     public PhoenixConfigurator(
             TalonFX motor,
@@ -44,7 +44,7 @@ public class PhoenixConfigurator {
             MotorPhase phase,
             double supply,
             double stator,
-            PIDConstants pid) {
+            PhoenixPIDConstants pid) {
         m_motor = motor;
         m_neutral = neutral;
         m_phase = phase;

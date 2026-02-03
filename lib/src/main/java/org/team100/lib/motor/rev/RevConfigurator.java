@@ -2,7 +2,7 @@ package org.team100.lib.motor.rev;
 
 import java.util.function.Supplier;
 
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.RevPIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode;
@@ -32,7 +32,7 @@ public class RevConfigurator {
     private final NeutralMode m_neutral;
     private final MotorPhase m_phase;
     private final Mutable m_statorCurrentLimit;
-    private final PIDConstants m_pid;
+    private final RevPIDConstants m_pid;
 
     /**
      * statorCurrentLimit is mutable.
@@ -44,7 +44,7 @@ public class RevConfigurator {
             NeutralMode neutral,
             MotorPhase phase,
             int statorCurrentLimit,
-            PIDConstants pid) {
+            RevPIDConstants pid) {
         m_motor = motor;
         m_neutral = neutral;
         m_phase = phase;

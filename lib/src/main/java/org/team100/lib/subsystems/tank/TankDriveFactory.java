@@ -1,7 +1,7 @@
 package org.team100.lib.subsystems.tank;
 
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.RevPIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -27,12 +27,14 @@ public class TankDriveFactory {
         // all wheels need the same ff/pid values
         Feedforward100 ff = NeoCANSparkMotor.ff(log);
         // 10/22/25: Anay found this value worked well
-        PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.00005);
+        RevPIDConstants pid = RevPIDConstants.makeVelocityPID(log, 0.00005);
         // 10/22/25: Lincoln used this value
-        // PIDConstants.makeVelocityPID(0.0003));
+        // RevPIDConstants.makeVelocityPID(0.0003));
 
-        BareMotor motorL = NeoCANSparkMotor.get(log, canL, MotorPhase.REVERSE, statorLimit, ff, pid);
-        BareMotor motorR = NeoCANSparkMotor.get(log, canR, MotorPhase.FORWARD, statorLimit, ff, pid);
+        BareMotor motorL = NeoCANSparkMotor.get(
+                log, canL, MotorPhase.REVERSE, statorLimit, ff, pid);
+        BareMotor motorR = NeoCANSparkMotor.get(
+                log, canR, MotorPhase.FORWARD, statorLimit, ff, pid);
 
         return new TankDrive(fieldLogger, trackWidthM,
                 OutboardLinearVelocityServo.make(logL, motorL, gearRatio, wheelDiaM),

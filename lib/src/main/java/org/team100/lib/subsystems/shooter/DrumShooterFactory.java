@@ -1,7 +1,7 @@
 package org.team100.lib.subsystems.shooter;
 
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.RevPIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -25,10 +25,12 @@ public class DrumShooterFactory {
 
         Feedforward100 ff = Neo550CANSparkMotor.ff(log);
         // This P value is a guess
-        PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.0002);
+        RevPIDConstants pid = RevPIDConstants.makeVelocityPID(log, 0.0002);
 
-        BareMotor motorL = Neo550CANSparkMotor.get(log, canL, MotorPhase.FORWARD, currentLimit, ff, pid);
-        BareMotor motorR = Neo550CANSparkMotor.get(log, canR, MotorPhase.REVERSE, currentLimit, ff, pid);
+        BareMotor motorL = Neo550CANSparkMotor.get(
+                log, canL, MotorPhase.FORWARD, currentLimit, ff, pid);
+        BareMotor motorR = Neo550CANSparkMotor.get(
+                log, canR, MotorPhase.REVERSE, currentLimit, ff, pid);
 
         return new DualDrumShooter(parent,
                 OutboardLinearVelocityServo.make(logL, motorL, GEAR_RATIO, WHEEL_DIA_M),

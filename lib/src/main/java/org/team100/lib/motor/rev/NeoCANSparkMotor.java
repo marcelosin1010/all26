@@ -3,7 +3,7 @@ package org.team100.lib.motor.rev;
 import org.team100.lib.config.Feedforward100;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.RevPIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
@@ -27,7 +27,7 @@ public class NeoCANSparkMotor extends CANSparkMotor {
             MotorPhase motorPhase,
             int statorCurrentLimit,
             Feedforward100 ff,
-            PIDConstants pid) {
+            RevPIDConstants pid) {
         super(parent, new SparkMax(canId.id, MotorType.kBrushless),
                 neutral, motorPhase, statorCurrentLimit, ff, pid);
     }
@@ -35,7 +35,7 @@ public class NeoCANSparkMotor extends CANSparkMotor {
     /** Real or simulated depending on identity */
     public static BareMotor get(
             LoggerFactory log, CanId can, MotorPhase phase, int statorLimit,
-            Feedforward100 ff, PIDConstants pid) {
+            Feedforward100 ff, RevPIDConstants pid) {
         return switch (Identity.instance) {
             case BLANK -> new SimulatedBareMotor(log, 600);
             default -> new NeoCANSparkMotor(

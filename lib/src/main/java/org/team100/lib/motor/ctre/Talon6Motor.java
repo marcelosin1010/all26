@@ -6,7 +6,7 @@ import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.DoubleCache;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.config.Feedforward100;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.PhoenixPIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
@@ -101,7 +101,7 @@ public abstract class Talon6Motor implements BareMotor {
             MotorPhase motorPhase,
             double supplyLimit,
             double statorLimit,
-            PIDConstants lowLevelPIDConstants,
+            PhoenixPIDConstants lowLevelPIDConstants,
             Feedforward100 ff) {
         //////////////////////////////////////
         //

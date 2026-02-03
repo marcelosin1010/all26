@@ -3,7 +3,7 @@ package org.team100.frc2025.grip;
 import java.util.List;
 
 import org.team100.lib.config.Identity;
-import org.team100.lib.config.PIDConstants;
+import org.team100.lib.config.PhoenixPIDConstants;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.BooleanLogger;
@@ -55,19 +55,19 @@ public class Manipulator extends SubsystemBase implements Music {
                         MotorPhase.FORWARD,
                         40, // og 40
                         40, // og 40
-                        PIDConstants.zero(leftMotorLog),
+                        PhoenixPIDConstants.zero(leftMotorLog),
                         Falcon6Motor.ff(leftMotorLog));
                 Kraken6Motor rightMotor = new Kraken6Motor(rightMotorLog, new CanId(20), NeutralMode.COAST,
                         MotorPhase.REVERSE,
                         40, // og 40
                         40, // og 40
-                        PIDConstants.zero(rightMotorLog),
+                        PhoenixPIDConstants.zero(rightMotorLog),
                         Falcon6Motor.ff(rightMotorLog));
                 Kraken6Motor algaeMotor = new Kraken6Motor(algaeMotorLog, new CanId(21), NeutralMode.COAST,
                         MotorPhase.FORWARD,
                         120, // og 120
                         120, // og 120
-                        PIDConstants.zero(algaeMotorLog),
+                        PhoenixPIDConstants.zero(algaeMotorLog),
                         Falcon6Motor.ff(algaeMotorLog));
                 algaeMotor.setTorqueLimit(4);
                 m_algaeMotor = algaeMotor;
