@@ -37,16 +37,21 @@ public class Falcon6Motor extends Talon6Motor {
         return 0.018;
     }
 
+    @Override
+    public double kFreeSpeedRPM() {
+        return 6079;
+    }
+
     /** Generic feedforward with considerable friction */
     public static Feedforward100 ff(LoggerFactory log) {
         // there's very little friction in the direct drive
-        return new Feedforward100(log, 6079, 0.000, 0.000,
+        return new Feedforward100(log, 0.000, 0.000,
                 new Friction(log, 0.900, 0.900, 0.0, 0.5));
     }
 
     /** Feedforward with less friction */
     public static Feedforward100 ff2(LoggerFactory log) {
-        return new Feedforward100(log, 6079, 0.001, 0.001,
+        return new Feedforward100(log, 0.001, 0.001,
                 new Friction(log, 0.100, 0.065, 0.0, 0.5));
     }
 
@@ -54,7 +59,7 @@ public class Falcon6Motor extends Talon6Motor {
     public static Feedforward100 swerveDriveFF(LoggerFactory log) {
         // there's a little bit of viscous friction here.
         // TODO: verify kA
-        return new Feedforward100(log, 6079, 0.003, 0.003,
+        return new Feedforward100(log, 0.003, 0.003,
                 new Friction(log, 0.260, 0.260, 0.002, 0.5));
     }
 
@@ -65,7 +70,7 @@ public class Falcon6Motor extends Talon6Motor {
     public static Feedforward100 swerveSteerFF(LoggerFactory log) {
         // TODO: the friction here is probably too low
         // TODO: verify kA
-        return new Feedforward100(log, 6079, 0.002, 0.002,
+        return new Feedforward100(log, 0.002, 0.002,
                 new Friction(log, 0.100, 0.100, 0.005, 0.5));
     }
 

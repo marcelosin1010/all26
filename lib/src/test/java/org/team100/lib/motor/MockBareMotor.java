@@ -17,7 +17,7 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
     /** These is for testing feedforwards. */
     public double ffVolts;
     public double frictionFFVolts;
-    public double velocityFFVolts;
+    public double backEMFVolts;
     public double torqueFFVolts;
     public double accelFFVolts;
     private final Feedforward100 m_ff;
@@ -47,10 +47,10 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
         torque = torqueNm;
 
         frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
-        velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
+        backEMFVolts = backEMFVoltage(motorRad_S);
         torqueFFVolts = getTorqueFFVolts(torqueNm);
         accelFFVolts = m_ff.accelFFVolts(motorRad_S, motorRad_S2);
-        ffVolts = frictionFFVolts + velocityFFVolts + torqueFFVolts + accelFFVolts;
+        ffVolts = backEMFVolts + frictionFFVolts + torqueFFVolts + accelFFVolts;
     }
 
     /** placeholder */
@@ -63,6 +63,11 @@ public class MockBareMotor implements BareMotor, IncrementalBareEncoder {
     @Override
     public double kTNm_amp() {
         return 0.02;
+    }
+
+    @Override
+    public double kFreeSpeedRPM() {
+        return 6000;
     }
 
     @Override

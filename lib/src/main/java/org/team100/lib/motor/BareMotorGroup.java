@@ -68,6 +68,11 @@ public class BareMotorGroup implements BareMotor {
     }
 
     @Override
+    public double kFreeSpeedRPM() {
+        return mean((m) -> m.kFreeSpeedRPM());
+    }
+
+    @Override
     public IncrementalBareEncoder encoder() {
         // TODO: does this work?
         return new SimulatedBareEncoder(m_log, this);

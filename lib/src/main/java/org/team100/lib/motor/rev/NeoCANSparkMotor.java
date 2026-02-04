@@ -53,10 +53,15 @@ public class NeoCANSparkMotor extends CANSparkMotor {
         return 0.028;
     }
 
+    @Override
+    public double kFreeSpeedRPM() {
+        return 5676;
+    }
+
     public static Feedforward100 ff(LoggerFactory log) {
         // TODO: friction
         // TODO: verify kA
-        return new Feedforward100(log, 5676, 0.01, 0.01,
+        return new Feedforward100(log, 0.01, 0.01,
                 new Friction(log, 0.5, 0.5, 0.0, 0.5));
     }
 }

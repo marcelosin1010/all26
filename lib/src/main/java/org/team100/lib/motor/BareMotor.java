@@ -92,15 +92,43 @@ public interface BareMotor extends Player {
 
     /**
      * Motor resistance in ohms, used to calculate voltage from desired torque
-     * current.
+     * current. This should be published by the manufacturer (divide stall current
+     * by 12.0).
      */
     double kROhms();
 
     /**
      * Motor torque constant, kT, in Nm per amp, used to calculate current from
-     * desired torque.
+     * desired torque. This should be published by the manufacturer (divide stall
+     * torque by stall current).
      */
     double kTNm_amp();
+
+    /**
+     * Motor free speed in RPM at 12.0 V, used to compute Ke, the back-EMF constant.
+     * This should be published by the manufacturer, or measured by experiment.
+     */
+    double kFreeSpeedRPM();
+
+    /**
+     * Back-EMF constant.
+     * 
+     * This is the voltage to maintain speed against the back-EMF of the motor.
+     * 
+     * V = kE * omega
+     * 
+     * so kE units are volt-sec/rad. This an intrinsic property of the motor.
+     * https://en.wikipedia.org/wiki/Motor_constants#Motor_velocity_constant,_back_EMF_constant
+     *
+     * @return kE value in volt-sec/rad.
+     */
+    default double kE() {
+        return 60 * 12 / (kFreeSpeedRPM() * 2 * Math.PI);
+    }
+
+    default double backEMFVoltage(double motorRad_S) {
+        return kE() * motorRad_S;
+    }
 
     /**
      * Incremental voltage required to produce the given torque, used for

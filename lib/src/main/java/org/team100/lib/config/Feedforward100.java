@@ -4,7 +4,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.tuning.Mutable;
 
 /**
- * Feedforward model with three constants, and friction.
+ * Feedforward for acceleration, deceleration, and friction.
  * 
  * @see https://en.wikipedia.org/wiki/Motor_constants
  * @see {@link edu.wpi.first.math.controller.SimpleMotorFeedforward} which uses
@@ -13,17 +13,6 @@ import org.team100.lib.tuning.Mutable;
  *      models.
  */
 public class Feedforward100 {
-    /**
-     * Back-EMF constant.
-     * 
-     * This is the voltage to maintain speed against the back-EMF of the motor.
-     * 
-     * V = kE * omega
-     * 
-     * so kE units are volt-sec/rad. This an intrinsic property of the motor.
-     * https://en.wikipedia.org/wiki/Motor_constants#Motor_velocity_constant,_back_EMF_constant
-     */
-    private final double kE;
     /** volt-sec^2/rad */
     private final Mutable kA;
     /** volt-sec^2/rad */
@@ -31,8 +20,6 @@ public class Feedforward100 {
     private final Friction friction;
 
     /**
-     * @param freeSpeedRPM Unloaded free speed in RPM, either from the manufacturer
-     *                     or experiment.
      * @param kA           Acceleration. Voltage to produce acceleration of the
      *                     motor shaft. V = kA * alpha, so kA units are
      *                     volt-sec^2/rad. This reflects the motor torque and
@@ -47,32 +34,13 @@ public class Feedforward100 {
      */
     public Feedforward100(
             LoggerFactory log,
-            double freeSpeedRPM,
             double kA,
             double kD,
             Friction friction) {
         LoggerFactory ffLog = log.type(this);
-        this.kE = freeSpeedToKE(freeSpeedRPM);
         this.kA = new Mutable(ffLog, "kA", kA);
         this.kD = new Mutable(ffLog, "kD", kD);
         this.friction = friction;
-    }
-
-    /**
-     * @param freeSpeedRPM motor free speed in RPM at 12.0 V.
-     * @return kE value in volt-sec/radian.
-     */
-    public static double freeSpeedToKE(double freeSpeedRPM) {
-        return 60 * 12 / (freeSpeedRPM * 2 * Math.PI);
-    }
-
-    /**
-     * Voltage to maintain the specified velocity.
-     * 
-     * @param motorRad_S setpoint speed
-     */
-    public double velocityFFVolts(double motorRad_S) {
-        return kE * motorRad_S;
     }
 
     /**
@@ -110,6 +78,9 @@ public class Feedforward100 {
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).
      * 
+     * Includes viscous friction (proportional to speed), dynamic friction (constant
+     * while moving), and static friction (constant while almost stopped).
+     * 
      * @param motorRad_S setpoint speed rad/s
      */
     public double frictionFFVolts(double motorRad_S) {
@@ -117,12 +88,12 @@ public class Feedforward100 {
     }
 
     public static Feedforward100 zero(LoggerFactory log) {
-        return new Feedforward100(log, 0, 0, 0,
+        return new Feedforward100(log, 0, 0,
                 new Friction(log, 0, 0, 0, 0));
     }
 
     public static Feedforward100 test(LoggerFactory log) {
-        return new Feedforward100(log, 6000, 0.100, 0.100,
+        return new Feedforward100(log, 0.100, 0.100,
                 new Friction(log, 0.100, 0.100, 0.0, 0.1));
     }
 }

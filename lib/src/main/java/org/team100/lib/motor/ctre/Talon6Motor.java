@@ -227,11 +227,11 @@ public abstract class Talon6Motor implements BareMotor {
      */
     @Override
     public void setVelocity(double motorRad_S, double motorRad_S2, double torqueNm) {
+        double backEMFVolts = backEMFVoltage(motorRad_S);
         double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
-        double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
         double accelFFVolts = m_ff.accelFFVolts(motorRad_S, motorRad_S2);
         double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
+        double FFVolts = backEMFVolts + frictionFFVolts + accelFFVolts + torqueFFVolts;
 
         // CTRE control unit is rev/s.
         warn(() -> m_motor.setControl(
@@ -243,7 +243,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_log_desired_speed.log(() -> motorRad_S);
         m_log_desired_accel.log(() -> motorRad_S2);
         m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> velocityFFVolts);
+        m_log_velocity_FF.log(() -> backEMFVolts);
         m_log_accel_FF.log(() -> accelFFVolts);
         m_log_torque_FF.log(() -> torqueFFVolts);
         m_totalFeedForward.log(() -> FFVolts);
@@ -268,11 +268,11 @@ public abstract class Talon6Motor implements BareMotor {
             double motorRad_S,
             double motorRad_S2,
             double torqueNm) {
+        double backEMFVolts = backEMFVoltage(motorRad_S);
         double frictionFFVolts = m_ff.frictionFFVolts(motorRad_S);
-        double velocityFFVolts = m_ff.velocityFFVolts(motorRad_S);
         double accelFFVolts = m_ff.accelFFVolts(motorRad_S, motorRad_S2);
         double torqueFFVolts = getTorqueFFVolts(torqueNm);
-        double FFVolts = frictionFFVolts + velocityFFVolts + accelFFVolts + torqueFFVolts;
+        double FFVolts = backEMFVolts + frictionFFVolts + accelFFVolts + torqueFFVolts;
 
         // CTRE control unit is rev.
         warn(() -> m_motor.setControl(
@@ -285,7 +285,7 @@ public abstract class Talon6Motor implements BareMotor {
         m_log_desired_speed.log(() -> motorRad_S);
         m_log_desired_accel.log(() -> motorRad_S2);
         m_log_friction_FF.log(() -> frictionFFVolts);
-        m_log_velocity_FF.log(() -> velocityFFVolts);
+        m_log_velocity_FF.log(() -> backEMFVolts);
         m_log_torque_FF.log(() -> torqueFFVolts);
         m_log_accel_FF.log(() -> accelFFVolts);
         m_totalFeedForward.log(() -> FFVolts);

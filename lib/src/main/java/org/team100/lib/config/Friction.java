@@ -56,6 +56,9 @@ public class Friction {
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).
      * 
+     * Includes viscous friction (proportional to speed), dynamic friction (constant
+     * while moving), and static friction (constant while almost stopped).
+     * 
      * @param motorRad_S setpoint speed rad/s
      */
     public double frictionFFVolts(double motorRad_S) {

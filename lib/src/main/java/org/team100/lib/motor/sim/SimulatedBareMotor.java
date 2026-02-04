@@ -150,6 +150,11 @@ public class SimulatedBareMotor implements BareMotor {
     }
 
     @Override
+    public double kFreeSpeedRPM() {
+        return 6000;
+    }
+
+    @Override
     public IncrementalBareEncoder encoder() {
         return new SimulatedBareEncoder(m_log, this);
     }
