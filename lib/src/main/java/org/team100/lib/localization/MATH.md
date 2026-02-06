@@ -96,7 +96,9 @@ variance, resulting in a state variance that mirrors the measurement variance,
 even if the measurement variance itself is ignored.  Another issue is that
 the overconfidence doesn't disappear if the means are close.
 
-So a combination of approaches might be good.
+So a combination of approaches might be good: added noise to keep the state
+from becoming unresponsive to small innovation, and mean dispersion to adapt to
+large innovation.
 
 
 ### Mixture model

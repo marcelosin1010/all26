@@ -38,12 +38,11 @@ public class VariableR1 {
         // https://stats.stackexchange.com/questions/16608/what-is-the-variance-of-the-weighted-mixture-of-two-gaussians
         // https://stats.stackexchange.com/questions/309622/calculate-moments-of-a-weighted-mixture-of-normal-distributions
         double variance = 2 / totalWeight
-
-         + wA * Math.pow(a.mean - mean, 2) / totalWeight
+                + wA * Math.pow(a.mean - mean, 2) / totalWeight
                 + wB * Math.pow(b.mean - mean, 2) / totalWeight;
-                // + wA * wB * Math.pow(a.mean - b.mean, 2) / Math.pow(totalWeight, 2);
+        // + wA * wB * Math.pow(a.mean - b.mean, 2) / Math.pow(totalWeight, 2);
 
-                return new VariableR1(mean, variance);
+        return new VariableR1(mean, variance);
     }
 
     /**
@@ -77,18 +76,14 @@ public class VariableR1 {
         double wB = 1 / b.variance;
         double totalWeight = wA + wB;
         double mean = (wA * a.mean + wB * b.mean) / totalWeight;
-        // inverse-variance weighting
-        // does *not* take mean dispersion into account.
-        // but does increase confidence with multiple measurements.
-        // This is wrong, when the means are different: repeated updates
-        // yield a slowly moving mean but rapidly increasing confidence
-        // (which slows the movement of the mean)
-        // double variance = 1 / totalWeight
-        // + wA * wB * Math.pow(a.mean - b.mean, 2) / Math.pow(totalWeight, 2);
-        // this makes the contribution of the component means more obvious.
-        double variance = 2 / totalWeight
-                + wA * Math.pow(a.mean - mean, 2) / totalWeight
+
+        // Inverse variance weight
+        double variance = 1 / totalWeight;
+        // Add mean dispersion
+        variance += wA * Math.pow(a.mean - mean, 2) / totalWeight
                 + wB * Math.pow(b.mean - mean, 2) / totalWeight;
+        // add noise
+        variance = Math.max(variance, 0.2);
         return new VariableR1(mean, variance);
     }
 
