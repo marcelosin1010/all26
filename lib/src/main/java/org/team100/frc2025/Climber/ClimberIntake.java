@@ -28,8 +28,9 @@ public class ClimberIntake extends SubsystemBase {
                         log, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
                         20, // og 50
                         20, // og 2
-                        PIDConstants.zero(log),
-                        Kraken6Motor.highFrictionFF(log));
+                        Kraken6Motor.highFrictionFF(log),
+                        Kraken6Motor.highFriction(log),
+                        PIDConstants.zero(log));
             }
             default -> {
                 m_motor = new LazySimulatedBareMotor(

@@ -2,7 +2,8 @@ package org.team100.lib.subsystems.five_bar;
 
 import java.util.function.DoubleSupplier;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -189,7 +190,8 @@ public class FiveBarMech extends SubsystemBase {
         PIDConstants pid = PIDConstants.makePositionPID(
                 logger, 2.0);
         /** We never use feedforward since all our goals are motionless. */
-        Feedforward100 ff = Feedforward100.zero(logger);
+        SimpleDynamics ff = SimpleDynamics.zero(logger);
+        Friction friction = Friction.zero(logger);
         return new Falcon6Motor(
                 logger,
                 canId,
@@ -197,8 +199,9 @@ public class FiveBarMech extends SubsystemBase {
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
-                pid,
-                ff);
+                ff,
+                friction,
+                pid);
     }
 
     /** For homing; ignores feasibility and limits. */

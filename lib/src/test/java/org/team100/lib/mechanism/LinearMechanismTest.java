@@ -3,7 +3,8 @@ package org.team100.lib.mechanism;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.Friction;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -18,8 +19,9 @@ public class LinearMechanismTest implements Timeless {
     /** Show that the limits have effect. */
     @Test
     void testLimits() {
-        Feedforward100 ff = Feedforward100.test(logger);
-        MockBareMotor motor = new MockBareMotor(ff);
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
         double gearRatio = 1;
         double wheelDiameterM = 2;
@@ -58,8 +60,9 @@ public class LinearMechanismTest implements Timeless {
     /** Same cases as above, but unlimited */
     @Test
     void testUnlimited() {
-        Feedforward100 ff = Feedforward100.test(logger);
-        MockBareMotor motor = new MockBareMotor(ff);
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockIncrementalBareEncoder encoder = new MockIncrementalBareEncoder();
         double gearRatio = 1;
         double wheelDiameterM = 2;

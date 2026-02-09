@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.mecanum;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -35,20 +36,21 @@ public class MecanumDriveFactory {
         LoggerFactory logRL = log.name("rearLeft");
         LoggerFactory logRR = log.name("rearRight");
 
-        Feedforward100 ff = NeoCANSparkMotor.ff(log);
         PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.01);
+        SimpleDynamics ff = NeoCANSparkMotor.ff(log);
+        Friction friction = NeoCANSparkMotor.friction(log);
 
         Gyro gyro = gyro(log, gyroId);
         slip = slip(slip);
 
         BareMotor motorFL = NeoCANSparkMotor.get(
-                log, canFL, MotorPhase.REVERSE, statorLimit, ff, pid);
+                log, canFL, MotorPhase.REVERSE, statorLimit, ff, friction, pid);
         BareMotor motorFR = NeoCANSparkMotor.get(
-                log, canFR, MotorPhase.FORWARD, statorLimit, ff, pid);
+                log, canFR, MotorPhase.FORWARD, statorLimit, ff, friction, pid);
         BareMotor motorRL = NeoCANSparkMotor.get(
-                log, canRL, MotorPhase.REVERSE, statorLimit, ff, pid);
+                log, canRL, MotorPhase.REVERSE, statorLimit, ff, friction, pid);
         BareMotor motorRR = NeoCANSparkMotor.get(
-                log, canRR, MotorPhase.FORWARD, statorLimit, ff, pid);
+                log, canRR, MotorPhase.FORWARD, statorLimit, ff, friction, pid);
 
         return new MecanumDrive100(
                 log, fieldLogger, gyro, trackWidthM, wheelbaseM, slip,

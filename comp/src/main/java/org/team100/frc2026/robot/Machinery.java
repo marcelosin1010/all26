@@ -10,6 +10,7 @@ import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.GroundTruthCache;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SimulatedTagDetector;
@@ -104,10 +105,11 @@ public class Machinery {
                 gyro.getYawNWU(),
                 m_modules.positions(),
                 Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
                 Takt.get());
         final OdometryUpdater odometryUpdater = new OdometryUpdater(
                 m_swerveKinodynamics, gyro, history, m_modules::positions);
-        odometryUpdater.reset(Pose2d.kZero);
+        odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high());
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
                 history, odometryUpdater);
 
@@ -177,6 +179,7 @@ public class Machinery {
                     groundTruthGyro.getYawNWU(),
                     m_modules.positions(),
                     Pose2d.kZero,
+                    IsotropicNoiseSE2.high(),
                     Takt.get());
 
             // Read positions and ground truth gyro (which are perfectly consistent) and

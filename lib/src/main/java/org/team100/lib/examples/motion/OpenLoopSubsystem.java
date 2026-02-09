@@ -1,6 +1,7 @@
 package org.team100.lib.examples.motion;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -42,11 +43,14 @@ public class OpenLoopSubsystem extends SubsystemBase {
                 CanId canId = new CanId(1);
                 int supplyLimit = 60;
                 int statorLimit = 90;
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.05);
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.05);
                 // you should make a case in the feedforward class for your constants
-                Feedforward100 FF = Feedforward100.test(log);
+                SimpleDynamics ff = SimpleDynamics.test(log);
+                Friction friction = Friction.test(log);
                 m_motor = new Falcon6Motor(
-                        log, canId, NeutralMode100.COAST, MotorPhase.FORWARD, supplyLimit, statorLimit, PID, FF);
+                        log, canId,
+                        NeutralMode100.COAST, MotorPhase.FORWARD,
+                        supplyLimit, statorLimit, ff, friction, pid);
             }
             default -> {
                 m_motor = new SimulatedBareMotor(log, 600);

@@ -25,6 +25,7 @@ public class PivotSubsystem extends SubsystemBase {
                 MotorPhase.FORWARD,
                 currentLimit,
                 Neo550CANSparkMotor.ff(logger),
+                Neo550CANSparkMotor.friction(logger),
                 PIDConstants.zero(logger));
     }
 

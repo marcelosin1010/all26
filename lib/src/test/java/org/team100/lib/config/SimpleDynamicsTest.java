@@ -14,7 +14,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
  * Notice the difference between the naive feedforward and the more-correct
  * discretized one.
  */
-class FeedforwardTest implements Timeless {
+class SimpleDynamicsTest implements Timeless {
     private static final double DELTA = 0.001;
     private static final LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
 
@@ -42,42 +42,16 @@ class FeedforwardTest implements Timeless {
     @Test
     void test100() {
         // behaves the same as the naive model above, ignoring friction.
-        Feedforward100 ff100 = new Feedforward100(
-                log, 114.59, 1, 1,
-                new Friction(log, 0, 0, 0, 0));
-        assertEquals(1, ff100.velocityFFVolts(1), DELTA);
+        SimpleDynamics ff100 = new SimpleDynamics(log, 1, 1);
         assertEquals(1, ff100.accelFFVolts(1, 1), DELTA);
     }
 
     @Test
     void testkD() {
         // kd is lower
-        Feedforward100 ff100 = new Feedforward100(
-                log, 0, 1, 0.1,
-                new Friction(log, 0, 0, 0, 0));
+        SimpleDynamics ff100 = new SimpleDynamics(log, 1, 0.1);
         assertEquals(1, ff100.accelFFVolts(1, 1), DELTA);
         assertEquals(0.1, ff100.accelFFVolts(-1, 1), DELTA);
-    }
-
-    /** I forgot an abs() in the friction term, so this verifies it. */
-    @Test
-    void testFriction() {
-        // static friction = 2, dynamic friction = 1
-        Feedforward100 ff100 = new Feedforward100(
-                log, 0, 1, 1,
-                new Friction(log, 2, 1, 0, 1));
-        // under the static friction limit, so this is static
-        assertEquals(2, ff100.frictionFFVolts(0.5), DELTA);
-        // over the static friction limit, so sliding
-        assertEquals(1, ff100.frictionFFVolts(2), DELTA);
-        // under the static friction limit, so this is static
-        assertEquals(-2, ff100.frictionFFVolts(-0.5), DELTA);
-        // over the static friction limit, so sliding
-        assertEquals(-1, ff100.frictionFFVolts(-2), DELTA);
-        // want to go negative, get negative
-        assertEquals(-2, ff100.frictionFFVolts(-0.5), DELTA);
-        // moving positive, want to go negative, get negative
-        assertEquals(-1, ff100.frictionFFVolts(-2), DELTA);
     }
 
 }

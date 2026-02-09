@@ -7,6 +7,7 @@ import org.team100.lib.controller.se2.ControllerSE2;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.FreshSwerveEstimate;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SwerveHistory;
@@ -59,11 +60,12 @@ public class Fixture {
                 Rotation2d.kZero,
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
                 0); // initial time is zero here for testing
         // history.reset(gyro.getYawNWU(), collection.positions(), Pose2d.kZero, 0);
 
         odometryUpdater = new OdometryUpdater(swerveKinodynamics, gyro, history, collection::positions);
-        odometryUpdater.reset(Pose2d.kZero, 0);
+        odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(history, odometryUpdater);
 

@@ -3,7 +3,8 @@ package org.team100.lib.servo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.Friction;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.logging.LoggerFactory;
@@ -31,7 +32,9 @@ class AnglePositionServoProfileTest implements Timeless {
     double previousMotorSpeed = 0;
 
     public AnglePositionServoProfileTest() {
-        motor = new MockBareMotor(Feedforward100.test(logger));
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        motor = new MockBareMotor(ff, friction);
         sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 logger,

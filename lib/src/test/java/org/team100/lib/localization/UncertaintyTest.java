@@ -28,7 +28,7 @@ public class UncertaintyTest {
     @Test
     void testVisionStdDevs() {
         double targetRangeM = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0.1);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, 0.1);
         assertEquals(0.041, visionStdDev.cartesian(), DELTA);
         assertEquals(0.041, visionStdDev.rotation(), DELTA);
     }
@@ -37,9 +37,36 @@ public class UncertaintyTest {
     void testStateStdDevs() {
         // these are the "antijitter" values.
         // 1 mm, very low
-        IsotropicSigmaSE2 stateStdDev = Uncertainty.TIGHT_STATE_STDDEV;
+        IsotropicNoiseSE2 stateStdDev = Uncertainty.TIGHT_STATE_STDDEV;
         assertEquals(0.001, stateStdDev.cartesian(), DELTA);
         assertEquals(0.1, stateStdDev.rotation(), DELTA);
+    }
+
+    @Test
+    void testOdometry() {
+        IsotropicNoiseSE2 odo = Uncertainty.odometryStdDevs(0, 0);
+        assertEquals(0.0, odo.cartesian(), 1e-6);
+        assertEquals(0.0, odo.rotation(), 1e-6);
+        // moving pretty slowly, 0.5 m/s over 0.02 sec
+        odo = Uncertainty.odometryStdDevs(0.01, 0);
+        // about 3 cm/s of error, which seems reasonable
+        assertEquals(0.00055, odo.cartesian(), 1e-6);
+        assertEquals(0.0, odo.rotation(), 1e-6);
+        // moving pretty fast, 5 m/s over 0.02 sec
+        odo = Uncertainty.odometryStdDevs(0.1, 0);
+        // 0.5 m/s of error, a whole lot!
+        assertEquals(0.010, odo.cartesian(), 1e-6);
+        assertEquals(0.0, odo.rotation(), 1e-6);
+        // this is slow rotation, 1 rad/s over 0.02 sec
+        odo = Uncertainty.odometryStdDevs(0, 0.02);
+        assertEquals(0.0, odo.cartesian(), 1e-3);
+        // 0.06 rad/s of error, a few degrees
+        assertEquals(0.0012, odo.rotation(), 1e-3);
+        // this is very fast rotation, 10 rad/s over 0.02 sec
+        odo = Uncertainty.odometryStdDevs(0, 0.2);
+        assertEquals(0.0, odo.cartesian(), 1e-3);
+        // 1.5 rad/s of error, that's a whole lot!
+        assertEquals(0.0300, odo.rotation(), 1e-3);
     }
 
     @Test
@@ -69,10 +96,10 @@ public class UncertaintyTest {
 
     @Test
     void testScaledTwist() {
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.02, 0.02);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
         assertEquals(0.040, visionStdDev.cartesian(), DELTA);
         assertEquals(0.016, visionStdDev.rotation(), DELTA);
         // 10 cm of difference between the vision update and the current pose
@@ -86,10 +113,10 @@ public class UncertaintyTest {
 
     @Test
     void testScaledDelta() {
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.02, 0.02);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
         assertEquals(0.040, visionStdDev.cartesian(), DELTA);
         assertEquals(0.016, visionStdDev.rotation(), DELTA);
         // 10 cm of difference between the vision update and the current pose
@@ -103,10 +130,10 @@ public class UncertaintyTest {
 
     @Test
     void testCartesianWeight() {
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.01, 0.01);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
         assertEquals(0.040, visionStdDev.cartesian(), DELTA);
         assertEquals(0.016, visionStdDev.rotation(), DELTA);
         double w = Uncertainty.cartesianWeight(stateStdDev, visionStdDev);
@@ -115,10 +142,10 @@ public class UncertaintyTest {
 
     @Test
     void testRotationWeight() {
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.01, 0.01);
+        IsotropicNoiseSE2 stateStdDev =  IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
-        IsotropicSigmaSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
         assertEquals(0.040, visionStdDev.cartesian(), DELTA);
         assertEquals(0.016, visionStdDev.rotation(), DELTA);
         double w = Uncertainty.rotationWeight(stateStdDev, visionStdDev);
@@ -126,12 +153,28 @@ public class UncertaintyTest {
     }
 
     @Test
-    void testinverseVarianceWeighting() {
-        assertEquals(0.010, Uncertainty.inverseVarianceWeighting(1, 100), DELTA);
-        assertEquals(0.091, Uncertainty.inverseVarianceWeighting(1, 10), DELTA);
-        assertEquals(0.5, Uncertainty.inverseVarianceWeighting(1, 1), DELTA);
-        assertEquals(0.910, Uncertainty.inverseVarianceWeighting(10, 1), DELTA);
-        assertEquals(0.990, Uncertainty.inverseVarianceWeighting(100, 1), DELTA);
+    void testWeight() {
+        // very uncertain update is almost ignored
+        assertEquals(0.010, Uncertainty.weight(1, 100), DELTA);
+        assertEquals(0.091, Uncertainty.weight(1, 10), DELTA);
+        // equal uncertainty yields equal weight
+        assertEquals(0.5, Uncertainty.weight(1, 1), DELTA);
+        assertEquals(0.910, Uncertainty.weight(10, 1), DELTA);
+        // very confident update gets almost all the weight
+        assertEquals(0.990, Uncertainty.weight(100, 1), DELTA);
+    }
+
+    @Test
+    void testVariance() {
+        // very uncertain update yields a confident result
+        assertEquals(0.990, Uncertainty.variance(1, 100), DELTA);
+        // less uncertain, result is tighter
+        assertEquals(0.91, Uncertainty.variance(1, 10), DELTA);
+        // two samples with same uncertainty -> twice as confident!
+        assertEquals(0.5, Uncertainty.variance(1, 1), DELTA);
+        assertEquals(0.91, Uncertainty.variance(10, 1), DELTA);
+        // very confident update yields a confident result
+        assertEquals(0.990, Uncertainty.variance(100, 1), DELTA);
     }
 
     @Test
@@ -142,7 +185,7 @@ public class UncertaintyTest {
         System.out.println("# q r mix\n");
         for (double q = 0; q < 0.1; q += 0.005) {
             for (double r = 0; r < 0.1; r += 0.005) {
-                double mix = Uncertainty.inverseVarianceWeighting(q, r);
+                double mix = Uncertainty.weight(q, r);
                 System.out.printf("%f %f %f\n", q, r, mix);
             }
         }

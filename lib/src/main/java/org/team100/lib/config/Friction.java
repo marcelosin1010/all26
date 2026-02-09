@@ -4,13 +4,14 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.tuning.Mutable;
 
 /**
- * Friction model with three constants, applicable for motor feedforward. These
- * values describe the entire mechanism; the motor friction itself is usually
- * negligible.
+ * Friction model for static, dynamic, and viscous friction.
+ * 
+ * Applicable for motor feedforward.
+ * 
+ * These values describe the entire mechanism; the motor friction itself is
+ * usually negligible.
  * 
  * TODO: make a little library of friction configs based on experiment.
- * 
- * 
  * 
  * @see https://mogi.bme.hu/TAMOP/robot_applications/ch07.html
  * @see https://en.wikipedia.org/wiki/Friction
@@ -56,6 +57,9 @@ public class Friction {
      * Voltage to balance friction (i.e. this has the same sign as the supplied
      * speed).
      * 
+     * Includes viscous friction (proportional to speed), dynamic friction (constant
+     * while moving), and static friction (constant while almost stopped).
+     * 
      * @param motorRad_S setpoint speed rad/s
      */
     public double frictionFFVolts(double motorRad_S) {
@@ -65,6 +69,14 @@ public class Friction {
             return viscous + kS.getAsDouble() * direction;
         }
         return viscous + kD.getAsDouble() * direction;
+    }
+
+    public static Friction zero(LoggerFactory log) {
+        return new Friction(log, 0, 0, 0, 0);
+    }
+
+    public static Friction test(LoggerFactory log) {
+        return new Friction(log, 0.100, 0.100, 0.0, 0.1);
     }
 
 }

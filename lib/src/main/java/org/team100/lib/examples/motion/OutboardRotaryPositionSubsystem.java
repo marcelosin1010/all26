@@ -70,6 +70,7 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                         MotorPhase.FORWARD,
                         10, // Stator current limit, amps
                         NeoCANSparkMotor.ff(log),
+                        NeoCANSparkMotor.friction(log),
                         PIDConstants.makePositionPID(log, 0.2));
                 IncrementalBareEncoder encoder = motor.encoder();
                 return getMech(log, motor, encoder);

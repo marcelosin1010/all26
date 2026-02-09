@@ -3,7 +3,8 @@ package org.team100.lib.mechanism;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.Friction;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.TestLoggerFactory;
 import org.team100.lib.logging.primitive.TestPrimitiveLogger;
@@ -18,8 +19,9 @@ public class RotaryMechanismTest implements Timeless {
     /** Show that the limits have effect. */
     @Test
     void testLimits() {
-        Feedforward100 ff = Feedforward100.test(logger);
-        MockBareMotor motor = new MockBareMotor(ff);
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
         RotaryMechanism mech = new RotaryMechanism(logger, motor, sensor, gearRatio, 1, 2);
@@ -56,8 +58,9 @@ public class RotaryMechanismTest implements Timeless {
     /** Same cases as above, but unlimited */
     @Test
     void testUnlimited() {
-        Feedforward100 ff = Feedforward100.test(logger);
-        MockBareMotor motor = new MockBareMotor(ff);
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         double gearRatio = 1;
         RotaryMechanism mech = new RotaryMechanism(
@@ -95,7 +98,9 @@ public class RotaryMechanismTest implements Timeless {
     @Test
     void testWrapNearMeasurement() {
         LoggerFactory log = new TestLoggerFactory(new TestPrimitiveLogger());
-        MockBareMotor motor = new MockBareMotor(Feedforward100.test(log));
+        SimpleDynamics ff = SimpleDynamics.test(log);
+        Friction friction = Friction.test(log);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 log, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

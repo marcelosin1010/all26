@@ -1,6 +1,7 @@
 package org.team100.lib.examples.motion;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.controller.r1.FeedbackR1;
@@ -90,11 +91,14 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
                 int supplyLimit = 60;
                 int statorLimit = 90;
                 double inputOffset = 0.135541;
-                PIDConstants PID = PIDConstants.makeVelocityPID(log, 0.05);
+                PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.05);
                 // you should make a case in the feedforward class for your constants
-                Feedforward100 FF = Feedforward100.test(log);
+                SimpleDynamics ff = SimpleDynamics.test(log);
+                Friction friction = Friction.test(log);
                 Kraken6Motor motor = new Kraken6Motor(
-                        log, new CanId(1), NeutralMode100.COAST, MotorPhase.REVERSE, supplyLimit, statorLimit, PID, FF);
+                        log, new CanId(1),
+                        NeutralMode100.COAST, MotorPhase.REVERSE,
+                        supplyLimit, statorLimit, ff, friction, pid);
                 RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(
                         log, new RoboRioChannel(5), inputOffset, EncoderDrive.DIRECT);
                 RotaryMechanism mech = new RotaryMechanism(

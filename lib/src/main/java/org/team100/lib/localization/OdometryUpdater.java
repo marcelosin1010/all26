@@ -64,32 +64,28 @@ public class OdometryUpdater {
 
     /** For testing. */
     void update(double timestamp) {
-        put(
-                timestamp,
-                m_gyro.getYawNWU(),
-                m_gyro.getYawRateNWU(),
-                m_positions.get());
+        put(timestamp, m_gyro.getYawNWU(), m_positions.get());
     }
 
     /**
-     * Empty the history, reset the gyro offset, and add the given measurements at
-     * the current instane.
+     * Empty the history and add the given measurements at the current instant.
      * 
      * Uses the module position supplier passed to the constructor, and the gyro.
      * When this is called by the bound command, it provides a pose with the current
      * translation and a rotation of zero (or 180 for the other button).
      */
-    public void reset(Pose2d pose) {
-        reset(m_gyro.getYawNWU(), pose, Takt.get());
+    public void reset(Pose2d pose, IsotropicNoiseSE2 noise) {
+        reset(pose, noise, Takt.get());
     }
 
     /** For testing. */
-    public void reset(Pose2d pose, double timestampSeconds) {
-        reset(m_gyro.getYawNWU(), pose, timestampSeconds);
+    public void reset(Pose2d pose, IsotropicNoiseSE2 noise, double timestampSeconds) {
+        reset(m_gyro.getYawNWU(), pose, noise, timestampSeconds);
     }
 
     /**
-     * Empty the history, reset the gyro offset, and add the given measurements.
+     * Empty the history and add the given measurements.
+     * 
      * Uses the module position supplier passed to the constructor.
      * When this is called by the bound command, it provides a pose with the current
      * translation and a rotation of zero (or 180 for the other button).
@@ -100,10 +96,12 @@ public class OdometryUpdater {
     void reset(
             Rotation2d gyroAngle,
             Pose2d pose,
+            IsotropicNoiseSE2 noise,
             double timestampSeconds) {
         m_history.reset(
                 m_positions.get(),
                 pose,
+                noise,
                 timestampSeconds,
                 gyroAngle);
     }
@@ -113,7 +111,6 @@ public class OdometryUpdater {
     private void put(
             double currentTimeS,
             Rotation2d gyroYaw,
-            double gyroRate,
             SwerveModulePositions positions) {
 
         // the entry right before this one, the basis for integration.
@@ -128,15 +125,18 @@ public class OdometryUpdater {
         }
 
         double dt = currentTimeS - lowerEntry.getKey();
-        SwerveState previousValue = lowerEntry.getValue();
-        ModelSE2 previousState = previousValue.state();
+        SwerveState previousState = lowerEntry.getValue();
+
+        ModelSE2 previousModel = previousState.state();
+        IsotropicNoiseSE2 previousNoise = previousState.noise();
+
         if (DEBUG) {
             System.out.printf("previous x %.6f y %.6f\n",
-                    previousState.pose().getX(), previousState.pose().getY());
+                    previousModel.pose().getX(), previousModel.pose().getY());
         }
 
         SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
-                previousValue.positions(), positions);
+                previousState.positions(), positions);
         if (DEBUG) {
             System.out.printf("modulePositionDelta %s\n", modulePositionDelta);
         }
@@ -146,25 +146,32 @@ public class OdometryUpdater {
             System.out.printf("twist x %.6f y %.6f theta %.6f\n", twist.dx, twist.dy, twist.dtheta);
         }
 
-        double gyroDTheta = gyroYaw.minus(previousValue.gyroYaw()).getRadians();
+        double gyroDTheta = gyroYaw.minus(previousState.gyroYaw()).getRadians();
         twist = mix(twist, gyroDTheta, dt);
 
-        Pose2d newPose = previousState.pose().exp(twist);
+        // The new pose is just the twist applied to the old pose.
+        Pose2d newPose = previousModel.pose().exp(twist);
         if (DEBUG) {
             System.out.printf("new pose x %.6f y %.6f\n", newPose.getX(), newPose.getY());
         }
 
-        // this is the backward finite difference velocity from odometry
-        // TODO: don't use delta to represent velocity
-        DeltaSE2 odoVelo = DeltaSE2.delta(
-                previousState.pose(), newPose)
-                .div(dt);
+        // Backward finite difference velocity.
+        VelocitySE2 velocity = VelocitySE2.velocity(
+                previousModel.pose(), newPose, dt);
 
-        VelocitySE2 velocity = mix(odoVelo, gyroRate);
+        ModelSE2 model = new ModelSE2(newPose, velocity);
 
-        ModelSE2 swerveState = new ModelSE2(newPose, velocity);
+        // Noise in this update.
+        IsotropicNoiseSE2 n0 = Uncertainty.odometryStdDevs(
+                Metrics.translationalNorm(twist), twist.dtheta);
 
-        m_history.put(currentTimeS, swerveState, positions, gyroYaw);
+        // The variance of the sum of (independent) variables is
+        // just the sum of their variances. So if you drive around for
+        // awhile without seeing any tags, the variance will grow
+        // without bound.
+        IsotropicNoiseSE2 noise = previousNoise.plus(n0);
+
+        m_history.put(currentTimeS, model, noise, positions, gyroYaw);
     }
 
     /**
@@ -188,33 +195,15 @@ public class OdometryUpdater {
                 odoFraction * twist.dtheta + gyroFraction * gyroDTheta);
     }
 
-    /**
-     * Same as above, for velocity.
-     * TODO: combine these, since there's really just one "delta" here.
-     */
-    static VelocitySE2 mix(DeltaSE2 odoVelo, double gyroRateRad_S) {
-        double velocity = odoVelo.l2Norm();
-        double width = 1.0;
-        double odoFraction = Math.exp(-width * velocity * velocity);
-        double gyroFraction = 1 - odoFraction;
-        return new VelocitySE2(
-                odoVelo.getX(),
-                odoVelo.getY(),
-                odoFraction * odoVelo.getRadians() + gyroFraction * gyroRateRad_S);
-    }
-
     /** Replay odometry after the sample time. */
     void replay(double sampleTime) {
         // Note the exclusive tailmap: we don't see the entry at timestamp.
         for (Map.Entry<Double, SwerveState> entry : m_history.exclusiveTailMap(sampleTime).entrySet()) {
             double timestamp = entry.getKey();
             SwerveState value = entry.getValue();
-
             Rotation2d gyroYaw = value.gyroYaw();
-            double gyroRate = value.state().theta().v();
             SwerveModulePositions positions = value.positions();
-
-            put(timestamp, gyroYaw, gyroRate, positions);
+            put(timestamp, gyroYaw, positions);
         }
     }
 

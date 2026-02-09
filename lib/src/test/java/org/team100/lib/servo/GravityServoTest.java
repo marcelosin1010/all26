@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.function.DoubleUnaryOperator;
 
 import org.junit.jupiter.api.Test;
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.Friction;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.controller.r1.FeedbackR1;
 import org.team100.lib.controller.r1.PIDFeedback;
 import org.team100.lib.controller.r1.ZeroFeedback;
@@ -35,7 +36,7 @@ class GravityServoTest implements Timeless {
         FeedbackR1 pivotFeedback = new PIDFeedback(
                 logger, 4.5, 0.0, 0.000, false, 0.05, 1);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(logger, 8, 8, 0.001);
-        IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger,() ->  profile, 0.05, 0.05);
+        IncrementalProfileReferenceR1 ref = new IncrementalProfileReferenceR1(logger, () -> profile, 0.05, 0.05);
         // motor speed is rad/s
         SimulatedBareMotor simMotor = new SimulatedBareMotor(logger, 600);
         IncrementalBareEncoder encoder = simMotor.encoder();
@@ -66,7 +67,9 @@ class GravityServoTest implements Timeless {
     /** For refactoring the gravity servo */
     @Test
     void testGravity() {
-        MockBareMotor motor = new MockBareMotor(Feedforward100.test(logger));
+        SimpleDynamics ff = SimpleDynamics.test(logger);
+        Friction friction = Friction.test(logger);
+        MockBareMotor motor = new MockBareMotor(ff, friction);
         MockRotaryPositionSensor sensor = new MockRotaryPositionSensor();
         RotaryMechanism mech = new RotaryMechanism(
                 logger, motor, sensor, 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);

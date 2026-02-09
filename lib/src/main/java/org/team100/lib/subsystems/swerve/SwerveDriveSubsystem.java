@@ -9,6 +9,7 @@ import org.team100.lib.config.DriverSkill;
 import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.localization.FreshSwerveEstimate;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.logging.Level;
 import org.team100.lib.logging.LoggerFactory;
@@ -140,11 +141,11 @@ public class SwerveDriveSubsystem extends SubsystemBase implements VelocitySubsy
         m_swerveLocal.stop();
     }
 
-    public void resetPose(Pose2d robotPose) {
+    public void resetPose(Pose2d robotPose, IsotropicNoiseSE2 noise) {
         if (DEBUG)
             System.out.println("WARNING: Make sure resetting the swerve module collection doesn't break anything");
         m_swerveLocal.reset();
-        m_odometryUpdater.reset(robotPose);
+        m_odometryUpdater.reset(robotPose, noise);
         m_stateCache.reset();
     }
 

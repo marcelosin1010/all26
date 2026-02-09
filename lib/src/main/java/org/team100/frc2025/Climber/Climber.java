@@ -44,8 +44,9 @@ public class Climber extends SubsystemBase {
                 Falcon6Motor motor = new Falcon6Motor(
                         log, canID, NeutralMode100.BRAKE, MotorPhase.REVERSE,
                         20, 20,
-                        PIDConstants.makePositionPID(log, 0.2),
-                        Falcon6Motor.ff2(log));
+                        Falcon6Motor.ff2(log),
+                        Falcon6Motor.friction2(log),
+                        PIDConstants.makePositionPID(log, 0.2));
 
                 double inputOffset = 0.440602;
                 RotaryPositionSensor sensor = new AS5048RotaryPositionSensor(

@@ -56,8 +56,8 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
     // @Test
     void test0() {
         SwerveKinodynamics kinodynamics = SwerveKinodynamicsFactory.forTest(logger);
-        IsotropicSigmaSE2 stateStdDevs = new IsotropicSigmaSE2(0.1, 0.1);
-        IsotropicSigmaSE2 visionMeasurementStdDevs = new IsotropicSigmaSE2(0.5, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDevs = IsotropicNoiseSE2.fromStdDev(0.1, 0.1);
+        IsotropicNoiseSE2 visionMeasurementStdDevs = IsotropicNoiseSE2.fromStdDev(0.5, Double.MAX_VALUE);
 
         Gyro gyro = new MockGyro();
         SwerveHistory history = new SwerveHistory(
@@ -66,10 +66,11 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
                 Rotation2d.kZero,
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
                 0);
         positions = p(0);
         OdometryUpdater ou = new OdometryUpdater(kinodynamics, gyro, history, () -> positions);
-        ou.reset(Pose2d.kZero, 0);
+        ou.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
         NudgingVisionUpdater vu = new NudgingVisionUpdater(history, ou);
 
         // fill the buffer with odometry
@@ -87,7 +88,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         int iterations = 100000;
         long startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(0.00, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
+            vu.put(0.00, visionRobotPoseMeters, visionMeasurementStdDevs);
         }
         long finishTime = System.currentTimeMillis();
         if (DEBUG) {
@@ -101,7 +102,7 @@ public class SwerveDrivePoseEstimator100PerformanceTest {
         iterations = 1000000;
         startTime = System.currentTimeMillis();
         for (int i = 0; i < iterations; ++i) {
-            vu.put(duration - 0.1, visionRobotPoseMeters, stateStdDevs, visionMeasurementStdDevs);
+            vu.put(duration - 0.1, visionRobotPoseMeters, visionMeasurementStdDevs);
         }
         finishTime = System.currentTimeMillis();
         if (DEBUG) {

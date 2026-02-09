@@ -1,6 +1,6 @@
 package org.team100.lib.motor.ctre;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
 import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -26,9 +26,10 @@ public class Kraken6Motor extends Talon6Motor {
             MotorPhase motorPhase,
             double supplyLimit,
             double statorLimit,
-            PIDConstants pid,
-            Feedforward100 ff) {
-        super(parent, canId, neutral, motorPhase, supplyLimit, statorLimit, pid, ff);
+            SimpleDynamics ff,
+            Friction friction,
+            PIDConstants pid) {
+        super(parent, canId, neutral, motorPhase, supplyLimit, statorLimit, ff, friction, pid);
     }
 
     @Override
@@ -41,21 +42,32 @@ public class Kraken6Motor extends Talon6Motor {
         return 0.019;
     }
 
+    @Override
+    public double kFreeSpeedRPM() {
+        return 5800;
+    }
+
     /** Feedforward for swerve drive axis */
-    public static Feedforward100 swerveDriveFF(LoggerFactory log) {
+    public static SimpleDynamics swerveDriveFF(LoggerFactory log) {
         // TODO: friction here is probably too low.
         // TODO: verify kA
-        return new Feedforward100(log, 5800, 0.004, 0.002,
-                new Friction(log, 0.26, 0.26, 0.006, 0.5));
+        return new SimpleDynamics(log, 0.004, 0.002);
     }
 
-    public static Feedforward100 highFrictionFF(LoggerFactory log) {
-        return new Feedforward100(log, 5800, 0.004, 0.002,
-                new Friction(log, 0.26, 0.26, 0.006, 0.5));
+    public static Friction swerveDriveFriction(LoggerFactory log) {
+        // TODO: friction here is probably too low.
+        return new Friction(log, 0.26, 0.26, 0.006, 0.5);
     }
 
-    public static Feedforward100 lowFrictionFF(LoggerFactory log) {
-        return new Feedforward100(log, 5800, 0.004, 0.002,
-                new Friction(log, 0.005, 0.005, 0.006, 0.5));
+    public static SimpleDynamics highFrictionFF(LoggerFactory log) {
+        return new SimpleDynamics(log, 0.004, 0.002);
+    }
+
+    public static Friction highFriction(LoggerFactory log) {
+        return new Friction(log, 0.26, 0.26, 0.006, 0.5);
+    }
+
+    public static SimpleDynamics lowFrictionFF(LoggerFactory log) {
+        return new SimpleDynamics(log, 0.004, 0.002);
     }
 }

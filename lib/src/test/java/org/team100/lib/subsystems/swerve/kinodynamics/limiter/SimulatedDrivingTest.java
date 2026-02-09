@@ -13,6 +13,7 @@ import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
 import org.team100.lib.localization.FreshSwerveEstimate;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SwerveHistory;
@@ -63,9 +64,10 @@ public class SimulatedDrivingTest implements Timeless {
                 Rotation2d.kZero,
                 SwerveModulePositions.kZero(),
                 Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
                 0);
         odometryUpdater = new OdometryUpdater(swerveKinodynamics, gyro, history, collection::positions);
-        odometryUpdater.reset(Pose2d.kZero, 0);
+        odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high(), 0);
 
         NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(history, odometryUpdater);
         AprilTagFieldLayoutWithCorrectOrientation layout = new AprilTagFieldLayoutWithCorrectOrientation();

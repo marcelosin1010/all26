@@ -103,6 +103,11 @@ public class LazySimulatedBareMotor implements BareMotor {
     }
 
     @Override
+    public double kFreeSpeedRPM() {
+        return m_delegate.kFreeSpeedRPM();
+    }
+
+    @Override
     public IncrementalBareEncoder encoder() {
         return new SimulatedBareEncoder(m_log, this);
     }

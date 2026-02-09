@@ -40,7 +40,7 @@ class AprilTagRobotLocalizerPerformanceTest {
 
         VisionUpdater visionUpdater = new VisionUpdater() {
             @Override
-            public void put(double t, Pose2d p, IsotropicSigmaSE2 sd1, IsotropicSigmaSE2 sd2) {
+            public void put(double t, Pose2d p, IsotropicNoiseSE2 sd2) {
                 poseEstimate.add(p);
                 timeEstimate.add(t);
             }

@@ -302,7 +302,6 @@ public class AprilTagRobotLocalizer extends CameraReader<Blip24> {
             m_visionUpdater.put(
                     correctedTimestamp,
                     robotPose2d,
-                    Uncertainty.stateStdDevs(),
                     Uncertainty.visionMeasurementStdDevs(distanceM, offAxisAngleRad));
             m_prevPose = robotPose2d;
         }

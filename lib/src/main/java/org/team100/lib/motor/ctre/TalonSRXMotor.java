@@ -78,6 +78,12 @@ public class TalonSRXMotor implements BareMotor {
     }
 
     @Override
+    public double kFreeSpeedRPM() {
+        // Adjust this for whatever is attached.
+        return 6000;
+    }
+
+    @Override
     public IncrementalBareEncoder encoder() {
         // TODO: does this work?
         return new SimulatedBareEncoder(m_log, this);

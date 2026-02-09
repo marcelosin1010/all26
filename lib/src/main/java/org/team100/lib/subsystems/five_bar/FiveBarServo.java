@@ -2,7 +2,8 @@ package org.team100.lib.subsystems.five_bar;
 
 import java.util.function.DoubleSupplier;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
@@ -67,7 +68,8 @@ public class FiveBarServo extends SubsystemBase {
     public FiveBarServo(LoggerFactory logger) {
         // zeros
         PIDConstants pid = PIDConstants.zero(logger);
-        Feedforward100 ff = Feedforward100.zero(logger);
+        SimpleDynamics ff = SimpleDynamics.zero(logger);
+        Friction friction = Friction.zero(logger);
         IncrementalProfile profile = new TrapezoidIncrementalProfile(
                 logger, MAX_VELOCITY, MAX_ACCEL, POSITION_TOLERANCE);
 
@@ -79,8 +81,9 @@ public class FiveBarServo extends SubsystemBase {
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
-                pid,
-                ff);
+                ff,
+                friction,
+                pid);
         IncrementalBareEncoder encoderP1 = motorP1.encoder();
         m_sensorP1 = new ProxyRotaryPositionSensor(encoderP1, 1.0);
         RotaryMechanism mechP1 = new RotaryMechanism(
@@ -106,8 +109,9 @@ public class FiveBarServo extends SubsystemBase {
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
-                pid,
-                ff);
+                ff,
+                friction,
+                pid);
         IncrementalBareEncoder encoderP5 = motorP5.encoder();
         m_sensorP5 = new ProxyRotaryPositionSensor(encoderP5, 1.0);
         RotaryMechanism m_mechP5 = new RotaryMechanism(

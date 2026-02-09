@@ -1,6 +1,7 @@
 package org.team100.lib.subsystems.shooter;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
@@ -23,13 +24,14 @@ public class DrumShooterFactory {
         CanId canL = new CanId(39);
         CanId canR = new CanId(19);
 
-        Feedforward100 ff = Neo550CANSparkMotor.ff(log);
+        SimpleDynamics ff = Neo550CANSparkMotor.ff(log);
+        Friction friction = Neo550CANSparkMotor.friction(log);
         PIDConstants pid = PIDConstants.makeVelocityPID(log, 0.02);
 
         BareMotor motorL = Neo550CANSparkMotor.get(
-                log, canL, MotorPhase.FORWARD, currentLimit, ff, pid);
+                log, canL, MotorPhase.FORWARD, currentLimit, ff, friction, pid);
         BareMotor motorR = Neo550CANSparkMotor.get(
-                log, canR, MotorPhase.REVERSE, currentLimit, ff, pid);
+                log, canR, MotorPhase.REVERSE, currentLimit, ff, friction, pid);
 
         return new DualDrumShooter(parent,
                 OutboardLinearVelocityServo.make(logL, motorL, GEAR_RATIO, WHEEL_DIA_M),

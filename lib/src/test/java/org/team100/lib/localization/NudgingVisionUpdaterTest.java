@@ -17,8 +17,8 @@ public class NudgingVisionUpdaterTest {
     @Test
     void testZeroNudge() {
         // state is twice as confident as camera
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.01, 0.01);
-        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.02, 0.02);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
+        IsotropicNoiseSE2 visionStdDev = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d();
         final Pose2d nudged = NudgingVisionUpdater.nudge(sample, measurement, stateStdDev, visionStdDev);
@@ -36,8 +36,8 @@ public class NudgingVisionUpdaterTest {
     @Test
     void testGentleNudge() {
         int frameRate = 50;
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.001, 0.1);
-        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.1, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.001, 0.1);
+        IsotropicNoiseSE2 visionStdDev = IsotropicNoiseSE2.fromStdDev(0.1, Double.MAX_VALUE);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d(0.1, 0, new Rotation2d());
         Pose2d nudged = sample;
@@ -66,8 +66,8 @@ public class NudgingVisionUpdaterTest {
     @Test
     void testFirmerNudge() {
         int frameRate = 50;
-        IsotropicSigmaSE2 stateStdDev = new IsotropicSigmaSE2(0.001, 0.1);
-        IsotropicSigmaSE2 visionStdDev = new IsotropicSigmaSE2(0.03, Double.MAX_VALUE);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.001, 0.1);
+        IsotropicNoiseSE2 visionStdDev = IsotropicNoiseSE2.fromStdDev(0.03, Double.MAX_VALUE);
         final Pose2d sample = new Pose2d();
         final Pose2d measurement = new Pose2d(0.1, 0, new Rotation2d());
         Pose2d nudged = sample;

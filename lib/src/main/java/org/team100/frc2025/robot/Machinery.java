@@ -13,6 +13,7 @@ import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
 import org.team100.lib.localization.AprilTagFieldLayoutWithCorrectOrientation;
 import org.team100.lib.localization.AprilTagRobotLocalizer;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.localization.NudgingVisionUpdater;
 import org.team100.lib.localization.OdometryUpdater;
 import org.team100.lib.localization.SimulatedTagDetector;
@@ -114,10 +115,11 @@ public class Machinery {
                 gyro.getYawNWU(),
                 m_modules.positions(),
                 Pose2d.kZero,
+                IsotropicNoiseSE2.high(),
                 Takt.get());
         final OdometryUpdater odometryUpdater = new OdometryUpdater(
                 m_swerveKinodynamics, gyro, history, m_modules::positions);
-        odometryUpdater.reset(Pose2d.kZero);
+        odometryUpdater.reset(Pose2d.kZero, IsotropicNoiseSE2.high());
         final NudgingVisionUpdater visionUpdater = new NudgingVisionUpdater(
                 history, odometryUpdater);
 
@@ -154,7 +156,9 @@ public class Machinery {
                 odometryUpdater,
                 history,
                 m_modules);
-        m_drive.resetPose(new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d(Math.PI)));
+        m_drive.resetPose(
+                new Pose2d(m_drive.getPose().getTranslation(), new Rotation2d(Math.PI)),
+                IsotropicNoiseSE2.high());
         m_robotViz = new RobotPoseVisualization(
                 fieldLogger, () -> m_drive.getState().pose(), "robot");
 

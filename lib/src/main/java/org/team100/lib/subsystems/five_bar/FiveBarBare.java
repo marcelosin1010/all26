@@ -2,7 +2,8 @@ package org.team100.lib.subsystems.five_bar;
 
 import java.util.function.DoubleSupplier;
 
-import org.team100.lib.config.Feedforward100;
+import org.team100.lib.config.SimpleDynamics;
+import org.team100.lib.config.Friction;
 import org.team100.lib.config.Identity;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
@@ -49,8 +50,9 @@ public class FiveBarBare extends SubsystemBase {
     /////////////////////
 
     private BareMotor makeMotor(LoggerFactory logger, CanId canId) {
-        PIDConstants PID = PIDConstants.zero(logger);
-        Feedforward100 FF = Feedforward100.zero(logger);
+        SimpleDynamics ff = SimpleDynamics.zero(logger);
+        Friction friction = Friction.zero(logger);
+        PIDConstants pid = PIDConstants.zero(logger);
         return new Falcon6Motor(
                 logger,
                 canId,
@@ -58,8 +60,9 @@ public class FiveBarBare extends SubsystemBase {
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
-                PID,
-                FF);
+                ff,
+                friction,
+                pid);
     }
 
     private void setDutyCycle(double p1, double p5) {

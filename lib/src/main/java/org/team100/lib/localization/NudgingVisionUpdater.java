@@ -40,15 +40,13 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * 
      * @param timestamp   When the measurement was made.
      * @param measurement Robot pose from vision.
-     * @param stateSigma  Standard deviation of the state.
-     * @param visionSigma Standard deviation of the measurement.
+     * @param visionNoise Measurement noise in SE(2).
      */
     @Override
     public void put(
             double timestamp,
             Pose2d measurement,
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
+            IsotropicNoiseSE2 visionNoise) {
 
         // Skip too-old measurement
         if (m_history.tooOld(timestamp)) {
@@ -59,19 +57,26 @@ public class NudgingVisionUpdater implements VisionUpdater {
         SwerveState sample = m_history.getRecord(timestamp);
 
         // Nudge the sample pose towards the measurement.
-        Pose2d samplePose = sample.state().pose();
-        Pose2d nudged = nudge(samplePose, measurement, stateSigma, visionSigma);
+        ModelSE2 sampleModel = sample.state();
+        IsotropicNoiseSE2 sampleNoise = sample.noise();
+        SwerveModulePositions samplePositions = sample.positions();
+
+        Pose2d samplePose = sampleModel.pose();
+
+        Pose2d nudged = nudge(samplePose, measurement, sampleNoise, visionNoise);
 
         // Use the interpolated gyro yaw, unmodified.
         Rotation2d gyroYaw = sample.gyroYaw();
         // Use the interpolated velocity, unmodified
-        VelocitySE2 sampleVelocity = sample.state().velocity();
+        VelocitySE2 sampleVelocity = sampleModel.velocity();
 
         ModelSE2 model = new ModelSE2(nudged, sampleVelocity);
-        SwerveModulePositions positions = sample.positions();
+
+        IsotropicNoiseSE2 noise = IsotropicNoiseSE2.inverseVarianceWeightedAverage(
+                sampleNoise, visionNoise);
 
         // Remember the result.
-        m_history.put(timestamp, model, positions, gyroYaw);
+        m_history.put(timestamp, model, noise, samplePositions, gyroYaw);
 
         // Replay everything after the sample.
         m_odometryUpdater.replay(timestamp);
@@ -91,9 +96,8 @@ public class NudgingVisionUpdater implements VisionUpdater {
     /////////////////////////////////////////
 
     /**
-     * Nudge the sample towards the measurement. This used to use a Twist, which
-     * coupled the cartesian and rotational dimensions in an unphysical way; this
-     * now treats the three dimensions as independent.
+     * Compute the weighted average of sample and measurement, using
+     * inverse-variance weighting.
      * 
      * TODO: make these arrays into objects
      * 
@@ -105,14 +109,11 @@ public class NudgingVisionUpdater implements VisionUpdater {
     static Pose2d nudge(
             Pose2d sample,
             Pose2d measurement,
-            IsotropicSigmaSE2 stateSigma,
-            IsotropicSigmaSE2 visionSigma) {
+            IsotropicNoiseSE2 stateSigma,
+            IsotropicNoiseSE2 visionSigma) {
         // The difference between the odometry pose and the vision pose.
         DeltaSE2 delta = DeltaSE2.delta(sample, measurement);
-        // Twist2d twist = sample.log(measurement);
-        // Discount the twist based on the sigmas relative to each other.
-        // Twist2d scaledTwist = Uncertainty.getScaledTwist(stateSigma, visionSigma,
-        // twist);
+        // Scale the delta based on the noise.
         DeltaSE2 scaledDelta = Uncertainty.getScaledDelta(stateSigma, visionSigma, delta);
         return scaledDelta.plus(sample);
     }

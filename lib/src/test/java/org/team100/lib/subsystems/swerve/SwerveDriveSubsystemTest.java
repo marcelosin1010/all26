@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.team100.lib.experiments.Experiment;
 import org.team100.lib.experiments.Experiments;
+import org.team100.lib.localization.IsotropicNoiseSE2;
 import org.team100.lib.testing.Timeless;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -24,7 +25,7 @@ class SwerveDriveSubsystemTest implements Timeless {
 
         SwerveDriveSubsystem drive = fixture.drive;
 
-        drive.resetPose(new Pose2d());
+        drive.resetPose(new Pose2d(), IsotropicNoiseSE2.high());
 
         stepTime();
         drive.periodic();
@@ -71,7 +72,7 @@ class SwerveDriveSubsystemTest implements Timeless {
         fixture.collection.reset();
         stepTime();
 
-        drive.resetPose(new Pose2d());
+        drive.resetPose(new Pose2d(), IsotropicNoiseSE2.high());
 
         stepTime();
         drive.periodic();
