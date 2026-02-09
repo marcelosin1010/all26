@@ -5,7 +5,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.sensor.position.incremental.sim.SimulatedBareEncoder;
 import org.team100.lib.util.CanId;
@@ -27,7 +27,7 @@ public class TalonSRXMotor implements BareMotor {
             LoggerFactory parent,
             CanId canID,
             MotorPhase phase,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             double supplyLimit) {
         m_motor = new TalonSRX(canID.id);
         switch (neutral) {

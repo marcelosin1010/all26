@@ -5,7 +5,7 @@ import java.util.List;
 import org.team100.lib.config.Identity;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.music.Player;
 import org.team100.lib.sensor.position.absolute.EncoderDrive;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
@@ -75,7 +75,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(6),
                                 0.893686,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(frontRightLogger, supplyLimit, statorLimit,
                                 new CanId(4),
                                 DriveRatio.MEDIUM,
@@ -83,7 +83,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(7),
                                 0.976568,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(rearLeftLogger, supplyLimit, statorLimit,
                                 new CanId(8),
                                 DriveRatio.MEDIUM,
@@ -91,7 +91,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(9),
                                 0.312068,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getKrakenDrive(rearRightLogger, supplyLimit, statorLimit,
                                 new CanId(6),
                                 DriveRatio.MEDIUM,
@@ -99,7 +99,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(8),
                                 0.842786,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE));
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case SWERVE_ONE:
                 System.out.println("************** WCP MODULES w/Duty-Cycle Encoders **************");
                 return new SwerveModuleCollection(
@@ -110,7 +110,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(6),
                                 0.160218,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(frontRightLogger, supplyLimit, statorLimit,
                                 new CanId(11), // drive
                                 DriveRatio.FAST,
@@ -118,7 +118,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(8),
                                 0.876519,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(rearLeftLogger, supplyLimit, statorLimit,
                                 new CanId(21), // drive
                                 DriveRatio.FAST,
@@ -126,7 +126,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(7),
                                 0.406423,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE),
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE),
                         WCPSwerveModule100.getFalconDrive(rearRightLogger, supplyLimit, statorLimit,
                                 new CanId(22), // drive
                                 DriveRatio.FAST,
@@ -134,7 +134,7 @@ public class SwerveModuleCollection implements Player {
                                 new RoboRioChannel(9),
                                 0.032502,
                                 kinodynamics,
-                                EncoderDrive.INVERSE, NeutralMode.COAST, MotorPhase.REVERSE));
+                                EncoderDrive.INVERSE, NeutralMode100.COAST, MotorPhase.REVERSE));
             case BETA_BOT:
             case SWERVE_TWO:
             case BLANK:

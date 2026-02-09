@@ -7,7 +7,7 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
 
@@ -23,7 +23,7 @@ public class NeoCANSparkMotor extends CANSparkMotor {
     public NeoCANSparkMotor(
             LoggerFactory parent,
             CanId canId,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase,
             int statorCurrentLimit,
             SimpleDynamics ff,
@@ -40,7 +40,7 @@ public class NeoCANSparkMotor extends CANSparkMotor {
         return switch (Identity.instance) {
             case BLANK -> new SimulatedBareMotor(log, 600);
             default -> new NeoCANSparkMotor(
-                    log, can, NeutralMode.BRAKE, phase, statorLimit, ff, friction, pid);
+                    log, can, NeutralMode100.BRAKE, phase, statorLimit, ff, friction, pid);
         };
     }
 

@@ -5,7 +5,7 @@ import java.util.function.Supplier;
 import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.tuning.Mutable;
 
 import com.revrobotics.PersistMode;
@@ -29,7 +29,7 @@ public class RevConfigurator {
     private static final int ENCODER_REPORT_PERIOD_MS = 20;
 
     private final SparkBase m_motor;
-    private final NeutralMode m_neutral;
+    private final NeutralMode100 m_neutral;
     private final MotorPhase m_phase;
     private final Mutable m_statorCurrentLimit;
     private final PIDConstants m_pid;
@@ -41,7 +41,7 @@ public class RevConfigurator {
     public RevConfigurator(
             LoggerFactory log,
             SparkBase motor,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase phase,
             int statorCurrentLimit,
             PIDConstants pid) {

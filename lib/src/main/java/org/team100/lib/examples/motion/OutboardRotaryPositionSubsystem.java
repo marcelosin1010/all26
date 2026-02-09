@@ -6,7 +6,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.rev.CANSparkMotor;
 import org.team100.lib.motor.rev.NeoCANSparkMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
@@ -66,7 +66,7 @@ public class OutboardRotaryPositionSubsystem extends SubsystemBase {
                 CANSparkMotor motor = new NeoCANSparkMotor(
                         log,
                         new CanId(0),
-                        NeutralMode.BRAKE,
+                        NeutralMode100.BRAKE,
                         MotorPhase.FORWARD,
                         10, // Stator current limit, amps
                         NeoCANSparkMotor.ff(log),

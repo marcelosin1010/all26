@@ -27,7 +27,7 @@ import org.team100.lib.logging.LoggerFactory.VelocitySE2Logger;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon6Motor;
 import org.team100.lib.motor.ctre.Kraken6Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
@@ -166,7 +166,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                 Kraken6Motor elevatorFrontMotor = new Kraken6Motor(
                         elevatorfrontLog,
                         new CanId(11),
-                        NeutralMode.BRAKE, MotorPhase.REVERSE,
+                        NeutralMode100.BRAKE, MotorPhase.REVERSE,
                         100,
                         100,
                         Falcon6Motor.swerveSteerFF(elevatorfrontLog),
@@ -182,7 +182,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                 Kraken6Motor elevatorBackMotor = new Kraken6Motor(
                         elevatorbackLog,
                         new CanId(12),
-                        NeutralMode.BRAKE, MotorPhase.FORWARD,
+                        NeutralMode100.BRAKE, MotorPhase.FORWARD,
                         100, // orginally 60
                         100, // originally 90
                         Falcon6Motor.swerveSteerFF(elevatorbackLog),
@@ -197,7 +197,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                 Kraken6Motor shoulderMotor = new Kraken6Motor(
                         shoulderLog,
                         new CanId(24),
-                        NeutralMode.BRAKE,
+                        NeutralMode100.BRAKE,
                         MotorPhase.REVERSE,
                         100, // og 60
                         100, // og 90
@@ -229,7 +229,7 @@ public class CalgamesMech extends SubsystemBase implements Music, PositionSubsys
                 Kraken6Motor wristMotor = new Kraken6Motor(
                         wristLog,
                         new CanId(22),
-                        NeutralMode.COAST, MotorPhase.FORWARD,
+                        NeutralMode100.COAST, MotorPhase.FORWARD,
                         40, // og 60
                         60, // og 90
                         Falcon6Motor.swerveSteerFF(wristLog),

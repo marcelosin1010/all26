@@ -7,7 +7,7 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon6Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
@@ -49,7 +49,7 @@ public class OpenLoopSubsystem extends SubsystemBase {
                 Friction friction = Friction.test(log);
                 m_motor = new Falcon6Motor(
                         log, canId,
-                        NeutralMode.COAST, MotorPhase.FORWARD,
+                        NeutralMode100.COAST, MotorPhase.FORWARD,
                         supplyLimit, statorLimit, ff, friction, pid);
             }
             default -> {

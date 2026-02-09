@@ -12,7 +12,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.rev.CANSparkEncoder;
 
 import com.revrobotics.REVLibError;
@@ -89,7 +89,7 @@ public abstract class CANSparkMotor implements BareMotor {
     protected CANSparkMotor(
             LoggerFactory parent,
             SparkBase motor,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase,
             int statorCurrentLimit,
             SimpleDynamics ff,

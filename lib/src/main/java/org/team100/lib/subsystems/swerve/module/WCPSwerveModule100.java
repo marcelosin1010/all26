@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon6Motor;
 import org.team100.lib.motor.ctre.Kraken6Motor;
 import org.team100.lib.profile.r1.IncrementalProfile;
@@ -82,7 +82,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             double turningOffset,
             SwerveKinodynamics kinodynamics,
             EncoderDrive drive,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase) {
 
         LinearVelocityServo driveServo = driveKrakenServo(
@@ -118,7 +118,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             double turningOffset,
             SwerveKinodynamics kinodynamics,
             EncoderDrive drive,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase) {
         LinearVelocityServo driveServo = driveFalconServo(
                 parent.name("Drive"),
@@ -152,7 +152,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         Kraken6Motor driveMotor = new Kraken6Motor(
                 parent,
                 driveMotorCanId,
-                NeutralMode.COAST,
+                NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 supplyLimit,
                 statorLimit,
@@ -182,7 +182,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
         Falcon6Motor driveMotor = new Falcon6Motor(
                 parent,
                 driveMotorCanId,
-                NeutralMode.COAST,
+                NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 supplyLimit,
                 statorLimit,
@@ -206,7 +206,7 @@ public class WCPSwerveModule100 extends SwerveModule100 {
             double gearRatio,
             SwerveKinodynamics kinodynamics,
             EncoderDrive drive,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase) {
 
         SimpleDynamics ff = Falcon6Motor.swerveSteerFF(parent);

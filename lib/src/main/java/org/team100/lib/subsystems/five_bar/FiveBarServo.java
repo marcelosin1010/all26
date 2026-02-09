@@ -8,7 +8,7 @@ import org.team100.lib.config.PIDConstants;
 import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.motor.ctre.Falcon6Motor;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
@@ -77,7 +77,7 @@ public class FiveBarServo extends SubsystemBase {
         Falcon6Motor motorP1 = new Falcon6Motor(
                 loggerP1,
                 new CanId(1),
-                NeutralMode.COAST,
+                NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,
@@ -105,7 +105,7 @@ public class FiveBarServo extends SubsystemBase {
         Falcon6Motor motorP5 = new Falcon6Motor(
                 loggerP5,
                 new CanId(2),
-                NeutralMode.COAST,
+                NeutralMode100.COAST,
                 MotorPhase.FORWARD,
                 SUPPLY_LIMIT,
                 STATOR_LIMIT,

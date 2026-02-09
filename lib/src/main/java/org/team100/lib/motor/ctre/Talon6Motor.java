@@ -13,7 +13,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.logging.LoggerFactory.DoubleLogger;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
-import org.team100.lib.motor.NeutralMode;
+import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.sensor.position.incremental.ctre.Talon6Encoder;
 import org.team100.lib.util.CanId;
 
@@ -99,7 +99,7 @@ public abstract class Talon6Motor implements BareMotor {
     protected Talon6Motor(
             LoggerFactory parent,
             CanId canId,
-            NeutralMode neutral,
+            NeutralMode100 neutral,
             MotorPhase motorPhase,
             double supplyLimit,
             double statorLimit,

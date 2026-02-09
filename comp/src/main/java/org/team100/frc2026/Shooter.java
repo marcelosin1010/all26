@@ -25,7 +25,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command stop() {
-        return run(this::stopMotor);
+        return run(this::stopMotor).withName("stop");
     }
 
     public void stopMotor() {
