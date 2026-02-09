@@ -95,33 +95,21 @@ public class UncertaintyTest {
     }
 
     @Test
-    void testScaledTwist() {
-        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
-        double targetRangeM = 1.0;
-        double offAxisRad = 1.0;
-        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
-        assertEquals(0.040, visionStdDev.cartesian(), DELTA);
-        assertEquals(0.016, visionStdDev.rotation(), DELTA);
-        // 10 cm of difference between the vision update and the current pose
-        Twist2d twist = new Twist2d(0.1, 0.1, 0.1);
-        Twist2d scaled = Uncertainty.getScaledTwist(stateStdDev, visionStdDev, twist);
-        // difference is discounted 20x
-        assertEquals(0.02, scaled.dx, DELTA);
-        assertEquals(0.02, scaled.dy, DELTA);
-        assertEquals(0.06, scaled.dtheta, DELTA);
-    }
-
-    @Test
     void testScaledDelta() {
         IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.02, 0.02);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
-        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);
+        IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(
+                targetRangeM, offAxisRad);
         assertEquals(0.040, visionStdDev.cartesian(), DELTA);
         assertEquals(0.016, visionStdDev.rotation(), DELTA);
         // 10 cm of difference between the vision update and the current pose
         DeltaSE2 twist = new DeltaSE2(new Translation2d(0.1, 0.1), new Rotation2d(0.1));
-        DeltaSE2 scaled = Uncertainty.getScaledDelta(stateStdDev, visionStdDev, twist);
+        double cartesianWeight = Uncertainty.cartesianWeight(stateStdDev, visionStdDev);
+        double rotationWeight = Uncertainty.rotationWeight(stateStdDev, visionStdDev);
+        DeltaSE2 scaled = new DeltaSE2(
+                twist.getTranslation().times(cartesianWeight),
+                twist.getRotation().times(rotationWeight));
         // difference is discounted 20x
         assertEquals(0.02, scaled.getX(), DELTA);
         assertEquals(0.02, scaled.getY(), DELTA);
@@ -142,7 +130,7 @@ public class UncertaintyTest {
 
     @Test
     void testRotationWeight() {
-        IsotropicNoiseSE2 stateStdDev =  IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
+        IsotropicNoiseSE2 stateStdDev = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
         double targetRangeM = 1.0;
         double offAxisRad = 1.0;
         IsotropicNoiseSE2 visionStdDev = Uncertainty.visionMeasurementStdDevs(targetRangeM, offAxisRad);

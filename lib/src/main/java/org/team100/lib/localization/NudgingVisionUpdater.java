@@ -1,13 +1,13 @@
 package org.team100.lib.localization;
 
 import org.team100.lib.coherence.Takt;
-import org.team100.lib.geometry.DeltaSE2;
 import org.team100.lib.geometry.VelocitySE2;
 import org.team100.lib.state.ModelSE2;
 import org.team100.lib.subsystems.swerve.module.state.SwerveModulePositions;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Updates SwerveModelHistory with any vision input, by interpolating to find a
@@ -66,11 +66,11 @@ public class NudgingVisionUpdater implements VisionUpdater {
         Pose2d nudged = nudge(samplePose, measurement, sampleNoise, visionNoise);
 
         // Vision updates do not affect the gyro measurement.
-        Rotation2d gyroYaw = sample.gyroYaw();
+        Rotation2d sampleGyroYaw = sample.gyroYaw();
 
         // Vision updates do not affect the gyro bias estimate.
-        VariableR1 gyroBias = sample.gyroBias();
-    
+        VariableR1 sampleGyroBias = sample.gyroBias();
+
         // Vision updates to not affect the velocity estimate.
         VelocitySE2 sampleVelocity = sampleModel.velocity();
 
@@ -80,7 +80,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
                 sampleNoise, visionNoise);
 
         // Remember the result.
-        m_history.put(timestamp, model, noise, samplePositions, gyroYaw, gyroBias);
+        m_history.put(timestamp, model, noise, samplePositions, sampleGyroYaw, sampleGyroBias);
 
         // Replay everything after the sample.
         m_odometryUpdater.replay(timestamp);
@@ -103,7 +103,7 @@ public class NudgingVisionUpdater implements VisionUpdater {
      * Compute the weighted average of sample and measurement, using
      * inverse-variance weighting.
      * 
-     * TODO: make these arrays into objects
+     * TODO: make an uncertain-pose type
      * 
      * @param sample      historical pose
      * @param measurement new input
@@ -116,10 +116,27 @@ public class NudgingVisionUpdater implements VisionUpdater {
             IsotropicNoiseSE2 stateSigma,
             IsotropicNoiseSE2 visionSigma) {
         // The difference between the odometry pose and the vision pose.
-        DeltaSE2 delta = DeltaSE2.delta(sample, measurement);
+
+        Translation2d deltaTranslation = measurement.getTranslation().minus(sample.getTranslation());
+        Rotation2d deltaRotation = measurement.getRotation().minus(sample.getRotation());
+
+        double cartesianWeight = Uncertainty.cartesianWeight(stateSigma, visionSigma);
+        double rotationWeight = Uncertainty.rotationWeight(stateSigma, visionSigma);
+
         // Scale the delta based on the noise.
-        DeltaSE2 scaledDelta = Uncertainty.getScaledDelta(stateSigma, visionSigma, delta);
-        return scaledDelta.plus(sample);
+        double deltaTranslationDistance = deltaTranslation.getNorm();
+        Rotation2d deltaTranslationDirection = deltaTranslation.getAngle();
+
+        double scaledTranslationDistance = deltaTranslationDistance * cartesianWeight;
+
+        Translation2d scaledTranslation = new Translation2d(scaledTranslationDistance, deltaTranslationDirection);
+        Rotation2d scaledRotation = deltaRotation.times(rotationWeight);
+
+        Translation2d newTranslation = sample.getTranslation().plus(scaledTranslation);
+        Rotation2d newRotation = sample.getRotation().plus(scaledRotation);
+
+        Pose2d result = new Pose2d(newTranslation, newRotation);
+        return result;
     }
 
 }

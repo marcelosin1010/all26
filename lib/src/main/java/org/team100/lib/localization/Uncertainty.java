@@ -116,43 +116,7 @@ public class Uncertainty {
 
     }
 
-    /**
-     * TODO: remove this
-     * @param stateNoise  state noise in SE(2)
-     * @param visionNoise vision update noise in SE(2)
-     * @param twist       from sample to measurement, i.e. in the intrinsic frame of
-     *                    the sample.
-     */
-    static Twist2d getScaledTwist(
-            IsotropicNoiseSE2 stateNoise,
-            IsotropicNoiseSE2 visionNoise,
-            Twist2d twist) {
-        double cartesianWeight = cartesianWeight(stateNoise, visionNoise);
-        double rotationWeight = rotationWeight(stateNoise, visionNoise);
-        return new Twist2d(
-                cartesianWeight * twist.dx,
-                cartesianWeight * twist.dy,
-                rotationWeight * twist.dtheta);
-    }
-
-    /**
-     * Use inverse-variance weighting to scale the delta.
-     * 
-     * @param stateNoise  state noise in SE(2)
-     * @param visionNoise vision update noise in SE(2)
-     * @param delta       from sample to measurement, in (extrinsic) field frame.
-     */
-    static DeltaSE2 getScaledDelta(
-            IsotropicNoiseSE2 stateNoise,
-            IsotropicNoiseSE2 visionNoise,
-            DeltaSE2 delta) {
-        double cartesianWeight = cartesianWeight(stateNoise, visionNoise);
-        double rotationWeight = rotationWeight(stateNoise, visionNoise);
-        return new DeltaSE2(
-                delta.getTranslation().times(cartesianWeight),
-                delta.getRotation().times(rotationWeight));
-    }
-
+ 
     /**
      * Weights for the vision update, using inverse-variance weighting.
      * 
