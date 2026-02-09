@@ -33,8 +33,9 @@ public class Intake extends SubsystemBase {
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // supplyLimit,
                         statorLimit, // statorLimit,
-                        PID, // PIDConstants pid,
-                        Kraken6Motor.highFrictionFF(log)// Feedforward100 ff
+                        Kraken6Motor.highFrictionFF(log), // Feedforward100 ff
+                        Kraken6Motor.highFriction(log),
+                        PID// PIDConstants pid,
                 );
             }
 

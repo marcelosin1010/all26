@@ -45,8 +45,9 @@ public class IntakeExtend extends SubsystemBase {
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // og 50 //double supplyLimit,
                         statorLimit, // og 2 //double statorLimit,
-                        PID, // PIDConstants pid,
-                        Kraken6Motor.highFrictionFF(log)// Feedforward100 ff
+                        Kraken6Motor.highFrictionFF(log), // Feedforward100 ff
+                        Kraken6Motor.highFriction(log),
+                        PID // PIDConstants pid,
                 );
                 Talon6Encoder encoder = m_motor.encoder();
 
