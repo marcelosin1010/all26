@@ -6,7 +6,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Kraken6Motor;
+import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
 
@@ -26,15 +27,16 @@ public class Intake extends SubsystemBase {
                 // two is too low, even for unloaded case
                 double supplyLimit = 50;
                 double statorLimit = 20;
-                m_motor = new Kraken6Motor(
+                m_motor = new KrakenX44Motor(
                         log, // LoggerFactory parent,
                         canID, // CanId canId,
                         NeutralMode100.COAST, // NeutralMode neutral,
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // supplyLimit,
                         statorLimit, // statorLimit,
-                        PID, // PIDConstants pid,
-                        Kraken6Motor.highFrictionFF(log)// Feedforward100 ff
+                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
+                        KrakenX60Motor.highFriction(log),
+                        PID// PIDConstants pid,
                 );
             }
 

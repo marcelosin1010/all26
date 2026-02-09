@@ -13,9 +13,9 @@ import org.team100.lib.util.CanId;
  * 
  * @see https://store.ctr-electronics.com/content/datasheet/Motor%20Performance%20Analysis%20Report.pdf
  */
-public class Falcon6Motor extends Talon6Motor {
+public class Falcon500Motor extends Talon6Motor {
 
-    public Falcon6Motor(
+    public Falcon500Motor(
             LoggerFactory parent,
             CanId canId,
             NeutralMode100 neutral,

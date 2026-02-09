@@ -1,4 +1,4 @@
-package org.team100.frc2025;
+package org.team100.frc2026;
 
 import org.team100.lib.coherence.Cache;
 import org.team100.lib.coherence.Takt;
@@ -49,6 +49,7 @@ public class Robot extends TimedRobot100 {
                 MotorPhase.FORWARD,
                 1, // current limit
                 NeoVortexCANSparkMotor.ff(log),
+                NeoVortexCANSparkMotor.friction(log),
                 PIDConstants.makeVelocityPID(log, 0.0002));
 
         RoboRioChannel sensorChannel = new RoboRioChannel(1);

@@ -1,4 +1,4 @@
-package org.team100.frc2025;
+package org.team100.frc2026;
 
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.logging.LoggerFactory;

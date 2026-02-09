@@ -9,7 +9,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Falcon6Motor;
+import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.sensor.position.absolute.ProxyRotaryPositionSensor;
 import org.team100.lib.sensor.position.incremental.IncrementalBareEncoder;
 import org.team100.lib.subsystems.five_bar.commands.Move;
@@ -63,7 +63,7 @@ public class FiveBarCartesian extends SubsystemBase {
         Friction friction = Friction.zero(logger);
 
         LoggerFactory loggerP1 = logger.name("p1");
-        Falcon6Motor motorP1 = new Falcon6Motor(
+        Falcon500Motor motorP1 = new Falcon500Motor(
                 loggerP1,
                 new CanId(1),
                 NeutralMode100.COAST,
@@ -84,7 +84,7 @@ public class FiveBarCartesian extends SubsystemBase {
                 1.0);
 
         LoggerFactory loggerP5 = logger.name("p5");
-        Falcon6Motor motorP5 = new Falcon6Motor(
+        Falcon500Motor motorP5 = new Falcon500Motor(
                 loggerP5,
                 new CanId(2),
                 NeutralMode100.COAST,

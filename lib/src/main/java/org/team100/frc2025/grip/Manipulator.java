@@ -11,8 +11,8 @@ import org.team100.lib.mechanism.LinearMechanism;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Falcon6Motor;
-import org.team100.lib.motor.ctre.Kraken6Motor;
+import org.team100.lib.motor.ctre.Falcon500Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.LazySimulatedBareMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.music.Music;
@@ -51,26 +51,26 @@ public class Manipulator extends SubsystemBase implements Music {
         switch (Identity.instance) {
             case COMP_BOT -> {
                 // Set specific parameters for the competition robot
-                Kraken6Motor leftMotor = new Kraken6Motor(leftMotorLog, new CanId(19), NeutralMode100.COAST,
+                KrakenX60Motor leftMotor = new KrakenX60Motor(leftMotorLog, new CanId(19), NeutralMode100.COAST,
                         MotorPhase.FORWARD,
                         40, // og 40
                         40, // og 40
-                        Falcon6Motor.ff(leftMotorLog),
-                        Falcon6Motor.friction(leftMotorLog),
+                        Falcon500Motor.ff(leftMotorLog),
+                        Falcon500Motor.friction(leftMotorLog),
                         PIDConstants.zero(leftMotorLog));
-                Kraken6Motor rightMotor = new Kraken6Motor(rightMotorLog, new CanId(20), NeutralMode100.COAST,
+                KrakenX60Motor rightMotor = new KrakenX60Motor(rightMotorLog, new CanId(20), NeutralMode100.COAST,
                         MotorPhase.REVERSE,
                         40, // og 40
                         40, // og 40
-                        Falcon6Motor.ff(rightMotorLog),
-                        Falcon6Motor.friction(rightMotorLog),
+                        Falcon500Motor.ff(rightMotorLog),
+                        Falcon500Motor.friction(rightMotorLog),
                         PIDConstants.zero(rightMotorLog));
-                Kraken6Motor algaeMotor = new Kraken6Motor(algaeMotorLog, new CanId(21), NeutralMode100.COAST,
+                KrakenX60Motor algaeMotor = new KrakenX60Motor(algaeMotorLog, new CanId(21), NeutralMode100.COAST,
                         MotorPhase.FORWARD,
                         120, // og 120
                         120, // og 120
-                        Falcon6Motor.ff(algaeMotorLog),
-                        Falcon6Motor.friction(algaeMotorLog),
+                        Falcon500Motor.ff(algaeMotorLog),
+                        Falcon500Motor.friction(algaeMotorLog),
                         PIDConstants.zero(algaeMotorLog));
                 algaeMotor.setTorqueLimit(4);
                 m_algaeMotor = algaeMotor;

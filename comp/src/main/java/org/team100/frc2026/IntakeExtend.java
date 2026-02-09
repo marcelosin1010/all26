@@ -7,7 +7,8 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Kraken6Motor;
+import org.team100.lib.motor.ctre.KrakenX44Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidIncrementalProfile;
@@ -38,15 +39,16 @@ public class IntakeExtend extends SubsystemBase {
                 PIDConstants PID = PIDConstants.makePositionPID(log, 1);
                 double supplyLimit = 50;
                 double statorLimit = 20;
-                Kraken6Motor m_motor = new Kraken6Motor(
+                KrakenX44Motor m_motor = new KrakenX44Motor(
                         log, // LoggerFactor y parent,
                         canID, // CanId canId,
                         NeutralMode100.COAST, // NeutralMode neutral,
                         MotorPhase.REVERSE, // MotorPhase motorPhase,
                         supplyLimit, // og 50 //double supplyLimit,
                         statorLimit, // og 2 //double statorLimit,
-                        PID, // PIDConstants pid,
-                        Kraken6Motor.highFrictionFF(log)// Feedforward100 ff
+                        KrakenX60Motor.highFrictionFF(log), // Feedforward100 ff
+                        KrakenX60Motor.highFriction(log),
+                        PID // PIDConstants pid,
                 );
                 Talon6Encoder encoder = m_motor.encoder();
 

@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.mechanism.RotaryMechanism;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Kraken6Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.profile.r1.IncrementalProfile;
 import org.team100.lib.profile.r1.TrapezoidProfileWPI;
@@ -95,7 +95,7 @@ public class RotaryPositionSubsystem1d extends SubsystemBase {
                 // you should make a case in the feedforward class for your constants
                 SimpleDynamics ff = SimpleDynamics.test(log);
                 Friction friction = Friction.test(log);
-                Kraken6Motor motor = new Kraken6Motor(
+                KrakenX60Motor motor = new KrakenX60Motor(
                         log, new CanId(1),
                         NeutralMode100.COAST, MotorPhase.REVERSE,
                         supplyLimit, statorLimit, ff, friction, pid);

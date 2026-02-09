@@ -6,7 +6,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Kraken6Motor;
+import org.team100.lib.motor.ctre.KrakenX60Motor;
 import org.team100.lib.motor.sim.LazySimulatedBareMotor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
@@ -24,12 +24,12 @@ public class ClimberIntake extends SubsystemBase {
         count = 0;
         switch (Identity.instance) {
             case COMP_BOT -> {
-                m_motor = new Kraken6Motor(
+                m_motor = new KrakenX60Motor(
                         log, canID, NeutralMode100.COAST, MotorPhase.REVERSE,
                         20, // og 50
                         20, // og 2
-                        Kraken6Motor.highFrictionFF(log),
-                        Kraken6Motor.highFriction(log),
+                        KrakenX60Motor.highFrictionFF(log),
+                        KrakenX60Motor.highFriction(log),
                         PIDConstants.zero(log));
             }
             default -> {

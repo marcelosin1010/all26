@@ -10,7 +10,7 @@ import org.team100.lib.logging.LoggerFactory;
 import org.team100.lib.motor.BareMotor;
 import org.team100.lib.motor.MotorPhase;
 import org.team100.lib.motor.NeutralMode100;
-import org.team100.lib.motor.ctre.Falcon6Motor;
+import org.team100.lib.motor.ctre.Falcon500Motor;
 import org.team100.lib.motor.sim.SimulatedBareMotor;
 import org.team100.lib.util.CanId;
 
@@ -53,7 +53,7 @@ public class FiveBarBare extends SubsystemBase {
         SimpleDynamics ff = SimpleDynamics.zero(logger);
         Friction friction = Friction.zero(logger);
         PIDConstants pid = PIDConstants.zero(logger);
-        return new Falcon6Motor(
+        return new Falcon500Motor(
                 logger,
                 canId,
                 NeutralMode100.COAST,

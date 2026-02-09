@@ -9,17 +9,13 @@ import org.team100.lib.motor.NeutralMode100;
 import org.team100.lib.util.CanId;
 
 /**
- * Kraken using Phoenix 6.
+ * Kraken X44 using Phoenix 6.
  * 
- * TODO: make a separate class for the x44, since its free speed is higher.
- * x60 is 5800 RPM at 12.0 V = 0.124 v-s/rev
- * x44 is 7530 RPM at 12.0 V = 0.096 v-s/rev
- * 
- * @see https://store.ctr-electronics.com/content/datasheet/Motor%20Performance%20Analysis%20Report.pdf
+ * https://docs.wcproducts.com/welcome/electronics/kraken-x44/kraken-x44-motor/overview-and-features/motor-performance
  */
-public class Kraken6Motor extends Talon6Motor {
+public class KrakenX44Motor extends Talon6Motor {
 
-    public Kraken6Motor(
+    public KrakenX44Motor(
             LoggerFactory parent,
             CanId canId,
             NeutralMode100 neutral,
@@ -34,17 +30,19 @@ public class Kraken6Motor extends Talon6Motor {
 
     @Override
     public double kROhms() {
-        return 0.025;
+        // 12.0 V, 279 A
+        return 0.043;
     }
 
     @Override
     public double kTNm_amp() {
-        return 0.019;
+        // 4.11 Nm, 279 A
+        return 0.015;
     }
 
     @Override
     public double kFreeSpeedRPM() {
-        return 5800;
+        return 7530;
     }
 
     /** Feedforward for swerve drive axis */
