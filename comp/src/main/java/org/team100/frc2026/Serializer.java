@@ -7,12 +7,10 @@ import org.team100.lib.motor.sim.SimulatedBareMotor;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Shooter extends SubsystemBase {
+public class Serializer extends SubsystemBase {
     private final BareMotor m_motor;
 
-    private final double m_speed = 30;
-
-    public Shooter(LoggerFactory parent) {
+    public Serializer(LoggerFactory parent) {
         LoggerFactory log = parent.type(this);
         m_motor = new SimulatedBareMotor(log, 600);
     }
@@ -22,7 +20,7 @@ public class Shooter extends SubsystemBase {
         m_motor.periodic();
     }
 
-    public Command shoot() {
+    public Command serialize() {
         return run(this::fullSpeed);
     }
 
@@ -35,19 +33,7 @@ public class Shooter extends SubsystemBase {
     }
 
     private void fullSpeed() {
-        setShooterSpeed();
-    }
-
-    public void setSpeed(double output) {
-        m_motor.setVelocity(output, 0, 0);
-    }
-
-    public void setShooterSpeed() {
-        setSpeed(m_speed);
-    }
-
-    public Boolean atSpeed() {
-        return m_motor.getVelocityRad_S() == m_speed;
+        m_motor.setDutyCycle(1);
     }
 
 }
