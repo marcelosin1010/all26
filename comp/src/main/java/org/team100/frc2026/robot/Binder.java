@@ -140,6 +140,8 @@ public class Binder {
         
         whileTrue(driver::x, m_machinery.m_intake.intake());
 
+        whileTrue(driver::y, m_machinery.m_serializer.serialize());
+
         // Test bindings
         whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
         whileTrue(driver::rightBumper, m_machinery.m_extender.goToRetractedPosition());

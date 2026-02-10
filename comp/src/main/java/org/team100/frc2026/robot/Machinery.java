@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.team100.frc2026.Intake;
 import org.team100.frc2026.IntakeExtend;
+import org.team100.frc2026.Serializer;
 import org.team100.frc2026.Shooter;
 import org.team100.lib.coherence.Takt;
 import org.team100.lib.indicator.Beeper;
@@ -25,9 +26,8 @@ import org.team100.lib.subsystems.swerve.SwerveDriveSubsystem;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamics;
 import org.team100.lib.subsystems.swerve.kinodynamics.SwerveKinodynamicsFactory;
 import org.team100.lib.subsystems.swerve.module.SwerveModuleCollection;
-import org.team100.lib.visualization.RobotPoseVisualization;
 import org.team100.lib.util.CanId;
-
+import org.team100.lib.visualization.RobotPoseVisualization;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -63,6 +63,7 @@ public class Machinery {
     final Shooter m_shooter;
     final Intake m_intake;
     final IntakeExtend m_extender;
+    final Serializer m_serializer;
 
     public Machinery() {
 
@@ -78,6 +79,7 @@ public class Machinery {
         m_shooter = new Shooter(driveLog);
         m_intake = new Intake(driveLog, new CanId(14));
         m_extender = new IntakeExtend(driveLog, new CanId(19));
+        m_serializer = new Serializer(driveLog);
 
         ////////////////////////////////////////////////////////////
         //
