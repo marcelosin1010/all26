@@ -44,8 +44,8 @@ public class NudgingVisionUpdater implements VisionUpdater {
         m_history = history;
         m_odometryUpdater = odometryUpdater;
         m_logState = log.swerveStateLogger(Level.TRACE, "state");
-        m_cartesianFusor = new CovarianceInflation();
-        m_rotationFusor = new CovarianceInflation();
+        m_cartesianFusor = new CovarianceInflation(0.02, 0.003);
+        m_rotationFusor = new CovarianceInflation(0.02, 0.003);
         m_latestTimeS = 0;
     }
 

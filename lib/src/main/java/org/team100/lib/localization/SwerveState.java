@@ -18,7 +18,10 @@ public class SwerveState {
     private final SwerveModulePositions m_positions;
     /** Verbatim measurement of yaw from the gyro, uncorrected. */
     private final Rotation2d m_gyroYaw;
-    /** Estimate for the gyro bias (drift rate). */
+    /**
+     * Estimate for the gyro bias (drift rate).
+     * Note this rate is *per sample* not *per second*.
+     */
     private final VariableR1 m_gyroBias;
 
     SwerveState(

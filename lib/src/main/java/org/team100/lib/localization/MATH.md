@@ -133,15 +133,17 @@ bias_noise = 0.000004 // rad*sqrt(hz)/s
 
 (We should attempt to verify these parameters.)
 
-These parameters scale with the sensor bandwidth, i.e. sample rate:
+These parameters scale with the sample period:
 
 ```
 dt = 0.02 // sec
 
-noise_stddev = white_noise / sqrt(dt)
+// noise in one sample
+noise_stddev = white_noise * sqrt(dt)
 noise = noise_stddev * random.nextGaussian()
 
-bias_stddev = bias_noise * sqrt(dt)
+// bias increment for one sample
+bias_stddev = bias_noise * dt * sqrt(dt)
 bias += bias_stddev * random.nextGaussian()
 
 measurement = ground_truth + bias + noise
@@ -221,3 +223,4 @@ References:
 * [Kalibr IMU noise model](https://github.com/ethz-asl/kalibr/wiki/IMU-Noise-Model).  Note the sentence, "From our experience, for lowest-cost sensors, increasing the noise model parameters by a factor of 10x or more may be necessary."
 * [more about IMU specs](https://stechschulte.net/2023/10/11/imu-specs.html)
 * [example IMU calibration](https://github.com/rpng/ar_table_dataset/blob/master/calibration/kalibr_color_0_imu/d455_calib_02-imu.yaml) with noise = 0.008 (high!) and bias = 1e-5.  More examples can be found on Github by searching for Kalibr configuration YAML files, with the keys gyroscope_noise_density and gyroscope_random_walk.
+* [Vectornav examples](https://www.vectornav.com/resources/inertial-navigation-primer/examples/noise)

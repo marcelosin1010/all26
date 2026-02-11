@@ -15,7 +15,7 @@ public class CovarianceInflationTest {
     void testCrisp() {
         VariableR1 a = VariableR1.fromVariance(0, 0);
         VariableR1 b = VariableR1.fromVariance(1, 1);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         // Crisp variable wins
         assertEquals(0, c.mean(), DELTA);
         assertEquals(0, c.variance(), DELTA);
@@ -25,7 +25,7 @@ public class CovarianceInflationTest {
     void testSelf() {
         VariableR1 a = VariableR1.fromVariance(0, 1);
         VariableR1 b = VariableR1.fromVariance(0, 1);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         assertEquals(0, c.mean(), DELTA);
         // Overconfident (higher than the minimum)
         assertEquals(0.5, c.variance(), DELTA);
@@ -35,7 +35,7 @@ public class CovarianceInflationTest {
     void testUnequalVariance() {
         VariableR1 a = VariableR1.fromVariance(0, 1);
         VariableR1 b = VariableR1.fromVariance(0, 0.1);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         assertEquals(0, c.mean(), DELTA);
         assertEquals(0.091, c.variance(), DELTA);
     }
@@ -44,7 +44,7 @@ public class CovarianceInflationTest {
     void testHighVariance() {
         VariableR1 a = VariableR1.fromVariance(0, 1);
         VariableR1 b = VariableR1.fromVariance(1, 100);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         // Ignores the higher variance
         assertEquals(0.01, c.mean(), DELTA);
         // Ignores the higher variance
@@ -55,7 +55,7 @@ public class CovarianceInflationTest {
     void testEqualVariance() {
         VariableR1 a = VariableR1.fromVariance(0, 1);
         VariableR1 b = VariableR1.fromVariance(1, 1);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         // Equal variance -> expectation in the middle
         assertEquals(0.5, c.mean(), DELTA);
         // Respects mean dispersion (a little)
@@ -66,7 +66,7 @@ public class CovarianceInflationTest {
     void testMinimumVariance() {
         VariableR1 a = VariableR1.fromVariance(0, 0.0000001);
         VariableR1 b = VariableR1.fromVariance(0, 0.00000001);
-        VariableR1 c = new CovarianceInflation().fuse(a, b);
+        VariableR1 c = new CovarianceInflation(0.02, 0.003).fuse(a, b);
         assertEquals(0, c.mean(), DELTA);
         // Minimum applies.
         assertEquals(9e-6, c.variance(), 1e-6);
@@ -102,7 +102,7 @@ public class CovarianceInflationTest {
                 System.out.printf("%f, %f, %f, %f\n",
                         t, camera.mean(), state.mean(), Math.sqrt(state.variance()));
             // do the update
-            state = new CovarianceInflation().fuse(state, camera);
+            state = new CovarianceInflation(0.02, 0.003).fuse(state, camera);
         }
     }
 

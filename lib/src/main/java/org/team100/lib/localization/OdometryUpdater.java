@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.function.Supplier;
 
 import org.team100.lib.coherence.Takt;
+import org.team100.lib.framework.TimedRobot100;
 import org.team100.lib.fusion.CovarianceInflation;
 import org.team100.lib.fusion.Fusor;
 import org.team100.lib.geometry.Metrics;
@@ -57,10 +58,10 @@ public class OdometryUpdater {
         m_gyro = gyro;
         m_history = estimator;
         m_positions = positions;
-        // gyro bias has a very low minimum variance
-        // TODO: use gyro bias noise for that
-        m_gyroBiasFusor = new CovarianceInflation();
-        m_rotationFusor = new CovarianceInflation();
+        double dt = TimedRobot100.LOOP_PERIOD_S;
+        // bias scales with dt^1.5.
+        m_gyroBiasFusor = new CovarianceInflation(0.02, gyro.bias_noise() * dt * Math.sqrt(dt));
+        m_rotationFusor = new CovarianceInflation(0.02, 0.003);
         m_logState = log.swerveStateLogger(Level.TRACE, "state");
     }
 
@@ -178,12 +179,9 @@ public class OdometryUpdater {
         }
 
         IsotropicNoiseSE2 previousNoise = previousState.noise();
-        // System.out.printf("previousNoise %s\n", previousNoise);
         SwerveModulePositions previousPositions = previousState.positions();
         Rotation2d previousGyroYaw = previousState.gyroYaw();
-        // System.out.printf("previousGyroYaw %s\n", previousGyroYaw);
         VariableR1 previousGyroBias = previousState.gyroBias();
-        // System.out.printf("previousGyroBias %s\n", previousGyroBias);
 
         SwerveModuleDeltas modulePositionDelta = SwerveModuleDeltas.modulePositionDelta(
                 previousPositions, positions);
@@ -197,12 +195,11 @@ public class OdometryUpdater {
         }
 
         // Gyro increment in this step
-        double gyroDTheta = gyroYaw.minus(previousGyroYaw).getRadians();
+        double gyroStep = gyroYaw.minus(previousGyroYaw).getRadians();
 
-        // Noise in the increment is the noise parameter times the sample time.
-        double gyroDThetaStdDev = m_gyro.white_noise() * Math.sqrt(dt);
-        VariableR1 gyroMeasurement = VariableR1.fromStdDev(
-                gyroDTheta, gyroDThetaStdDev);
+        // Noise in the increment is the noise density times the sample time.
+        double gyroWhiteNoise = m_gyro.white_noise() * Math.sqrt(dt);
+        VariableR1 gyroMeasurement = VariableR1.fromStdDev(gyroStep, gyroWhiteNoise);
 
         // Cartesian distance in this step
         double distanceM = Metrics.translationalNorm(twist);
@@ -215,7 +212,6 @@ public class OdometryUpdater {
 
         VariableR1 odoRotationMeasurement = VariableR1.fromStdDev(
                 odoDTheta, odoDThetaStdDev);
-        // System.out.printf("odoRotationMeasurement %s\n", odoRotationMeasurement);
 
         // Gyro drift during this time step
         // Variance here is the (constant) gyro noise and the (speed-dependent) odo
@@ -240,10 +236,6 @@ public class OdometryUpdater {
 
         // The new pose is just the twist applied to the old pose.
         Pose2d newPose = previousPose.exp(twist);
-        // System.out.printf("newPose %s\n", StrUtil.pose2Str(newPose));
-        if (DEBUG) {
-            System.out.printf("new pose x %.6f y %.6f\n", newPose.getX(), newPose.getY());
-        }
 
         // Compute a new velocity using backward finite difference.
         VelocitySE2 velocity = VelocitySE2.velocity(previousPose, newPose, dt);

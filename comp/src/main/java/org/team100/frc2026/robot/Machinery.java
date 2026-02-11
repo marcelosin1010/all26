@@ -68,6 +68,7 @@ public class Machinery {
     final Serializer m_serializer;
     final ClimberExtension m_ClimberExtension;
     final Climber m_Climber;
+
     public Machinery() {
 
         final LoggerFactory driveLog = logger.name("Drive");
@@ -83,6 +84,8 @@ public class Machinery {
         m_intake = new Intake(driveLog, new CanId(14));
         m_extender = new IntakeExtend(driveLog, new CanId(19));
         m_serializer = new Serializer(driveLog);
+        m_ClimberExtension = new ClimberExtension(driveLog);
+        m_Climber = new Climber(driveLog);
 
         ////////////////////////////////////////////////////////////
         //

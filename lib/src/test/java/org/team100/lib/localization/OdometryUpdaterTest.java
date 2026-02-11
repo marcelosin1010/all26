@@ -37,6 +37,7 @@ public class OdometryUpdaterTest {
         IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(1, 1);
         SwerveModulePositions positions = SwerveModulePositions.kZero();
         Rotation2d yaw = new Rotation2d();
+        // high bias sigma compared to the real value
         VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
         SwerveState sample = new SwerveState(
                 sampleModel, stateNoise, positions, yaw, bias);
@@ -46,15 +47,31 @@ public class OdometryUpdaterTest {
 
         // result shouldn't move.
         SwerveState newState = ou.newState(sample, 0.02, gyroYaw, positions);
-        assertEquals(0, newState.state().pose().getX(), DELTA);
-        assertEquals(0, newState.state().pose().getY(), DELTA);
-        assertEquals(0, newState.state().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0, newState.state().pose().getX(), 1e-6);
+        assertEquals(0, newState.state().pose().getY(), 1e-6);
+        assertEquals(0, newState.state().pose().getRotation().getRadians(), 1e-6);
         // variance shouldn't change.
-        assertEquals(1, newState.noise().cartesian(), DELTA);
-        assertEquals(1, newState.noise().rotation(), DELTA);
+        assertEquals(1, newState.noise().cartesian(), 1e-6);
+        assertEquals(1, newState.noise().rotation(), 1e-6);
         // there's no movement in yaw, so bias is unchanged.
-        assertEquals(0, newState.gyroBias().mean(), DELTA);
-        assertEquals(0.001, newState.gyroBias().sigma(), DELTA);
+        assertEquals(0, newState.gyroBias().mean(), 1e-6);
+        // previous bias sigma was 0.001
+        // the bias measurement adds the odometry variance (which is zero, it's not
+        // moving) with the gyro measurement variance, which is the white noise
+        // so the new bias estimate at this point just reflects the gyro
+        // measurement noise.
+        assertEquals(0.000056, newState.gyroBias().sigma(), 1e-6);
+        // do it again
+        newState = ou.newState(newState, 0.02, gyroYaw, positions);
+        // now the gyro bias is improved
+        assertEquals(0.000040, newState.gyroBias().sigma(), 1e-6);
+        // a few more times
+        for (int i = 0; i < 50; ++i) {
+            newState = ou.newState(newState, 0.02, gyroYaw, positions);
+            System.out.println(newState.gyroBias().sigma());
+        }
+        // now the gyro bias is improved
+        assertEquals(0.000008, newState.gyroBias().sigma(), 1e-6);
     }
 
     @Test
@@ -88,7 +105,84 @@ public class OdometryUpdaterTest {
         assertEquals(0, newState.state().pose().getY(), DELTA);
         assertEquals(0, newState.state().pose().getRotation().getRadians(), DELTA);
         assertEquals(0.014, newState.noise().cartesian(), DELTA);
-        assertEquals(0.012, newState.noise().rotation(), DELTA);
+        assertEquals(0.010, newState.noise().rotation(), DELTA);
+        assertEquals(0, newState.gyroBias().mean(), 1e-6);
+        // more variance here due to odometry noise
+        assertEquals(0.000995, newState.gyroBias().sigma(), 1e-6);
+    }
+
+    @Test
+    void testNewStateWithBias() {
+        MockGyro gyro = new MockGyro();
+        positions = SwerveModulePositions.kZero();
+        OdometryUpdater ou = new OdometryUpdater(
+                log, kinodynamics, gyro, null, () -> positions);
+
+        // previous state is at zero, pretty sure.
+        ModelSE2 sampleModel = new ModelSE2();
+        IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
+        SwerveModulePositions positions = SwerveModulePositions.kZero();
+        Rotation2d yaw = new Rotation2d();
+        VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
+        SwerveState sample = new SwerveState(
+                sampleModel, stateNoise, positions, yaw, bias);
+
+        // odometry says we're not rotating, but the gyro thinks we are.
+        Rotation2d gyroYaw = new Rotation2d(0.02);
+        positions = new SwerveModulePositions(
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.1, Optional.of(Rotation2d.kZero)));
+
+        SwerveState newState = ou.newState(sample, 0.02, gyroYaw, positions);
+        assertEquals(0.1, newState.state().pose().getX(), DELTA);
+        assertEquals(0, newState.state().pose().getY(), DELTA);
+        // odo is not that trustworthy since it's so fast
+        assertEquals(0.019, newState.state().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0.014, newState.noise().cartesian(), DELTA);
+        assertEquals(0.010, newState.noise().rotation(), DELTA);
+        // nonzero bias mean
+        assertEquals(0.000198, newState.gyroBias().mean(), 1e-6);
+        // much more bias noise
+        assertEquals(0.001034, newState.gyroBias().sigma(), 1e-6);
+    }
+
+        @Test
+    void testNewStateWithBias2() {
+        MockGyro gyro = new MockGyro();
+        positions = SwerveModulePositions.kZero();
+        OdometryUpdater ou = new OdometryUpdater(
+                log, kinodynamics, gyro, null, () -> positions);
+
+        // previous state is at zero, pretty sure.
+        ModelSE2 sampleModel = new ModelSE2();
+        IsotropicNoiseSE2 stateNoise = IsotropicNoiseSE2.fromStdDev(0.01, 0.01);
+        SwerveModulePositions positions = SwerveModulePositions.kZero();
+        Rotation2d yaw = new Rotation2d();
+        VariableR1 bias = VariableR1.fromStdDev(0, 0.001);
+        SwerveState sample = new SwerveState(
+                sampleModel, stateNoise, positions, yaw, bias);
+
+        // much slower, so odometry is more trustworthy.
+        Rotation2d gyroYaw = new Rotation2d(0.02);
+        positions = new SwerveModulePositions(
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)),
+                new SwerveModulePosition100(0.01, Optional.of(Rotation2d.kZero)));
+
+        SwerveState newState = ou.newState(sample, 0.02, gyroYaw, positions);
+        assertEquals(0.01, newState.state().pose().getX(), DELTA);
+        assertEquals(0, newState.state().pose().getY(), DELTA);
+        // we don't really believe the gyro
+        assertEquals(0.000717, newState.state().pose().getRotation().getRadians(), DELTA);
+        assertEquals(0.010, newState.noise().cartesian(), DELTA);
+        assertEquals(0.010, newState.noise().rotation(), DELTA);
+        // much more bias
+        assertEquals(0.015317, newState.gyroBias().mean(), 1e-6);
+        // a bit more bias noise
+        assertEquals(0.001291, newState.gyroBias().sigma(), 1e-6);
     }
 
 }

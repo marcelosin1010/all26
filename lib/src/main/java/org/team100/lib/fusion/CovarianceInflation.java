@@ -9,25 +9,41 @@ import org.team100.lib.uncertainty.VariableR1;
  * inflation:
  * 
  * * mean dispersion weight: reduce the influence of mean dispersion, but not to
- * zero.
- * * minimum state variance: avoid state variance collapse.
+ * zero. My eyeball-tuned value for vision updates is 0.02, i.e. 2% mean
+ * dispersion to maintain responsiveness to real changes without paying too much
+ * attention to noise.
+ * 
+ * * minimum state variance: avoid state variance collapse. My eyeball-tuned
+ * value for vision updates is 9e-6, or a stddev of 0.003, i.e. state confidence
+ * of a few millimeters. This seems to keep it from becoming too confident and
+ * locking in on the wrong value.
+ * 
  * 
  * I tuned these terms by eye, in this sheet:
  * https://docs.google.com/spreadsheets/d/1DmHL1UDd6vngmr-5_9fNHg2xLC4TEVWTN2nHZBOnje0/edit?gid=1604242948#gid=1604242948
  */
 public class CovarianceInflation implements Fusor {
-    // TODO: make this adjustable?
-    private static final double DISPERSION_WEIGHT = 0.02;
-    // TODO: make this adjustable?
-    private static final double MIN_VARIANCE = 0.000009;
+    private static final double CRISP_THRESHOLD = 1e-12;
+
+    private final double m_dispersionWeight;// = 0.02;
+    private final double m_minVariance;// = 0.000009;
+
+    /**
+     * @param dispersionWeight scales the effect of mean dispersion.
+     * @param minSigma         the minimum result standard deviation.
+     */
+    public CovarianceInflation(double dispersionWeight, double minSigma) {
+        m_dispersionWeight = dispersionWeight;
+        m_minVariance = minSigma * minSigma;
+    }
 
     @Override
     public VariableR1 fuse(VariableR1 a, VariableR1 b) {
-        if (a.variance() < 1e-9 && b.variance() < 1e-9)
+        if (a.variance() < CRISP_THRESHOLD && b.variance() < CRISP_THRESHOLD)
             return VariableR1.fromVariance((a.mean() + b.mean()) / 2, 0);
-        if (a.variance() < 1e-9)
+        if (a.variance() < CRISP_THRESHOLD)
             return VariableR1.fromVariance(a.mean(), 0);
-        if (b.variance() < 1e-9)
+        if (b.variance() < CRISP_THRESHOLD)
             return VariableR1.fromVariance(b.mean(), 0);
         double wA = 1 / a.variance();
         double wB = 1 / b.variance();
@@ -39,11 +55,11 @@ public class CovarianceInflation implements Fusor {
         // Add (a little) mean dispersion, so that when very-different camera estimates
         // arrive, the state listens to them.
 
-        variance += DISPERSION_WEIGHT * wA * Math.pow(a.mean() - mean, 2) / totalWeight
-                + DISPERSION_WEIGHT * wB * Math.pow(b.mean() - mean, 2) / totalWeight;
+        variance += m_dispersionWeight * wA * Math.pow(a.mean() - mean, 2) / totalWeight
+                + m_dispersionWeight * wB * Math.pow(b.mean() - mean, 2) / totalWeight;
         // Prevent variance collapse, so that the camera influence stays high
         // enough.
-        variance = Math.max(variance, MIN_VARIANCE);
+        variance = Math.max(variance, m_minVariance);
         return VariableR1.fromVariance(mean, variance);
     }
 
