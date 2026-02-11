@@ -2,6 +2,8 @@ package org.team100.frc2026.robot;
 
 import java.io.IOException;
 
+import org.team100.frc2026.ClimberExtension;
+import org.team100.frc2026.Climber;
 import org.team100.frc2026.Intake;
 import org.team100.frc2026.IntakeExtend;
 import org.team100.frc2026.Serializer;
@@ -29,7 +31,6 @@ import org.team100.lib.uncertainty.IsotropicNoiseSE2;
 import org.team100.lib.uncertainty.VariableR1;
 import org.team100.lib.util.CanId;
 import org.team100.lib.visualization.RobotPoseVisualization;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.RobotBase;
 
@@ -65,7 +66,8 @@ public class Machinery {
     final Intake m_intake;
     final IntakeExtend m_extender;
     final Serializer m_serializer;
-
+    final ClimberExtension m_ClimberExtension;
+    final Climber m_Climber;
     public Machinery() {
 
         final LoggerFactory driveLog = logger.name("Drive");

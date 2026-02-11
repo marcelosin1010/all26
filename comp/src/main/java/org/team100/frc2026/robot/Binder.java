@@ -145,12 +145,18 @@ public class Binder {
         // Test bindings
         whileTrue(driver::leftBumper, m_machinery.m_extender.goToExtendedPosition());
         whileTrue(driver::rightBumper, m_machinery.m_extender.goToRetractedPosition());
+        whileTrue(driver:: rightTrigger, m_machinery.m_ClimberExtension.setPosition());
+         whileTrue(driver:: x, m_machinery.m_Climber.setClimb0());
+         whileTrue(driver:: y, m_machinery.m_Climber.setClimb1());
+         whileTrue(driver:: b, m_machinery.m_Climber.setClimb3());
 
         // The real bindings
         whileTrue(driver::leftBumper, m_machinery.m_extender.goToRetractedPosition());
         whileTrue(driver::leftTrigger,
                 m_machinery.m_extender.goToExtendedPosition()
                         .andThen(m_machinery.m_intake.intake()));
+        
+       
 
         ///////////////////////////////////////////////////////////
         //
