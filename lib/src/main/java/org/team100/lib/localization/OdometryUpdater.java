@@ -222,6 +222,8 @@ public class OdometryUpdater {
         // gyro bias has a very low minimum variance
         VariableR1 newGyroBiasEstimate = m_gyroBiasFusor.fuse(
                 previousGyroBias, gyroBiasMeasurement);
+        System.out.printf("=== gyro bias previous %s measurement %s result %s\n",
+                previousGyroBias, gyroBiasMeasurement, newGyroBiasEstimate);
 
         // Gyro increment without the drift.
         VariableR1 correctedGyroMeasurement = VariableR1.subtract(
