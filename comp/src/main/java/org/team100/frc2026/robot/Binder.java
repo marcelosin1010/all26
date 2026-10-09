@@ -98,7 +98,7 @@ public class Binder {
                         machinery.m_conveyor.convey(),
 
                     
-                        machinery.m_feeder.normal()));
+                        machinery.m_feeder.proportional()));
 
         whileTrue(m_driver::rightBumper,
                 machinery.m_conveyor.convey());

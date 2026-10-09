@@ -102,6 +102,14 @@ public class Feeder extends SubsystemBase {
                 .withName("Feed Proportional");
     }
 
+    public Command whenReady() {
+        return startRun(
+                this::reset,
+                () -> feedWhenReady())
+                .finallyDo(this::stopMotor)
+                .withName("Feed When Ready");
+        }
+
     public Command back() {
         return startRun(
                 this::reset,
