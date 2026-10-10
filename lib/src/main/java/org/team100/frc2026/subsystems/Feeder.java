@@ -27,9 +27,9 @@ public class Feeder extends SubsystemBase {
     public static final CanId canID2 = new CanId(18);
     private static final CanBusId busId = new CanBusId(0);
     private static final double TOLERANCE_M_S = 1.0;
-    private static final double GEAR_RATIO = 24.0/18.0;
+    private static final double GEAR_RATIO = 24.0 / 18.0;
     private static final double WHEEL_DIAMETER_M = 0.048;
-    private static final double NORMAL_SPEED = 10.0;
+    private static final double NORMAL_SPEED = 20.0;
 
     private final OutboardLinearVelocityServo m_servo1;
     private final OutboardLinearVelocityServo m_servo2;
@@ -56,10 +56,10 @@ public class Feeder extends SubsystemBase {
 
             m1 = new KrakenX60Motor(
                     log1, currentLog, canID1, busId, NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(25, 25), friction, pid);
             m2 = new KrakenX60Motor(
                     log2, currentLog, canID2, busId, NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(25, 25), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -108,7 +108,7 @@ public class Feeder extends SubsystemBase {
                 () -> feedWhenReady())
                 .finallyDo(this::stopMotor)
                 .withName("Feed When Ready");
-        }
+    }
 
     public Command back() {
         return startRun(
@@ -148,7 +148,7 @@ public class Feeder extends SubsystemBase {
                 .withName("set velocity");
     }
 
-    //////////////////////////////////////////////////
+    /////////////////////////////////////////////////
 
     private void reset() {
         m_servo1.reset();
@@ -168,9 +168,10 @@ public class Feeder extends SubsystemBase {
         double shooterSlowness = Math.max(0, meanError);
         // if we're 1 m/s slow, feed at 100%
         // if we're 2 m/s slow, feed at 0%
-        double feedFraction = Math.clamp(2.0 - shooterSlowness, 0, 1);
+        double feedFraction = Math.clamp((20 - shooterSlowness) / 20, 0, 1);
         double feedSpeed = NORMAL_SPEED * feedFraction;
-        setVelocityProfiled(feedSpeed);
+        setVelocityDirect(feedSpeed);
+        //System.out.printf("%f %f %f\n", feedSpeed, feedFraction, shooterSlowness);
     }
 
     private void feedWhenReady() {
@@ -184,6 +185,11 @@ public class Feeder extends SubsystemBase {
     private void setVelocityProfiled(double x) {
         m_servo1.setVelocityProfiled(x);
         m_servo2.setVelocityProfiled(x);
+    }
+
+    private void setVelocityDirect(double x) {
+        m_servo1.setVelocityDirect(x);
+        m_servo2.setVelocityDirect(x);
     }
 
     private void setDutyCycle(double x) {

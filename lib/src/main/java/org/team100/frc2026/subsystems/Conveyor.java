@@ -56,11 +56,11 @@ public class Conveyor extends SubsystemBase {
             m1 = new KrakenX60Motor(
                     log1, currentLog, canID1, busId,
                     NeutralMode100.COAST, MotorPhase.FORWARD,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(25, 15), friction, pid);
             m2 = new KrakenX60Motor(
                     log2, currentLog, canID2, busId,
                     NeutralMode100.COAST, MotorPhase.REVERSE,
-                    new CurrentLimit(50, 30), friction, pid);
+                    new CurrentLimit(25, 15), friction, pid);
         } else {
             m1 = new SimulatedMotor(log1, 600);
             m2 = new SimulatedMotor(log2, 600);
@@ -79,7 +79,6 @@ public class Conveyor extends SubsystemBase {
         return startRun(
                 this::reset,
                 () -> setVelocityProfiled(4.0))
-                .finallyDo(this::stopMotor)
                 .withName("Convey");
     }
 

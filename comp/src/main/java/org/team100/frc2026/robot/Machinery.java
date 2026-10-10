@@ -141,7 +141,7 @@ public class Machinery {
         m_intake = new Intake(logger, currentLog);
         m_intakeExtend = new IntakeExtend(logger, currentLog);
         m_shooter = new Shooter(logger, currentLog, m_cachedSolution::speed);
-        m_feeder= new Feeder(logger, currentLog, null);
+        m_feeder= new Feeder(logger, currentLog, m_shooter);
         m_conveyor = new Conveyor(logger, currentLog);
 
 
