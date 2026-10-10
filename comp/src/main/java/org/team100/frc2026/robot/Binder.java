@@ -77,15 +77,19 @@ public class Binder {
         ///
         whileTrue(m_driver::povDown, machinery.m_drive.defend());
 
-        whileTrue(m_driver::rightTrigger,
+        // whileTrue(m_driver::rightTrigger,
 
-                parallel(
-                        machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
-                        sequence(
-                                waitUntil(machinery.m_intakeExtend::atGoal),
-                                parallel(
-                                        machinery.m_intake.intake(),
-                                        machinery.m_shooter.shooterFullspeed()))));
+        // parallel(
+        // machinery.m_intakeExtend.goToExtendedPositionEndlessly(),
+        // sequence(
+        // waitUntil(machinery.m_intakeExtend::atGoal),
+        // parallel(
+        // machinery.m_intake.intake(),
+        // machinery.m_conveyor.convey(),
+        // machinery.m_feeder.normal(),
+        // machinery.m_shooter.shooterFullspeed()))));
+        whileTrue(m_driver::rightTrigger,
+                machinery.m_intake.intake());
 
         whileTrue(m_driver::x,
                 machinery.m_intake.intake());
@@ -96,18 +100,16 @@ public class Binder {
         whileTrue(m_driver::y,
                 parallel(machinery.m_shooter.testRun(),
                         machinery.m_conveyor.convey(),
+                        machinery.m_feeder.proportional()));
 
-                    
-                        machinery.m_feeder.normal()));
-
-        whileTrue(m_driver::rightBumper,
-                machinery.m_conveyor.convey());
+        whileTrue(m_driver::rightBumper, machinery.m_intake.intake());
         // whileTrue(m_driver::rightBumper, Commands.print("help me"));
 
         ////////////////////////////////////////////////////
         ///
         /// AIM
         ///
+        /// 
         /// Left bumper: rotate the robot to hit the target
 
         FeedbackR1 thetaFeedback = new FullStateFeedback(

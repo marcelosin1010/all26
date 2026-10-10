@@ -33,7 +33,7 @@ public class IntakeExtend extends SubsystemBase {
     private static final double gearDiameter = 0.025;
     private static final double RETRACTED_POSITION = 0;
     // seems fine, 3/12/26
-    private static final double EXTENDED_POSITION = 2.140017;
+    private static final double EXTENDED_POSITION = 2.140017; // tune this from glass
 
     private final LinearPositionServo m_servo;
     private final LinearPositionServo m_Servo2;
@@ -41,7 +41,7 @@ public class IntakeExtend extends SubsystemBase {
     @SuppressWarnings("unused")
     public IntakeExtend(LoggerFactory parent, TotalCurrentLog currentLog) {
         LoggerFactory log = parent.type(this);
-        LoggerFactory log1 = log.name("Eextend Left");
+        LoggerFactory log1 = log.name("Extend Left");
         LoggerFactory log2 = log.name("Extend Right");
 
         // Mass is zero for now because gravity coordinate doesn't match
@@ -58,12 +58,12 @@ public class IntakeExtend extends SubsystemBase {
             PIDConstants pid = PIDConstants.makePositionPID(1);
             motor = new KrakenX44Motor(
                     log1, currentLog, CAN_ID, busId,
-                    NeutralMode100.COAST, MotorPhase.REVERSE,
+                    NeutralMode100.COAST, MotorPhase.FORWARD,
                     new CurrentLimit(20, 40),
                     friction, pid);
             motor2 = new KrakenX44Motor(
                     log2, currentLog, CAN_ID2, busId,
-                    NeutralMode100.COAST, MotorPhase.FORWARD,
+                    NeutralMode100.COAST, MotorPhase.REVERSE,
                     new CurrentLimit(20, 40),
                     friction, pid);
         } else {
